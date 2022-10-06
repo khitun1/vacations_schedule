@@ -1,26 +1,35 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+ <div>
+   <my-settings/>
+<!--   <set-signature/>-->
+<!--   <all-vacations/>-->
+<!--   <take-vacation/>-->
+<!--   <my-vacations/>-->
+<!--  <start-screen/>-->
+ </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// import StartScreen from "@/components/Pages/StartScreen";
+// import MyVacations from "@/components/Pages/MyVacations";
+// import TakeVacation from "@/components/Pages/TakeVacation";
+// import AllVacations from "@/components/Pages/AllVacations";
+// import SetSignature from "@/components/Pages/SetSignature";
+import MySettings from "@/components/Pages/MySettings";
 
 export default {
-  name: 'App',
   components: {
-    HelloWorld
+    MySettings,
+    // SetSignature,
+    // AllVacations,
+    // TakeVacation,
+    // MyVacations,
+    // StartScreen,
   }
+
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>

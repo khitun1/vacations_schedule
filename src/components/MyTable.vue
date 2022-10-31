@@ -10,103 +10,21 @@
       <th width="50px"/>
       <th width="50px"/>
     </tr>
-    <tr>
-      <td>07.10.2022 - 18.10.2022</td>
-      <td>11 дней</td>
-      <td>15.08.2022</td>
-      <td>Да</td>
-      <td>Подтверждено</td>
-      <td><div class="circle" style="background: greenyellow"></div></td>
+    <tr v-for="rec in records"
+          :key="rec.id">
+      <td>{{rec.start}} - {{rec.end}}</td>
+      <td>{{rec.total}} дней</td>
+      <td>{{rec.dateRequest}}</td>
+      <td>{{rec.paid}}</td>
+      <td>{{rec.status}}</td>
       <td>
-        <button-icon>
-          <img src="@/components/images/EditIcon.png"/>
-        </button-icon>
+        <div class="circle" v-if="rec.status === 'Утверждено'" style="background: #00FF19"/>
+        <div class="circle" v-else-if="rec.status === 'Ожидание'" style="background: #FFB800"/>
+        <div class="circle" v-else-if="rec.status === 'Отказ'" style="background: #FF0000"/>
+        <div class="circle" v-else-if="rec.status === 'Удалено'" style="background: #9E9E9E"/>
+        <div class="circle" v-else-if="rec.status === 'Использовано'" style="background: #8482FF"/>
+        <div class="circle" v-else-if="rec.status === 'Отменено'" style="background: #9E9E9E"/>
       </td>
-      <td>
-        <button-icon>
-          <img src="@/components/images/DeleteIcon.png"/>
-        </button-icon>
-      </td>
-    </tr>
-    <tr>
-      <td>07.10.2022 - 18.10.2022</td>
-      <td>11 дней</td>
-      <td>15.08.2022</td>
-      <td>Да</td>
-      <td>Ожидает подтверждения</td>
-      <td><div class="circle" style="background: orange"></div></td>
-      <td>
-        <button-icon>
-          <img src="@/components/images/EditIcon.png"/>
-        </button-icon>
-      </td>
-      <td>
-        <button-icon>
-          <img src="@/components/images/DeleteIcon.png"/>
-        </button-icon>
-      </td>
-    </tr>
-    <tr>
-      <td>07.10.2022 - 18.10.2022</td>
-      <td>11 дней</td>
-      <td>15.08.2022</td>
-      <td>Да</td>
-      <td>Ожидает подтверждения</td>
-      <td><div class="circle" style="background: orange"></div></td>
-      <td>
-        <button-icon>
-          <img src="@/components/images/EditIcon.png"/>
-        </button-icon>
-      </td>
-      <td>
-        <button-icon>
-          <img src="@/components/images/DeleteIcon.png"/>
-        </button-icon>
-      </td>
-    </tr>
-    <tr>
-      <td>07.10.2022 - 18.10.2022</td>
-      <td>11 дней</td>
-      <td>15.08.2022</td>
-      <td>Да</td>
-      <td>Ожидает подтверждения</td>
-      <td><div class="circle" style="background: orange"></div></td>
-      <td>
-        <button-icon>
-          <img src="@/components/images/EditIcon.png"/>
-        </button-icon>
-      </td>
-      <td>
-        <button-icon>
-          <img src="@/components/images/DeleteIcon.png"/>
-        </button-icon>
-      </td>
-    </tr>
-    <tr>
-      <td>07.10.2022 - 18.10.2022</td>
-      <td>11 дней</td>
-      <td>15.08.2022</td>
-      <td>Да</td>
-      <td>Ожидает подтверждения</td>
-      <td><div class="circle" style="background: orange"></div></td>
-      <td>
-        <button-icon>
-          <img src="@/components/images/EditIcon.png"/>
-        </button-icon>
-      </td>
-      <td>
-        <button-icon>
-          <img src="@/components/images/DeleteIcon.png"/>
-        </button-icon>
-      </td>
-    </tr>
-    <tr>
-      <td>07.10.2022 - 18.10.2022</td>
-      <td>11 дней</td>
-      <td>15.08.2022</td>
-      <td>Да</td>
-      <td>Ожидает подтверждения</td>
-      <td><div class="circle" style="background: orange"></div></td>
       <td>
         <button-icon>
           <img src="@/components/images/EditIcon.png"/>
@@ -128,7 +46,13 @@ export default {
   name: "MyTable",
   components: {
     ButtonIcon,
+  },
+  props: {
+    records: {
+      type: Array,
+      required: false,
     }
+  },
 }
 </script>
 
@@ -143,6 +67,7 @@ td
 {
   border-bottom: 1px solid lightslategray;
   height: 30px;
+  text-align: center;
 }
 
 button-icon

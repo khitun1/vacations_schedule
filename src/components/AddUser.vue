@@ -1,14 +1,22 @@
 <template>
   <h1>Новый пользователь</h1>
-  <div>
-    <my-input class="in" placeholder="Фамилия"/>
-    <my-input class="in" placeholder="Имя"/>
-    <my-input class="in" placeholder="Отчество"/>
-    <my-input class="in" placeholder="Логин"/>
-    <my-input class="in" placeholder="Пароль"/>
-    <my-input class="in" placeholder="Отдел"/>
-    <my-button class="create">Добавить</my-button>
-  </div>
+    <form @submit.prevent>
+      <my-input class="in" placeholder="Фамилия"
+                v-model="user.surname"/>
+      <my-input class="in" placeholder="Имя"
+                v-model="user.name"/>
+      <my-input class="in" placeholder="Отчество"
+                v-model="user.lastname"/>
+      <my-input class="in" placeholder="Логин"
+                v-model="user.login"/>
+      <my-input class="in" placeholder="Пароль"
+                v-model="user.password"/>
+      <my-input class="in" placeholder="Отдел"
+                v-model="user.department"/>
+      <my-button class="create" @click="createUser">
+        Добавить
+      </my-button>
+    </form>
 </template>
 
 <script>
@@ -16,12 +24,38 @@ import MyInput from "@/components/UI/MyInput";
 import MyButton from "@/components/UI/MyButton";
 export default {
   name: "AddUser",
-  components: {MyButton, MyInput}
+  components: {MyButton, MyInput},
+  data() {
+    return {
+      user: {
+        surname: '',
+        name: '',
+        lastname: '',
+        login: '',
+        password: '',
+        department: '',
+      }
+   }
+  },
+  methods: {
+    createUser(){
+      this.user.id = Date.now()
+      this.$emit('create', this.user)
+      this.user = {
+        surname: '',
+        name: '',
+        lastname: '',
+        login: '',
+        password: '',
+        department: '',
+      }
+    }
+  }
 }
 </script>
 
 <style scoped>
-div
+form
 {
   width: 300px;
   margin-left: 40px;

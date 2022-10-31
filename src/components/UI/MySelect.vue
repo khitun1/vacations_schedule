@@ -1,12 +1,20 @@
 <template>
-  <select>
+  <select :value="modelValue" @input="updateInput">
     <slot></slot>
   </select>
 </template>
 
 <script>
 export default {
-  name: "MySelect"
+  name: "MySelect",
+  props: {
+    modelValue: [String, Number]
+  },
+  methods: {
+    updateInput(event) {
+      this.$emit('update:modelValue', event.target.value);
+    },
+  }
 }
 </script>
 

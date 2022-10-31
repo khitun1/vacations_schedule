@@ -1,7 +1,10 @@
 <template>
   <sample-page>
     <h1>Запросы на подпись отпуска</h1>
-    <signature-table/>
+    <signature-table
+      :requested="requested"
+      @getExplanation="explain"
+    />
   </sample-page>
 </template>
 
@@ -13,6 +16,17 @@ export default {
   components:{
     SignatureTable,
     SamplePage,
+  },
+  props:{
+    requested: {
+      type: Array,
+      required: false,
+    }
+  },
+  methods: {
+    explain(exp){
+      this.$emit('getExplanation', exp);
+    }
   },
   name: "SetSignature"
 }

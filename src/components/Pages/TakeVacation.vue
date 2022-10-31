@@ -3,9 +3,13 @@
     <h1>Заявление на отпуск</h1>
     <div class="dates">
       <p>Даты отпуска</p>
-      <my-input class="date" type="date"></my-input>
+      <my-input class="date" type="date"
+                v-model="record.start">
+      </my-input>
       &mdash;
-      <my-input class="date" type="date"></my-input>
+      <my-input class="date" type="date"
+                v-model="record.end">
+      </my-input>
     </div>
     <div class="free">
       <p>Список доступных дат</p>
@@ -16,10 +20,9 @@
     </div>
     <div class="type">
       <p>Тип отпуска</p>
-      <my-select>
-        <option selected value="Выберите из списка" disabled>Выберите из списка</option>
-        <option>1</option>
-        <option>2</option>
+      <my-select v-model="record.type">
+        <option selected value="" disabled>Выберите из списка</option>
+        <option v-for="type in types" :key="type.id" >{{type.name}}</option>
       </my-select>
     </div>
     <div class="countries">
@@ -35,9 +38,10 @@
     </div>
     <div class="comment">
       <p>Поле для комментария</p>
-      <textarea placeholder="Добавьте комментарий, если считаете нужным"/>
+      <textarea placeholder="Добавьте комментарий, если считаете нужным"
+                v-model="record.comment"/>
     </div>
-    <my-button class="send">
+    <my-button class="send" @click="request">
       Отправить заявление
     </my-button>
   </sample-page>
@@ -50,11 +54,41 @@ import MyButton from "@/components/UI/MyButton";
 import MySelect from "@/components/UI/MySelect";
 
 export default {
+  data()
+  {
+    return {
+      record: {
+       start: '',
+       end: '',
+       comment: '',
+       type: '',
+      },
+    }
+  },
   components:{
     MySelect,
     MyButton,
     MyInput,
     SamplePage,
+  },
+  props:{
+    types: {
+      type: Array,
+      required: false,
+    },
+  },
+  methods: {
+    request()
+    {
+      this.record.id = Date.now();
+      this.$emit('create', this.record);
+      this.record = {
+        start: '',
+        end: '',
+        comment: '',
+        type: '',
+      }
+    }
   },
   name: "TakeVacation"
 }
@@ -75,6 +109,7 @@ h1
 textarea
 {
   position: absolute;
+  padding: 10px;
   left: 10px;
   height: 90px;
   width: 500px;
@@ -167,11 +202,13 @@ select
 {
   position: absolute;
   left: 150px;
-  top: -55px;
+  top: -3px;
 }
 
 .check_div
 {
+  top: -3px;
+  left: 0;
   width: 60px;
   height: 30px;
   border-radius: 100px;

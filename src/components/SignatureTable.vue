@@ -10,41 +10,27 @@
       <th></th>
       <th></th>
     </tr>
-    <tr>
-      <td>Хитун Иван Михайлович</td>
-      <td>09.11.2022 - 20.11.2022</td>
-      <td>12 дней</td>
-      <td>Да</td>
-      <td>Нет</td>
+    <tr v-for="vac in requested"
+      :key="vac.id">
+      <td>{{vac.surname}} {{vac.name}} {{vac.lastname}}</td>
+      <td>{{ vac.start }} - 20.11.2022</td>
+      <td>{{ vac.total }} дней</td>
+      <td>{{ vac.paid }}</td>
+      <td>{{ vac.intersections }}</td>
       <td><button class="answer" style="color: #8482FF;">утвердить</button></td>
-      <td><button class="answer">отказать</button></td>
-      <td><button-icon><img src="@/components/images/Triplets.png">
-
-      </button-icon></td>
-
-    </tr>
-    <tr>
-      <td>Хитун Иван Михайлович</td>
-      <td>09.11.2022 - 20.11.2022</td>
-      <td>12 дней</td>
-      <td>Да</td>
-      <td>Нет</td>
-      <td><button class="answer" style="color: #8482FF;">утвердить</button></td>
-      <td><button class="answer">отказать</button></td>
-      <td><button-icon><img src="@/components/images/Triplets.png">
-        <div class="triplets">
-          <button>Все детали отпуска</button>
-          <button>В общем календаре</button>
-          <button>В календаре сотрудника</button>
-        </div>
-      </button-icon></td>
+      <td><button class="answer" v-on:click="visible=true">отказать</button></td>
+      <td>
+        <button-icon>
+          <img src="@/components/images/Triplets.png">
+        </button-icon>
+      </td>
     </tr>
   </table>
-  <div class="failure">
+  <div class="failure" v-show="visible">
     <h3>Укажите причину отказа</h3>
-    <textarea></textarea>
-    <my-button>Отправить</my-button>
-    <my-button>Отменить</my-button>
+    <textarea v-model="explanation"></textarea>
+    <my-button v-on:click="visible=false" @click="explain">Отправить</my-button>
+    <my-button v-on:click="visible=false">Отменить</my-button>
   </div>
 
 </template>
@@ -55,8 +41,23 @@ import MyButton from "@/components/UI/MyButton";
 export default {
   name: "SignatureTable",
   components: {MyButton, ButtonIcon},
+  data() {
+    return {
+      visible: false,
+      explanation: '',
+    }
+  },
   methods: {
+    explain(){
+        this.$emit('getExplanation', this.explanation);
+    }
+  },
 
+  props: {
+    requested: {
+      type: Array,
+      required: false,
+    }
   }
 }
 </script>
@@ -104,7 +105,6 @@ img
   filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
   border-radius: 40px;
   text-align: center;
-  display: none;
 }
 
 

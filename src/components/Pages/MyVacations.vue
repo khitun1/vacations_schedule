@@ -15,9 +15,13 @@
     </my-button>
     <div class="plan">
       <h1>Запланированные отпуска</h1>
-      <my-table/>
+      <my-table
+        :records="plans"
+      />
       <h1 style="margin-top: 20px">История отпусков</h1>
-      <my-table/>
+      <my-table
+        :records="history"
+      />
     </div>
     </sample-page>
 </template>
@@ -32,6 +36,16 @@ export default {
     MyButton,
     MyTable,
     SamplePage,
+  },
+  props: {
+    plans: {
+      type: Array,
+      required: false,
+    },
+    history: {
+      type: Array,
+      required: false,
+    }
   },
 
   name: "MyVacations"

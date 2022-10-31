@@ -6,7 +6,7 @@
         Фамилия:
       </td>
       <td>
-        Николаев
+        {{ user.surname }}
       </td>
     </tr>
     <tr>
@@ -14,7 +14,7 @@
         Имя:
       </td>
       <td>
-        Иван
+        {{ user.name }}
       </td>
     </tr>
     <tr>
@@ -22,7 +22,7 @@
         Отчество:
       </td>
       <td>
-        Михайлович
+        {{ user.lastname }}
       </td>
     </tr>
     <tr>
@@ -30,7 +30,7 @@
         Логин:
       </td>
       <td>
-        Flash
+        {{ user.login }}
       </td>
       <td><my-button class="change">Изменить логин</my-button></td>
     </tr>
@@ -39,7 +39,7 @@
         Пароль:
       </td>
       <td>
-        Qwertyu123456
+        {{ user.password }}
         <button-icon class="watch"><img src="@/components/images/WatchIcon.png"></button-icon>
       </td>
       <td><my-button class="change">Изменить пароль</my-button></td>
@@ -49,7 +49,7 @@
         Отдел:
       </td>
       <td>
-        Разработка
+        {{ user.department }}
       </td>
     </tr>
   </table>
@@ -60,7 +60,13 @@ import ButtonIcon from "@/components/UI/ButtonIcon";
 import MyButton from "@/components/UI/MyButton";
 export default {
   name: "PersonalData",
-  components: {MyButton, ButtonIcon}
+  components: {MyButton, ButtonIcon},
+  props: {
+    user: {
+      type: Object,
+      required: true,
+    }
+  }
 }
 </script>
 

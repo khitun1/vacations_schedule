@@ -1,9 +1,11 @@
 <template>
   <sample-page>
     <my-select>
-      <option selected value="Все сотрудники">Все сотрудники</option>
-      <option>Отдел разработки</option>
-      <option>Отдел проектирования</option>
+      <option selected disabled value="">Выберите отдел</option>
+      <option v-for="dep in deps"
+              :key="dep.id">
+        {{ dep.name }}
+      </option>
     </my-select>
     <my-input class="search" placeholder="поиск сотрудника"/>
     <div class="interval">
@@ -29,6 +31,12 @@ export default {
     MySelect,
     MyInput,
     SamplePage,
+  },
+  props: {
+    deps: {
+      type: Array,
+      required: false,
+    }
   }
 }
 </script>
@@ -41,7 +49,6 @@ select
   top: 20px;
   left: 30px;
   text-align: center;
-  font-weight: bold;
   font-size: 16px;
   width: 250px;
   cursor: pointer;

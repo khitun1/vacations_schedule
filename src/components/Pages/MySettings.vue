@@ -2,14 +2,19 @@
   <sample-page>
     <personal-data
         :user="user"
+        @eventChangePas="changePas"
+        @eventChangeLog="changeLog"
     />
     <add-user
         @create="createUser"
+        :users="users"
+        :deps="deps"
     />
     <set-data
       :deps="deps"
       :types="types"
       @create="createNew"
+      @changeCon="setCon"
     />
   </sample-page>
 
@@ -28,52 +33,57 @@ export default {
     PersonalData,
     SamplePage,
   },
+
   props: {
+    users: {
+      type: Array,
+      required: false,
+    },
     user: {
       type: Object,
       required: true,
     },
+
     deps: {
       type: Array,
       required: false,
     },
+
     types: {
       type: Array,
       required: false,
     },
   },
+
   name: "MySettings",
+
   data() {
     return {
-      newUser: {
-        surname: '',
-        name: '',
-        lastname: '',
-        login: '',
-        password: '',
-        department: '',
-      },
       newType: {
         name: '',
       }
     }
   },
+
   methods: {
-    createUser(user){
-      this.newUser = user;
-      this.$emit('create', this.newUser);
-      this.newUser = {
-        surname: '',
-        name: '',
-        lastname: '',
-        login: '',
-        password: '',
-        department: '',
-      }
+    createUser(user) {
+      this.$emit('create', user);
     },
-    createNew(type){
-      this.newType = type;
-      this.$emit('add', this.newType);
+
+    createNew(type) {
+      this.$emit('add', type);
+    },
+
+    changePas(pas){
+      this.$emit('changePassword', pas);
+    },
+
+    changeLog(log){
+      this.$emit('changeLogin', log);
+    },
+
+    setCon(con){
+      this.$emit('changeCondition', con);
     }
   }
 }

@@ -27,12 +27,12 @@
     </div>
     <div class="countries">
       <p>Какие страны собираетесь посетить?</p>
-      <my-input class="list" placeholder="Если едете заграницу, укажите страну"/>
+      <my-input class="list" placeholder="Если едете заграницу, укажите страну" v-model="record.countries"/>
     </div>
     <div class="payed">
       <p>Оплачиваемый</p>
       <label class="checkbox">
-        <input type="checkbox" class="check_input"/>
+        <input type="checkbox" class="check_input" v-model="record.paid"/>
         <div class="check_div"/>
       </label>
     </div>
@@ -62,6 +62,8 @@ export default {
        end: '',
        comment: '',
        type: '',
+       countries: '',
+       paid: false,
       },
     }
   },
@@ -87,6 +89,8 @@ export default {
         end: '',
         comment: '',
         type: '',
+        countries: '',
+        paid: false,
       }
     }
   },
@@ -114,7 +118,7 @@ textarea
   height: 90px;
   width: 500px;
   border-width: 0;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 15px;
   resize: none;
   outline: none;

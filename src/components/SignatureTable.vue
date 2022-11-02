@@ -10,28 +10,40 @@
       <th></th>
       <th></th>
     </tr>
-    <tr v-for="vac in requested"
+    <tr  v-for="vac in requested"
       :key="vac.id">
-      <td>{{vac.surname}} {{vac.name}} {{vac.lastname}}</td>
-      <td>{{ vac.start }} - 20.11.2022</td>
-      <td>{{ vac.total }} дней</td>
-      <td>{{ vac.paid }}</td>
-      <td>{{ vac.intersections }}</td>
-      <td><button class="answer" style="color: #8482FF;">утвердить</button></td>
-      <td><button class="answer" v-on:click="visible=true">отказать</button></td>
-      <td>
-        <button-icon>
+      <td v-if="vac.status === 'Ожидание'">{{vac.surname}} {{vac.name}} {{vac.lastname}}</td>
+      <td v-if="vac.status === 'Ожидание'">{{ vac.start }} - 20.11.2022</td>
+      <td v-if="vac.status === 'Ожидание'">{{ vac.total }} дней</td>
+      <td v-if="vac.status === 'Ожидание'">{{ vac.paid }}</td>
+      <td v-if="vac.status === 'Ожидание'">{{ vac.intersections }}</td>
+      <td v-if="vac.status === 'Ожидание'"><button class="answer" style="color: #8482FF;" @click="accept(vac.id)">утвердить</button></td>
+      <td v-if="vac.status === 'Ожидание'"><button class="answer" @click="visible=true; this.id = vac.id">отказать</button></td>
+      <td v-if="vac.status === 'Ожидание'">
+        <button-icon @click="menuVis = !menuVis">
           <img src="@/components/images/Triplets.png">
+          <div class="menu" v-show="menuVis">
+            <button>
+              Все детали отпуска
+            </button>
+            <button>
+              В общем календаре
+            </button>
+            <button>
+              Календарь сотрудника
+            </button>
+          </div>
         </button-icon>
+
       </td>
     </tr>
   </table>
-  <div class="failure" v-show="visible">
+  <form @submit.prevent class="failure" v-show="visible">
     <h3>Укажите причину отказа</h3>
-    <textarea v-model="explanation"></textarea>
-    <my-button v-on:click="visible=false" @click="explain">Отправить</my-button>
-    <my-button v-on:click="visible=false">Отменить</my-button>
-  </div>
+    <textarea v-model="explanation.exp"></textarea>
+    <my-button @click="explain">Отправить</my-button>
+    <my-button @click="visible=false">Отменить</my-button>
+  </form>
 
 </template>
 
@@ -43,13 +55,25 @@ export default {
   components: {MyButton, ButtonIcon},
   data() {
     return {
+      //vacs: this.requested.filter(p => p.status == 'wait'),
       visible: false,
-      explanation: '',
+      menuVis: false,
+      id: 0,
+      explanation: {
+        exp: '',
+      },
     }
   },
   methods: {
     explain(){
+        this.explanation.id = this.id;
         this.$emit('getExplanation', this.explanation);
+        this.explanation.exp = '';
+        this.visible = false;
+    },
+
+    accept(id){
+      this.$emit('accepted', id);
     }
   },
 
@@ -76,6 +100,7 @@ td
   height: 30px;
   padding-left: 20px;
   padding-right: 20px;
+  overflow: visible;
 }
 
 .answer
@@ -114,7 +139,7 @@ textarea
   height: 150px;
   width: 300px;
   border-width: 0;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 15px;
   resize: none;
   outline: none;
@@ -128,20 +153,6 @@ textarea
   width: 120px;
   background: #8482FF;
   color: #FCFF7C;
-}
-
-.triplets
-{
-  position: relative;
-  top: -25px;
-  left: -200px;
-  height: 200px;
-  width: 200px;
-  border-width: 0;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 20px;
-  background: #DDDDDD;
-  display: none;
 }
 
 .triplets button
@@ -159,5 +170,33 @@ textarea
 .triplets button:hover
 {
   background: white;
+}
+
+.menu
+{
+  position: relative;
+  top: -30px;
+  right: 210px;
+  width: fit-content;
+  height: fit-content;
+
+  background: #FFFFFF;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+}
+
+.menu button
+{
+  width: 200px;
+  height: 50px;
+
+  background: #FFFFFF;
+  border-width: 0;
+  border-radius: 10px;
+}
+
+.menu button:hover
+{
+  background:  #D9D9D9;
 }
 </style>

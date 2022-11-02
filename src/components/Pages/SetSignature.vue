@@ -4,6 +4,7 @@
     <signature-table
       :requested="requested"
       @getExplanation="explain"
+      @accepted="accept"
     />
   </sample-page>
 </template>
@@ -26,6 +27,10 @@ export default {
   methods: {
     explain(exp){
       this.$emit('getExplanation', exp);
+    },
+
+    accept(id){
+      this.$emit('accepted', id);
     }
   },
   name: "SetSignature"

@@ -1,5 +1,7 @@
 <template>
-  <sample-page>
+  <sample-page
+      :choice="'take'"
+      :admin="isAdmin">
     <h1>Заявление на отпуск</h1>
     <div class="dates">
       <p>Даты отпуска</p>
@@ -54,9 +56,42 @@ import MyButton from "@/components/UI/MyButton";
 import MySelect from "@/components/UI/MySelect";
 
 export default {
+  name: "TakeVacation",
   data()
   {
     return {
+      current_user: {
+        id: 1, surname: 'Adams', name: 'John', lastname: 'Jack', login: 'Flash', password: 'qwerty',
+        department: 'Developers', daysLeft: 10,
+      },
+
+      types: [
+        {id: 1, name: 'first'},
+        {id: 2, name: 'second'},
+        {id: 3, name: 'third'},
+      ],
+
+      vacations : [
+        {id: 1, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '01.01.2022', end: '02.02.2022',
+          total: 12, paid: 'Да', type: '', dateRequest: '',
+          intersections: 'Нет', explanation: '', status: 'Ожидание', comment: '', countries: '',},
+        {id: 22, surname: 'Иванов', name: 'Владислав', lastname: 'Андреевич', start: '01.01.2022', end: '02.02.2022',
+          total: 20, paid: 'Нет', type: '', dateRequest: '',
+          intersections: 'Да', explanation: '', status: 'Ожидание', comment: '', countries: '',},
+      ],
+
+      myPlans: [
+        {id: 1, start: '01.01.2022', end: '02.02.2022', total: 12, dateRequest: '01.06.2021', paid: 'Да', status: 'Утверждено',
+          explanation: '',},
+        {id: 2, start: '01.01.2022', end: '02.02.2022', total: 12, dateRequest: '01.06.2021', paid: 'Нет', status: 'Ожидание',
+          explanation: '',},
+        {id: 3, start: '01.01.2022', end: '02.02.2022', total: 12, dateRequest: '01.06.2021', paid: 'Да', status: 'Отказ',
+          explanation: '',},
+        {id: 4, start: '01.01.2022', end: '02.02.2022', total: 12, dateRequest: '01.06.2021', paid: 'Нет', status: 'Удалено',
+          explanation: '',},
+
+      ],
+
       record: {
        start: '',
        end: '',
@@ -67,34 +102,38 @@ export default {
       },
     }
   },
+
+  props: {
+    isAdmin:{
+      type: Number,
+      requested: true,
+    }
+  },
+
   components:{
     MySelect,
     MyButton,
     MyInput,
     SamplePage,
   },
-  props:{
-    types: {
-      type: Array,
-      required: false,
-    },
-  },
+
   methods: {
-    request()
+    request(rec)
     {
-      this.record.id = Date.now();
-      this.$emit('create', this.record);
-      this.record = {
-        start: '',
-        end: '',
-        comment: '',
-        type: '',
-        countries: '',
-        paid: false,
-      }
+      let date = new Date()
+      rec.paid = rec.paid === true? 'Да' : 'Нет';
+      rec.surname = this.current_user.surname;
+      rec.name = this.current_user.name;
+      rec.lastname = this.current_user.lastname;
+      rec.intersections = 'Нет';
+      rec.explanation = '';
+      rec.status = 'Ожидание';
+      rec.triplets = false;
+      rec.dateRequest = date.getDate() + '.' + date.getMonth() + '.' + date.getFullYear();
+      this.vacations.push(rec);
+      this.myPlans.push(rec);
     }
   },
-  name: "TakeVacation"
 }
 </script>
 

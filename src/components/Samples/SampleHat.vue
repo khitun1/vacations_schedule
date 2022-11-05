@@ -14,8 +14,8 @@
   position: fixed;
   width: 100%;
   height: 10%;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
   background: #DDDDDD;
   filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
   z-index: 1;

@@ -5,11 +5,16 @@
     <button-icon class="btn">
       <img src="@/components/images/NoticeIcon.png">
     </button-icon>
-    <button-icon class="btn">
+    <router-link to="/">
+      <button-icon class="btn">
       <img src="@/components/images/ExitIcon.png">
-    </button-icon>
+      </button-icon>
+    </router-link>
   </div>
-  <sample-nav-bar/>
+  <sample-nav-bar
+      :choice="choice"
+      :admin="admin"
+  />
   <div class="work">
     <slot></slot>
   </div>
@@ -21,12 +26,26 @@ import SampleNavBar from "@/components/Samples/SampleNavBar";
 import ButtonIcon from "@/components/UI/ButtonIcon";
 
 export default {
+  name: "SamplePage",
+
   components:{
     ButtonIcon,
     SampleHat,
     SampleNavBar
   },
-  name: "SamplePage"
+
+  props: {
+    choice: {
+      type: String,
+      requested: true,
+    },
+    admin: {
+      type: Number,
+      requested: true,
+    },
+  },
+
+
 }
 </script>
 

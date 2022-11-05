@@ -46,7 +46,7 @@
       <td>
         <my-input :readonly="changePassword" :type="typePassword"
                   v-model="newPassword"/>
-        <button-icon class="watch" @click="typePassword = typePassword == 'text'? 'password' : 'text'"  >
+        <button-icon class="watch" @click="typePassword = typePassword === 'text'? 'password' : 'text'"  >
           <img src="@/components/images/WatchIcon.png">
         </button-icon>
       </td>
@@ -93,7 +93,7 @@ export default {
   },
   methods: {
     changePas(){
-      if(this.changePassword == true) this.textPasBtn = 'Подтвердить';
+      if(this.changePassword === true) this.textPasBtn = 'Подтвердить';
       else{
         this.$emit('eventChangePas', this.newPassword);
         this.textPasBtn = 'Изменить пароль';
@@ -101,7 +101,7 @@ export default {
       this.changePassword = !this.changePassword;
     },
     changeLog(){
-      if(this.changeLogin == true)  this.textLogBtn = 'Подтвердить';
+      if(this.changeLogin === true)  this.textLogBtn = 'Подтвердить';
       else
       {
         this.$emit('eventChangeLog', this.newLogin);
@@ -118,7 +118,6 @@ export default {
 td
 {
   position: relative;
-  height: 20px;
   text-align: left;
   padding-left: 50px;
   padding-right: 50px;

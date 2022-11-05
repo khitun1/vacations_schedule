@@ -13,16 +13,16 @@
     <tr  v-for="vac in requested"
       :key="vac.id">
       <td v-if="vac.status === 'Ожидание'">{{vac.surname}} {{vac.name}} {{vac.lastname}}</td>
-      <td v-if="vac.status === 'Ожидание'">{{ vac.start }} - 20.11.2022</td>
-      <td v-if="vac.status === 'Ожидание'">{{ vac.total }} дней</td>
+      <td v-if="vac.status === 'Ожидание'">{{ vac.start }} - {{ vac.end }}</td>
+      <td v-if="vac.status === 'Ожидание'">{{totalDays(vac.start, vac.end)}} дней</td>
       <td v-if="vac.status === 'Ожидание'">{{ vac.paid }}</td>
       <td v-if="vac.status === 'Ожидание'">{{ vac.intersections }}</td>
       <td v-if="vac.status === 'Ожидание'"><button class="answer" style="color: #8482FF;" @click="accept(vac.id)">утвердить</button></td>
       <td v-if="vac.status === 'Ожидание'"><button class="answer" @click="visible=true; this.id = vac.id">отказать</button></td>
       <td v-if="vac.status === 'Ожидание'">
-        <button-icon @click="menuVis = !menuVis">
+        <button-icon @click="menuVisible = menuVisible === vac.id? 0: vac.id;">
           <img src="@/components/images/Triplets.png">
-          <div class="menu" v-show="menuVis">
+          <div class="menu" v-if="menuVisible === vac.id">
             <button>
               Все детали отпуска
             </button>
@@ -50,14 +50,14 @@
 <script>
 import ButtonIcon from "@/components/UI/ButtonIcon";
 import MyButton from "@/components/UI/MyButton";
+import moment from "moment";
 export default {
   name: "SignatureTable",
   components: {MyButton, ButtonIcon},
   data() {
     return {
-      //vacs: this.requested.filter(p => p.status == 'wait'),
+      menuVisible: 0,
       visible: false,
-      menuVis: false,
       id: 0,
       explanation: {
         exp: '',
@@ -74,6 +74,14 @@ export default {
 
     accept(id){
       this.$emit('accepted', id);
+    },
+
+    totalDays(start,end){
+      let arr = start.split('.');
+      start = moment([arr[2],arr[1]-1, arr[0]]);
+      arr = end.split('.');
+      end = moment([arr[2],arr[1]-1, arr[0]]);
+      return end.diff(start,'days');
     }
   },
 
@@ -198,5 +206,6 @@ textarea
 .menu button:hover
 {
   background:  #D9D9D9;
+  cursor: pointer;
 }
 </style>

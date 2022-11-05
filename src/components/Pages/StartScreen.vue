@@ -3,9 +3,11 @@
   <div class="login">
     <my-input placeholder="Логин"/>
     <my-input placeholder="Пароль"/>
-    <my-button class="test">Войти</my-button>
+    <router-link to="myVacations" :isAdmin="isAdmin">
+      <my-button class="test">Войти</my-button>
+    </router-link>
   </div>
-  <div class="gif" style="overflow:hidden">
+  <div class="gif" style="overflow: hidden">
     <img src="@/components/images/Bear.gif">
   </div>
 </template>
@@ -16,12 +18,19 @@ import MyInput from "@/components/UI/MyInput";
 import MyButton from "@/components/UI/MyButton";
 
 export default {
+  name: "StartScreen",
+
+  data() {
+    return {
+      isAdmin: 2,
+    }
+  },
+
   components:{
     SampleHat,
     MyInput,
     MyButton,
   },
-  name: "StartScreen"
 }
 </script>
 
@@ -54,6 +63,8 @@ input
   left: 330px;
   top: 30px;
   margin-bottom: -10px;
+  width: fit-content;
+  height: fit-content;
 }
 
 </style>

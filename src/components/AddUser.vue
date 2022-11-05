@@ -1,21 +1,27 @@
 <template>
   <h1>Новый пользователь</h1>
     <form @submit.prevent>
-      <my-input class="in" placeholder="Фамилия"
-                v-model="user.surname"/>
-      <my-input class="in" placeholder="Имя"
-                v-model="user.name"/>
-      <my-input class="in" placeholder="Отчество"
-                v-model="user.lastname"/>
-      <my-input class="in" placeholder="Логин"
-                v-model="user.login"/>
-      <my-input class="in" placeholder="Пароль" :type="typePassword"
-                v-model="user.password"/>
-      <button-icon style="top: 8px;" @click="typePassword = typePassword == 'text'? 'password': 'text'">
+      <my-input class="in" :placeholder="surname"
+                v-model="user.surname"
+                v-bind:style="{boxShadow: user.surname === '' && flag? color : ''}"/>
+      <my-input class="in" :placeholder="name"
+                v-model="user.name"
+                v-bind:style="{boxShadow: user.name === '' && flag? color : ''}"/>
+      <my-input class="in" :placeholder="lastname"
+                v-model="user.lastname"
+                v-bind:style="{boxShadow: user.lastname === '' && flag? color : ''}"/>
+      <my-input class="in" :placeholder="log"
+                v-model="user.login"
+                v-bind:style="{boxShadow: user.login === '' && flag? color : ''}"/>
+      <my-input class="in" :placeholder="pas" :type="typePassword"
+                v-model="user.password"
+                v-bind:style="{boxShadow: user.password === '' && flag? color : ''}"/>
+      <button-icon style="top: 8px;" @click="typePassword = typePassword === 'text'? 'password': 'text'">
         <img src="@/components/images/WatchIcon.png" />
       </button-icon>
-      <my-input class="in" placeholder="Отдел"
-                v-model="user.department"/>
+      <my-input class="in" :placeholder="dep"
+                v-model="user.department"
+                v-bind:style="{boxShadow: user.department === '' && flag? color : ''}"/>
       <p class="error" v-show="error">{{ errorMsg }}</p>
       <my-button class="create" @click="createUser">
         Добавить
@@ -42,6 +48,7 @@ export default {
   },
   data() {
     return {
+      color: 'inset 0px 0px 5px red',
       user: {
         surname: '',
         name: '',
@@ -50,30 +57,42 @@ export default {
         password: '',
         department: '',
       },
+      surname: 'Фамилия',
+      name: 'Имя',
+      lastname: 'Отчество',
+      log: 'Логин',
+      pas: 'Пароль',
+      dep: 'Отдел',
       error: false,
       visible: true,
       errorMsg: 'sad',
       typePassword: 'text',
+      flag: false,
    }
   },
   methods: {
     createUser(){
-      if(!this.user.surname || !this.user.name || !this.user.lastname
-          || !this.user.login || !this.user.password || !this.user.department)
-      {
-        this.errorMsg = 'Заполните все поля!';
-        this.error = true;
-      }
-      else if(this.users.find(p => p.login == this.user.login))
+      if(!this.user.surname && !this.user.name && !this.user.lastname
+      && !this.user.login && !this.user.password && !this.user.department)  return;
+      this.flag = true;
+      if(!this.user.surname)  this.surname = 'Введите фамилию!';
+      if(!this.user.name)  this.name = 'Введите имя!';
+      if(!this.user.lastname)  this.lastname = 'Введите отчество!';
+      if(!this.user.login)  this.log = 'Введите логин!';
+      if(!this.user.password)  this.pas = 'Введите пароль!';
+      if(!this.user.department)  this.dep = 'Введите отдел!';
+      else if(this.users.find(p => p.login === this.user.login))
       {
         this.errorMsg = 'Пользователь с таким логином уже есть!';
         this.error = true;
       }
-      else if (!this.deps.find(p => p.name == this.user.department))
+
+      else if (!this.deps.find(p => p.name === this.user.department))
       {
         this.errorMsg = 'Отдел с таким названием отсутствует!';
         this.error = true;
       }
+
       else {
         this.user.id = Date.now()
         this.$emit('create', this.user)
@@ -85,7 +104,14 @@ export default {
           password: '',
           department: '',
         }
+        this.surname = 'Фамилия';
+        this.name = 'Имя';
+        this.lastname = 'Отчество';
+        this.log = 'Логин';
+        this.pas = 'Пароль';
+        this.dep = 'Отдел';
         this.error = false;
+        this.flag = false;
       }
     }
   }
@@ -123,5 +149,6 @@ form
   font-size: larger;
   font-weight: bold;
 }
+
 
 </style>

@@ -1,8 +1,10 @@
 <template>
-  <sample-page>
+  <sample-page
+      :choice="'allVacations'"
+      :admin="isAdmin">
     <my-select>
       <option selected disabled value="">Выберите отдел</option>
-      <option v-for="dep in deps"
+      <option v-for="dep in departments"
               :key="dep.id">
         {{ dep.name }}
       </option>
@@ -17,7 +19,9 @@
     <div class="chart">
 
     </div>
+
   </sample-page>
+
 </template>
 
 <script>
@@ -27,17 +31,28 @@ import MySelect from "@/components/UI/MySelect";
 
 export default {
   name: "AllVacations",
+
+  data() {
+    return{
+      departments: [
+        {id: 2, name: 'first', min: 7, total: 55, percent: 30,},
+        {id: 3, name: 'sdgsg', min: 7, total: 55, percent: 30,},
+      ],
+    }
+  },
+
   components: {
     MySelect,
     MyInput,
     SamplePage,
   },
+
   props: {
-    deps: {
-      type: Array,
-      required: false,
+    isAdmin:{
+      type: Number,
+      requested: true,
     }
-  }
+  },
 }
 </script>
 
@@ -83,5 +98,6 @@ select
   margin-top: 0;
   font-family: "Times New Roman";
 }
+
 
 </style>

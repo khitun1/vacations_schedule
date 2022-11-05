@@ -1,11 +1,13 @@
 <template>
-  <sample-page>
+  <sample-page
+    :choice="'myVacations'"
+    :admin="isAdmin">
     <h3>Осталось 25 дней</h3>
     <div class="fill">
       <div class="prev"/>
       <div class="present"/>
       <div class="year">
-        <p style="left: 0px">2021</p>
+        <p style="left: 0">2021</p>
         <p style="left: 290px">2022</p>
       </div>
     </div>
@@ -16,14 +18,18 @@
     <div class="plan">
       <h1>Запланированные отпуска</h1>
       <my-table
-        :records="plans"
+        :records="myPlans"
+        @Del="delPlan"
       />
       <h1 style="margin-top: 20px">История отпусков</h1>
       <my-table
-        :records="history"
+        :records="myHistory"
+        @Del="delHistory"
+
       />
     </div>
     </sample-page>
+
 </template>
 
 <script>
@@ -32,23 +38,55 @@ import MyTable from "@/components/MyTable";
 import MyButton from "@/components/UI/MyButton";
 
 export default {
+  name: "MyVacations",
+
   components:{
     MyButton,
     MyTable,
     SamplePage,
   },
-  props: {
-    plans: {
-      type: Array,
-      required: false,
-    },
-    history: {
-      type: Array,
-      required: false,
+
+  data(){
+    return {
+      myPlans: [
+        {id: 1, start: '11.12.2022', end: '02.02.2023', dateRequest: '01.06.2021', paid: 'Да', status: 'Утверждено',
+          explanation: '',},
+        {id: 2, start: '01.01.2022', end: '02.02.2022', dateRequest: '01.06.2021', paid: 'Нет', status: 'Ожидание',
+          explanation: '',},
+        {id: 3, start: '01.01.2022', end: '02.02.2022', dateRequest: '01.06.2021', paid: 'Да', status: 'Отказ',
+          explanation: '',},
+        {id: 4, start: '01.01.2022', end: '02.02.2022', dateRequest: '01.06.2021', paid: 'Нет', status: 'Удалено',
+          explanation: '',},
+        {id: 5, start: '01.01.2022', end: '03.05.2022', dateRequest: '01.06.2021', paid: 'Да', status: 'Отказ',
+          explanation: '',},
+        {id: 6, start: '01.01.2022', end: '02.02.2022', dateRequest: '01.06.2021', paid: 'Нет', status: 'Удалено',
+          explanation: '',},
+
+      ],
+
+      myHistory: [
+        {id: 1, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Отменено',},
+        {id: 2, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
+      ],
     }
   },
 
-  name: "MyVacations"
+  props: {
+    isAdmin:{
+      type: Number,
+      requested: true,
+    }
+  },
+
+  methods: {
+    delPlan(id){
+      this.myPlans.find(p => p.id === id).status = 'Удалено';
+    },
+
+    delHistory(id){
+      this.myHistory.find(p => p.id === id).status = 'Удалено';
+    }
+  }
 }
 </script>
 
@@ -58,7 +96,7 @@ h3
 {
   position: absolute;
   left: 10px;
-  top: 0px;
+  top: 0;
   font-family: "Times New Roman";
   font-weight: bold;
   font-size: 20px;
@@ -71,7 +109,7 @@ h3
   height: 20px;
   left: 10px;
   top: 50px;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 100px;
 }
 
@@ -86,7 +124,7 @@ h3
 .present
 {
   position: inherit;
-  top: 0px;
+  top: 0;
   width: 200px;
   height: 20px;
   left: 265px;
@@ -111,7 +149,7 @@ h3
 .plan h1
 {
   height: 20px;
-  margin-top: 0px;
+  margin-top: 0;
   margin-bottom: 30px;
   font-family: "Times New Roman";
   font-size: 32px;
@@ -143,7 +181,6 @@ h3
   top: -3px;
   font-family: "Times New Roman";
   font-size: 18px;
-
 }
 
 </style>

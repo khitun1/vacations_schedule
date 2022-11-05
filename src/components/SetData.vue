@@ -42,18 +42,23 @@
         <td>Минимальное кол-во дней отпуска:</td>
         <td><my-input v-model="condition.min" :readonly="changeMin"/> </td>
         <td>
-          <my-button @click="setCon(1)">{{minText}}</my-button>
+          <my-button @click="selectedDep !== ''? setCon(1): 0">{{minText}}</my-button>
         </td>
+      </tr>
+      <tr>
+        <td>Максимальное кол-во дней отпуска:</td>
+        <td><my-input v-model="condition.max" :readonly="changeMax"/></td>
+        <td><my-button @click="selectedDep !== ''? setCon(2): 0">{{maxText}}</my-button></td>
       </tr>
       <tr>
         <td>Всего дней для отпуска:</td>
         <td><my-input v-model="condition.total" :readonly="changeTotal"/></td>
-        <td><my-button @click="setCon(2)">{{totalText}}</my-button></td>
+        <td><my-button @click="selectedDep !== ''? setCon(3): 0">{{totalText}}</my-button></td>
       </tr>
       <tr>
         <td>% максимально допустимых одновременных отпусков:</td>
         <td><my-input v-model="condition.percent" :readonly="changePercent"/></td>
-        <td><my-button @click="setCon(3)">{{percentText}}</my-button></td>
+        <td><my-button @click="selectedDep !== ''? setCon(4): 0">{{percentText}}</my-button></td>
       </tr>
     </table>
     <p class="error" v-show="errorNum"> {{ errorMsg }}</p>
@@ -84,9 +89,11 @@ export default {
       newOne: {name: ''},
       selectedDep: '',
       changeMin: true,
+      changeMax: true,
       changeTotal: true,
       changePercent: true,
       minText: 'Изменить',
+      maxText: 'Изменить',
       totalText: 'Изменить',
       percentText: 'Изменить',
       errorDep: false,
@@ -135,22 +142,17 @@ export default {
     },
 
     setCon(flag){
+      let accept = false;
       switch (flag){
         case 1:
-          if(this.changeMin == false)
+          if(this.changeMin === false)
           {
-            if(parseInt(this.condition.min) && this.condition.min > 0 && this.condition.min % 1 == 0)
-            {
-              this.$emit('changeCon', this.condition);
-              this.errorNum = false;
+            if (this.validate(this.condition.min)) {
               this.changeMin = true;
               this.minText =  'Изменить';
+              accept = true;
             }
-            else
-            {
-              this.errorMsg = 'Минимальное количество дней должно быть целым и положительным числом!';
-              this.errorNum = true;
-            }
+            else this.errorMsg = 'Минимальное количество дней должно быть целым и положительным числом!';
           }
           else
           {
@@ -159,19 +161,30 @@ export default {
           }
           break;
         case 2:
-          if(this.changeTotal == false)
+          if(this.changeMax === false)
           {
-            if(parseInt(this.condition.total) && this.condition.total > 0 && this.condition.min % 1 == 0) {
-              this.$emit('changeCon', this.condition);
-              this.errorNum = false;
+            if (this.validate(this.condition.max)) {
+              this.changeMax = true;
+              this.maxText =  'Изменить';
+              accept = true;
+            }
+            else this.errorMsg = 'Максимальное количество дней должно быть целым и положительным числом!';
+          }
+          else
+          {
+            this.changeMax = false;
+            this.maxText =  'Подтвердить';
+          }
+          break;
+        case 3:
+          if(this.changeTotal === false)
+          {
+            if(this.validate(this.condition.total)) {
               this.changeTotal = true;
               this.totalText = 'Изменить';
+              accept = true;
             }
-            else
-            {
-              this.errorMsg = 'Общее количество дней должно быть целым и положительным числом!';
-              this.errorNum = true;
-            }
+            else this.errorMsg = 'Общее количество дней должно быть целым и положительным числом!';
           }
           else
           {
@@ -179,22 +192,15 @@ export default {
             this.totalText =  'Подтвердить';
           }
           break;
-        case 3:
-          if(this.changePercent == false)
+        case 4:
+          if(this.changePercent === false)
           {
-            if(parseInt(this.condition.percent) && this.condition.percent > 0 && this.condition.percent < 100
-                && this.condition.min % 1 == 0)
-            {
-              this.$emit('changeCon', this.condition);
-              this.errorNum = false;
+            if(this.validate(this.condition.percent) && this.condition.percent < 100) {
               this.changePercent = true;
               this.percentText = 'Изменить';
+              accept = true;
             }
-            else
-            {
-              this.errorMsg = '% пересечений должен быть целым, положительным и меньшем, чем 100, числом !';
-              this.errorNum = true;
-            }
+            else this.errorMsg = '% пересечений должен быть целым, положительным и меньшем, чем 100, числом !';
           }
           else
           {
@@ -203,6 +209,23 @@ export default {
           }
           break;
       }
+
+      if (accept){
+        if (this.condition.min > this.condition.max)
+        {
+          this.errorMsg = 'Максимальное кол-во дней не может быть меньше минимального';
+          this.errorNum = true;
+        }
+        else {
+          this.$emit('changeCon', this.condition);
+          this.errorNum = false;
+        }
+      }
+      else this.errorNum = true;
+    },
+
+    validate(con){
+      return (parseInt(con) && con > 0 && con % 1 === 0)
     },
   },
 }

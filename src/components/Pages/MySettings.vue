@@ -46,8 +46,8 @@ export default {
       },
 
       departments: [
-        {id: 2, name: 'first', min: 7, max: 30, total: 55, percent: 30,},
-        {id: 3, name: 'sdgsg', min: 7, max: 30, total: 55, percent: 30,},
+        {id: 2, name: 'first', min: 8, max: 30, total: 49, percent: 30,},
+        {id: 3, name: 'sdgsg', min: 7, max: 20, total: 55, percent: 25,},
       ],
 
       types: [

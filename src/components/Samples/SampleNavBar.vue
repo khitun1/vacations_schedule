@@ -1,12 +1,14 @@
 <template>
 
   <div class="nav">
-    <router-link to="requestVacation">
-      <button class="take" v-if="choice !== 'take'">
+    <router-link to="requestVacation" v-if="choice !== 'take'">
+      <button class="take" >
         &#10010;
         Планировщик отпусков
       </button>
-      <button class="cancel" v-else>
+    </router-link>
+    <router-link to="myVacations" v-else>
+      <button class="cancel" >
         &#x2212;
         Отменить планирование
       </button>
@@ -17,12 +19,12 @@
                 @mouseover="hover1=true"
                 @mouseleave="hover1=false"
                 :style="choice === 'myVacations' || hover1 ? { backgroundColor: 'white' } : { backgroundColor: '#E2E2E2' }">
-        <img src="@/components/images/VacationIcon.png"/>
-        <p>Мои отпуска</p>
-      </button>
-        </router-link>
-      <router-link to="allVacations" >
-        <button class="employees" v-if="admin !== 0"
+          <img src="@/components/images/VacationIcon.png"/>
+          <p>Мои отпуска</p>
+        </button>
+      </router-link>
+      <router-link to="allVacations" v-if="admin !== 0">
+        <button class="employees"
                 @mouseover="hover2=true"
                 @mouseleave="hover2=false"
                 :style="choice === 'allVacations' || hover2 ? { backgroundColor: 'white' } : { backgroundColor: '#E2E2E2' }">
@@ -30,15 +32,15 @@
         <p>Отпуска сотрудников</p>
       </button>
         </router-link>
-      <router-link to="setSignature" >
-        <button class="signature" v-if="admin !== 0"
-                @mouseover="hover3=true"
-                @mouseleave="hover3=false"
-                :style="choice === 'signature' || hover3 ? { backgroundColor: 'white' } : { backgroundColor: '#E2E2E2' }">
-        <img src="@/components/images/LetterIcon.png"/>
-        <p>Заявления на подпись</p>
-      </button>
-        </router-link>
+<!--      <router-link to="setSignature" v-if="admin !== 0">-->
+<!--        <button class="signature"-->
+<!--                @mouseover="hover3=true"-->
+<!--                @mouseleave="hover3=false"-->
+<!--                :style="choice === 'signature' || hover3 ? { backgroundColor: 'white' } : { backgroundColor: '#E2E2E2' }">-->
+<!--        <img src="@/components/images/LetterIcon.png"/>-->
+<!--        <p>Заявления на подпись</p>-->
+<!--       </button>-->
+<!--      </router-link>-->
       <router-link to="settings">
         <button class="settings"
                 @mouseover="hover4=true"
@@ -62,6 +64,8 @@ export default {
       hover2: false,
       hover3: false,
       hover4: false,
+      takeColor: this.choice === 'take' ? '#9492FF' : '#FCFF7C',
+      takeBack: this.choice === 'take' ? '#fffbfb' : '#9492FF',
     }
   },
 
@@ -97,19 +101,8 @@ export default {
   cursor: pointer;
   font-family: "Times New Roman";
   font-size: 24px;
-
-}
-
-.take
-{
-  color: #FCFF7C;
-  background: #9492FF;
-}
-
-.cancel
-{
-  color: #9492FF;
-  background: #fffbfb;
+  color: v-bind(takeColor);
+  background: v-bind(takeBack);
 }
 
 

@@ -121,7 +121,7 @@ export default {
 <style scoped>
 form
 {
-  width: 300px;
+  width: 400px;
   margin-left: 40px;
 }
 
@@ -145,6 +145,7 @@ form
 {
   position: relative;
   color: red;
+  width: fit-content;
   left: 25px;
   font-size: larger;
   font-weight: bold;

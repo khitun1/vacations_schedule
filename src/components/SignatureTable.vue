@@ -1,87 +1,57 @@
 <template>
-  <table style="text-align: center">
-    <tr>
-      <th>Ф.И.О. сотрудника</th>
-      <th>Даты отпуска</th>
-      <th>Всего дней</th>
-      <th>Оплачиваемый</th>
-      <th>Пересечения</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-    <tr  v-for="vac in requested"
-      :key="vac.id">
-      <td v-if="vac.status === 'Ожидание'">{{vac.surname}} {{vac.name}} {{vac.lastname}}</td>
-      <td v-if="vac.status === 'Ожидание'">{{ vac.start }} - {{ vac.end }}</td>
-      <td v-if="vac.status === 'Ожидание'">{{totalDays(vac.start, vac.end)}} дней</td>
-      <td v-if="vac.status === 'Ожидание'">{{ vac.paid }}</td>
-      <td v-if="vac.status === 'Ожидание'">{{ vac.intersections }}</td>
-      <td v-if="vac.status === 'Ожидание'"><button class="answer" style="color: #8482FF;" @click="accept(vac.id)">утвердить</button></td>
-      <td v-if="vac.status === 'Ожидание'"><button class="answer" @click="visible=true; this.id = vac.id">отказать</button></td>
-      <td v-if="vac.status === 'Ожидание'">
-        <button-icon @click="menuVisible = menuVisible === vac.id? 0: vac.id;">
-          <img src="@/components/images/Triplets.png">
-          <div class="menu" v-if="menuVisible === vac.id">
-            <button>
-              Все детали отпуска
-            </button>
-            <button>
-              В общем календаре
-            </button>
-            <button>
-              Календарь сотрудника
-            </button>
-          </div>
-        </button-icon>
-
-      </td>
-    </tr>
-  </table>
-  <form @submit.prevent class="failure" v-show="visible">
-    <h3>Укажите причину отказа</h3>
-    <textarea v-model="explanation.exp"></textarea>
-    <my-button @click="explain">Отправить</my-button>
-    <my-button @click="visible=false">Отменить</my-button>
-  </form>
+  <div class="rec"
+      v-for="vac in requested.filter(p => p.status === 'Ожидание')"
+    :key="vac.id"
+     @mouseover="visible=vac.id" @mouseleave="visible = false">
+      <div class="info" v-bind:style="{background: vac.intersections === 'Нет'? '#8886fc': '#fc7a7a'}">
+        <div class="withOutInter">
+          <p class="name">
+            {{vac.surname}} {{vac.name}} {{vac.lastname}}
+          </p>
+          <p>
+            {{ vac.start }} - {{ vac.end }}
+          </p>
+          <p style="width: 130px">
+            кол-во дней: {{totalDays(vac.start, vac.end)}}
+          </p>
+          <p style="width: 130px">
+            {{vac.paid === 'Да'? 'Оплачиваемый': 'Не оплачиваемый'}}
+          </p>
+        </div>
+        <p class="inters"
+           v-bind:style="vac.intersections === 'Да'? {border: '2px solid red'}: 'none'">
+          {{ vac.intersections === 'Да' ? "Перeсечение" : "" }}
+        </p>
+      </div>
+    <button style="color: #17c42c" v-if="visible === vac.id && vac.intersections === 'Нет'"
+            @click="this.$emit('accepted', vac.id)"
+            title="Утвердить">
+      &#10004;
+    </button>
+    <button style="color: #fd2626" v-if="visible === vac.id"
+            @click="this.$emit('showWindow', vac.id)"
+            title="Отказать">
+      &#10006;
+    </button>
+  </div>
 
 </template>
 
 <script>
-import ButtonIcon from "@/components/UI/ButtonIcon";
-import MyButton from "@/components/UI/MyButton";
 import moment from "moment";
 export default {
   name: "SignatureTable",
-  components: {MyButton, ButtonIcon},
+
   data() {
     return {
       menuVisible: 0,
       visible: false,
-      id: 0,
-      explanation: {
-        exp: '',
-      },
     }
   },
   methods: {
-    explain(){
-        this.explanation.id = this.id;
-        this.$emit('getExplanation', this.explanation);
-        this.explanation.exp = '';
-        this.visible = false;
-    },
-
-    accept(id){
-      this.$emit('accepted', id);
-    },
 
     totalDays(start,end){
-      let arr = start.split('.');
-      start = moment([arr[2],arr[1]-1, arr[0]]);
-      arr = end.split('.');
-      end = moment([arr[2],arr[1]-1, arr[0]]);
-      return end.diff(start,'days');
+      return moment(end, 'DD.MM.YYYY').diff(moment(start, 'DD.MM.YYYY'), 'days');
     }
   },
 
@@ -95,34 +65,62 @@ export default {
 </script>
 
 <style scoped>
-th
+
+.rec
 {
-  border-bottom: 1px solid lightslategray;
-  padding-left: 20px;
-  padding-right: 20px;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+  margin-right: 50px;
+  width: 1200px;
 }
 
-td
+.info
 {
-  border-bottom: 1px solid lightslategray;
-  height: 30px;
-  padding-left: 20px;
-  padding-right: 20px;
-  overflow: visible;
+  display: flex;
+  width: fit-content;
+  padding: 5px;
+  border-radius: 10px;
+  cursor: default;
 }
 
-.answer
+.withOutInter
 {
+  display: flex;
+  justify-content: space-between;
+}
+
+p
+{
+  margin-right: 44px;
+}
+
+.inters
+{
+  height: fit-content;
+  border-radius: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: center;
+  margin-top: 15px;
+  margin-right: 5px;
+}
+
+.name
+{
+  width: 250px;
+}
+
+button
+{
+  margin-left: 20px;
+  height: fit-content;
+  margin-top: 15px;
   font-weight: bold;
+  font-size: 22px;
   border-width: 0;
   background: none;
   cursor: pointer;
-}
-
-img
-{
-  height: 20px;
-  width: 20px;
 }
 
 .failure
@@ -161,6 +159,8 @@ textarea
   width: 120px;
   background: #8482FF;
   color: #FCFF7C;
+  font-family: "Times New Roman";
+  font-size: 16px;
 }
 
 .triplets button
@@ -175,37 +175,5 @@ textarea
   background: #DDDDDD;
 }
 
-.triplets button:hover
-{
-  background: white;
-}
 
-.menu
-{
-  position: relative;
-  top: -30px;
-  right: 210px;
-  width: fit-content;
-  height: fit-content;
-
-  background: #FFFFFF;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 10px;
-}
-
-.menu button
-{
-  width: 200px;
-  height: 50px;
-
-  background: #FFFFFF;
-  border-width: 0;
-  border-radius: 10px;
-}
-
-.menu button:hover
-{
-  background:  #D9D9D9;
-  cursor: pointer;
-}
 </style>

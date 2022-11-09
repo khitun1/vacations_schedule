@@ -7,6 +7,11 @@ import MySettings from "@/components/Pages/MySettings";
 import StartScreen from "@/components/Pages/StartScreen";
 
 let admin = 1;
+let left = 20;
+let total = 100;
+let selected = 1;
+let dep = 'first';
+
 
 const routes = [
     {
@@ -16,7 +21,11 @@ const routes = [
     {
         path: '/myVacations',
         component: MyVacations,
-        props: { isAdmin: admin},
+        props: {
+            isAdmin: admin,
+            left: left,
+            total: total,
+        },
     },
     {
         path: '/requestVacation',
@@ -26,7 +35,11 @@ const routes = [
     {
         path: '/allVacations',
         component: AllVacations,
-        props: { isAdmin: admin},
+        props: {
+            isAdmin: admin,
+            selected: selected,
+            dep: dep,
+        },
     },
     {
         path: '/setSignature',

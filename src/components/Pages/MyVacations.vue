@@ -2,15 +2,21 @@
   <sample-page
     :choice="'myVacations'"
     :admin="isAdmin">
-    <h3>Осталось 25 дней</h3>
-    <div class="fill">
-      <div class="prev"/>
-      <div class="present"/>
-      <div class="year">
-        <p style="left: 0">2021</p>
-        <p style="left: 290px">2022</p>
-      </div>
+    <h3>Осталось отпускных дней: {{left}}</h3>
+    <div class="prog">
+        <div class="progBar"/>
     </div>
+<!--    <div class="progress">-->
+<!--      <div class="bar" style="width: 30%;"></div>-->
+<!--    </div>-->
+<!--    <div class="fill">-->
+<!--      <div class="prev"/>-->
+<!--      <div class="present"/>-->
+<!--      <div class="year">-->
+<!--        <p style="left: 0">2021</p>-->
+<!--        <p style="left: 290px">2022</p>-->
+<!--      </div>-->
+<!--    </div>-->
     <my-button class="calendar">
       <img src="@/components/images/CalendarIcon.png"/>
       <p>В режиме календаря</p>
@@ -68,6 +74,8 @@ export default {
         {id: 1, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Отменено',},
         {id: 2, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
       ],
+
+        width: (100 - this.left / this.total * 100) + '%',
     }
   },
 
@@ -75,7 +83,15 @@ export default {
     isAdmin:{
       type: Number,
       requested: true,
-    }
+    },
+    total: {
+      type: Number,
+      requested: true,
+    },
+    left: {
+      type: Number,
+      requested: true,
+    },
   },
 
   methods: {
@@ -94,50 +110,32 @@ export default {
 
 h3
 {
-  position: absolute;
-  left: 10px;
-  top: 0;
   font-family: "Times New Roman";
   font-weight: bold;
   font-size: 20px;
+  height: fit-content;
+  margin-left: 10px;
 }
 
-.fill
+.prog
 {
-  position: absolute;
-  width: 550px;
+  width: 300px;
   height: 20px;
-  left: 10px;
-  top: 50px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  margin-left: 30px;
+  border-radius: 10px;
+  background: #FFFFFF;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 100px;
 }
 
-.prev
+.progBar
 {
-  width: 295px;
-  height: 20px;
-  background: #00FF19;
+  width: v-bind(width);
+  background: #8886fc;
+  height: 100%;
   border-radius: 100px;
 }
 
-.present
-{
-  position: inherit;
-  top: 0;
-  width: 200px;
-  height: 20px;
-  left: 265px;
-  z-index: -1;
-  background: #8482FF;
-  border-radius: 100px;
-}
-
-.year p
-{
-  position: absolute;
-  top: 10px;
-}
 
 .plan
 {
@@ -182,5 +180,19 @@ h3
   font-family: "Times New Roman";
   font-size: 18px;
 }
+
+/*.progress {*/
+/*  position: relative;*/
+/*  width: 200px;*/
+/*  height: 30px;*/
+/*  background-color: #888;*/
+/*}*/
+/*.bar {*/
+/*  width: 30%;*/
+/*  height: 100%;*/
+/*  background-color: #f40;*/
+/*}*/
+
+
 
 </style>

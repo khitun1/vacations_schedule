@@ -7,17 +7,7 @@
         @eventChangePas="changePas"
         @eventChangeLog="changeLog"
     />
-    <add-user v-if="isAdmin !== 0"
-        @create="createUser"
-        :users="users"
-        :deps="departments"
-    />
-    <set-data v-if="isAdmin !== 0"
-      :deps="departments"
-      :types="types"
-      @create="createNew"
-      @changeCon="setCon"
-    />
+
   </sample-page>
 
 </template>
@@ -25,15 +15,12 @@
 <script>
 import SamplePage from "@/components/Samples/SamplePage";
 import PersonalData from "@/components/PersonalData";
-import AddUser from "@/components/AddUser";
-import SetData from "@/components/SetData";
+
 
 export default {
   name: "MySettings",
 
   components:{
-    SetData,
-    AddUser,
     PersonalData,
     SamplePage,
   },
@@ -77,22 +64,6 @@ export default {
   },
 
   methods: {
-    createUser(user) {
-      this.users.push(user);
-    },
-
-    createNew(name) {
-      let flag = name.flag;
-      delete name.flag;
-      if(flag === 1)
-      {
-        name.min = 7;
-        name.total = 30;
-        name.percent = 30;
-        this.departments.push(name)
-      }
-      else this.types.push(name);
-    },
 
     changePas(pas){
       this.current_user.password = pas;
@@ -101,12 +72,6 @@ export default {
     changeLog(log){
       this.current_user.login = log;
     },
-
-    setCon(con){
-      this.departments.find(p => p.id === con.id).min = con.min;
-      this.departments.find(p => p.id === con.id).total = con.total;
-      this.departments.find(p => p.id === con.id).percent = con.percent;
-    }
   }
 }
 </script>

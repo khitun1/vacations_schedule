@@ -2,51 +2,56 @@
   <sample-page
       :choice="'allVacations'"
       :admin="isAdmin">
-    <h1>Запросы на подпись отпуска</h1>
-    <my-select v-model="choice" @change="chartClick">
-      <option selected disabled value="">Выберите отдел</option>
-      <option v-for="dep in departments"
-              :key="dep.id">
-        {{ dep.name }}
-      </option>
-    </my-select>
-      <signature-table
-          :requested="vacations"
-          @accepted="accept"
-          @showWindow="show"
-      />
-    <form @submit.prevent class="failure" v-show="expVis">
-      <h3>Укажите причину отказа</h3>
-      <textarea v-model="explanation"></textarea>
-      <my-button @click="explain(id)">Отправить</my-button>
-      <my-button @click="expVis=false; this.explanation = ''">Отменить</my-button>
-    </form>
-    <h1>График отпусков</h1>
-    <div class="block" v-show="!visible"></div>
-    <div class="chart">
-      <canvas id="myChart" :style="{height: height + 'px'}"></canvas>
-    </div>
-    <div class="buttons">
-      <div class="pair" v-for="vac in vacations.filter(p => p.number === 1)"
-           :key="vac.id" >
-        <button style="color: #17c42c" :style="vac.status === 'Ожидание' && vac.intersections === 'Нет'?
-            {background: 'default'}: {background: 'white', color: 'white', borderWidth: 0}"
-                @click="accept(vac.id)">
-          &#10004;
-        </button>
-        <button style="color: #fd2626" :style="vac.status === 'Ожидание'?
-            {background: 'default'}: {background: 'white', color: 'white', borderWidth: 0}"
-                @click="show(vac.id)">
-          &#10006;
-        </button>
+      <h2>Запросы на подпись отпуска</h2>
+      <my-select v-model="choice" @change="chartClick">
+        <option selected disabled value="">Выберите отдел</option>
+        <option v-for="dep in departments"
+                :key="dep.id">
+          {{ dep.name }}
+        </option>
+      </my-select>
+        <signature-table
+            :requested="vacations"
+            :clickedName="clickedName"
+            :clickedNumber="clickedNumber"
+            :clicked="clickEvent"
+            @accepted="accept"
+            @showWindow="show"
+            @showRec="showData"
+        />
+      <form @submit.prevent class="failure" v-show="expVis">
+        <h3>Укажите причину отказа</h3>
+        <textarea v-model="explanation"></textarea>
+        <my-button @click="explain(id)">Отправить</my-button>
+        <my-button @click="expVis=false; this.explanation = ''">Отменить</my-button>
+      </form>
+      <h2>График отпусков</h2>
+      <div class="block" v-show="this.vacations.length === 0"></div>
+      <div class="chart">
+        <canvas id="myChart"
+                :style="{height: height + 'px'}"
+                @click="showRec"/>
       </div>
-    </div>
+    <button class="focus"></button>
+<!--      <div class="buttons">-->
+<!--        <div class="pair" v-for="vac in vacations.filter(p => p.number === 1)"-->
+<!--             :key="vac.id" >-->
+<!--          <button style="color: #17c42c" :style="vac.status === 'Ожидание' && vac.intersections === 'Нет'?-->
+<!--              {background: 'default'}: {background: 'white', color: 'white', borderWidth: 0}"-->
+<!--                  @click="accept(vac.id)">-->
+<!--            &#10004;-->
+<!--          </button>-->
+<!--          <button style="color: #fd2626" :style="vac.status === 'Ожидание'?-->
+<!--              {background: 'default'}: {background: 'white', color: 'white', borderWidth: 0}"-->
+<!--                  @click="show(vac.id)">-->
+<!--            &#10006;-->
+<!--          </button>-->
+<!--        </div>-->
+<!--      </div>-->
   </sample-page>
-
 </template>
 
 <script>
-import SamplePage from "@/components/Samples/SamplePage";
 import MySelect from "@/components/UI/MySelect";
 import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
@@ -54,6 +59,7 @@ import {options} from "@/components/Options";
 import moment from "moment";
 import SignatureTable from "@/components/SignatureTable";
 import MyButton from "@/components/UI/MyButton";
+import SamplePage from "@/components/Samples/SamplePage";
 
 
 export default {
@@ -62,35 +68,38 @@ export default {
   data() {
     return{
       departments: [
-        {id: 2, name: 'first', min: 7, total: 55, percent: 30,},
-        {id: 3, name: 'sdgsg', min: 7, total: 55, percent: 30,},
+        {id: 2, name: 'first', min: 7, total: 55, percent: 30, amount: 15},
+        {id: 3, name: 'sdgsg', min: 7, total: 55, percent: 30, amount: 15},
       ],
 
       all : [
-        {id: 1, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '01.01.2022', end: '02.02.2022',
-          paid: 'Да', type: '', dateRequest: '', department: 'first', number: 1,
-          intersections: 'Нет', explanation: '', status: 'Ожидание', comment: '', countries: '',},
-        {id: 22, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '03.03.2022', end: '04.04.2022',
-          paid: 'Нет', type: '', dateRequest: '', department: 'first', number: 2,
-          intersections: 'Да', explanation: '', status: 'Ожидание', comment: '', countries: '',},
-         {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.01.2022', end: '11.11.2022',
-           paid: 'Да', type: '', dateRequest: '', department: 'first', number: 1,
-           intersections: 'Нет', explanation: '', status: 'Принято', comment: '', countries: '',},
-        {id: 220, surname: 'Ивановa', name: 'Владислав', lastname: 'Андреевич', start: '01.01.2022', end: '02.02.2022',
-          paid: 'Нет', type: '', dateRequest: '', department: 'first', number: 1,
-          intersections: 'Да', explanation: '', status: 'Ожидание', comment: '', countries: '',},
-        {id: 120, surname: 'Алиевa', name: 'Иван', lastname: 'Михайлович', start: '01.01.2022', end: '11.11.2022',
-          paid: 'Да', type: '', dateRequest: '', department: 'first', number: 1,
-          intersections: 'Нет', explanation: '', status: 'Ожидание', comment: '', countries: '',},
-         {id: 222, surname: 'Семеренко', name: 'Владислав', lastname: 'Андреевич', start: '01.01.2022', end: '02.02.2022',
-           paid: 'Нет', type: '', dateRequest: '', department: 'first', number: 1,
-           intersections: 'Да', explanation: '', status: 'Принято', comment: '', countries: '',},
+        {id: 1, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '01.01.2022', end: '20.01.2022',
+          paid: 'Да', department: 'first', number: 1,
+          intersections: 'Нет', status: 'Ожидание',},
+        {id: 22, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '02.02.2022', end: '20.02.2022',
+          paid: 'Нет', department: 'first', number: 2,
+          intersections: 'Да', status: 'Ожидание',},
+         {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.03.2022', end: '20.03.2022',
+           paid: 'Да', department: 'first', number: 1,
+           intersections: 'Нет', status: 'Принято',},
+        {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.07.2022', end: '20.08.2022',
+          paid: 'Да', department: 'first', number: 2,
+          intersections: 'Нет', status: 'Принято',},
+        {id: 220, surname: 'Ивановa', name: 'Владислав', lastname: 'Андреевич', start: '01.04.2022', end: '20.04.2022',
+          paid: 'Нет', department: 'first', number: 1,
+          intersections: 'Да', status: 'Ожидание',},
+        {id: 120, surname: 'Алиевa', name: 'Иван', lastname: 'Михайлович', start: '01.05.2022', end: '20.05.2022',
+          paid: 'Да', department: 'first', number: 1,
+          intersections: 'Нет', status: 'Ожидание',},
+         {id: 222, surname: 'Семеренко', name: 'Владислав', lastname: 'Андреевич', start: '01.06.2022', end: '20.06.2022',
+           paid: 'Нет', department: 'first', number: 1,
+           intersections: 'Да', status: 'Принято',},
         {id: 122, surname: 'Шарипов', name: 'Иван', lastname: 'Михайлович', start: '05.05.2022', end: '11.11.2022',
           paid: 'Да', type: '', dateRequest: '', department: 'sdgsg', number: 1,
           intersections: 'Нет', explanation: '', status: 'Ожидание', comment: '', countries: '',},
         {id: 2222, surname: 'Михайлов', name: 'Владислав', lastname: 'Андреевич', start: '01.01.2022', end: '02.02.2022',
-          paid: 'Нет', type: '', dateRequest: '', department: 'sdgsg', number: 1,
-          intersections: 'Нет', explanation: '', status: 'Ожидание', comment: '', countries: '',},
+          paid: 'Нет', department: 'sdgsg', number: 1,
+          intersections: 'Нет', status: 'Ожидание',},
   ],
 
 
@@ -103,14 +112,17 @@ export default {
       expVis: false,
       explanation: '',
       id: 0,
+      clickedName: '',
+      clickedNumber: undefined,
+      clickEvent: 0,
     }
   },
 
   components: {
-    MySelect,
     SamplePage,
+    MySelect,
     SignatureTable,
-    MyButton
+    MyButton,
   },
 
   props: {
@@ -128,7 +140,7 @@ export default {
 
   computed: {
     vacations: function (){
-      return this.all.filter(p => p.department === this.choice);
+      return this.all.filter(p => p.department === this.choice && p.status !== 'Отказ');
     },
 
     height: function (){
@@ -137,6 +149,10 @@ export default {
 
     percent: function (){
       return this.departments.find(p => p.name === this.choice).percent / 100;
+    },
+
+    top: function(){
+      return this.vacations.length === 0? '-250px': 0;
     },
   },
 
@@ -158,7 +174,7 @@ export default {
     getLabels()  // get unique names
     {
       let labels = [];
-      this.vacations.forEach(p => labels.push(p.surname + ' ' + p.name[0] + '.' + p.lastname[0]+ '.'));
+      this.vacations.forEach(p => labels.push(p.surname + ' ' + p.name + ' ' + p.lastname));
       return [...new Set(labels)];
     },
 
@@ -175,6 +191,7 @@ export default {
           grouped: false,
           data: [],
           backgroundColor: this.colors[n-1],
+          hoverBackgroundColor: '#548aff',
         })
     },
 
@@ -251,7 +268,7 @@ export default {
 
     intersection(i) // find intersection
     {
-      let quarter = Math.floor(this.percent * this.getLabels().length);
+      let quarter = Math.floor(this.percent * this.departments[i].amount);
       let range;
       for (let j = 0; j < i; j++){
         if(!this.findIntersection(i,j)) {
@@ -272,9 +289,9 @@ export default {
       for(let i = 0; i < this.vacations.length; i++){
           let n = this.vacations[i].number;
           this.findSet(n);
-          if(n === 1) this.myChart.data.datasets[this.amount].data[i] = (this.getDates(i));
+          if(n === 1) this.myChart.data.datasets[this.amount].data.push(this.getDates(i));
           else {
-            let name = this.vacations[i].surname + ' ' + this.vacations[i].name[0] + '.' + this.vacations[i].lastname[0] + '.';
+            let name = this.vacations[i].surname + ' ' + this.vacations[i].name + ' ' + this.vacations[i].lastname;
             this.myChart.data.datasets[n-1+this.amount].data[this.getId(name)] = (this.getDates(i));
           }
           this.intersection(i);
@@ -288,6 +305,7 @@ export default {
       this.all.find(p => p.id === this.id).explanation = this.explanation;
       this.all.find(p => p.id === this.id).status = 'Отказ';
       this.explanation = '';
+      this.chartClick();
     },
 
     accept(id){
@@ -297,23 +315,29 @@ export default {
     show(id){
       this.id = id;
       this.expVis = true;
-        switch(this.vacations.filter(p => p.status === 'Ожидание').length){
-          case 1:
-            this.indent = 200;
-            break;
-          case 2:
-            this.indent = 130;
-            break;
-          case 3:
-            this.indent = 50;
-            break;
-        }
+        if(this.vacations.filter(p => p.status === 'Ожидание').length === 1) this.indent = 100;
     },
 
     reject(id){
       this.all.find(p => p.id === id).explanation = 'Пересечение';
       this.all.find(p => p.id === id).status = 'Отказ';
-    }
+    },
+
+    showRec(){
+      this.clickEvent++;
+      let clickedIndex = this.myChart.getActiveElements()[0].index;
+      this.clickedName = this.myChart.data.labels[clickedIndex];
+      this.clickedNumber = this.myChart.getActiveElements()[0].datasetIndex;
+      console.log( this.clickedName, this.clickedNumber)
+    },
+
+    showData(index){
+      this.myChart.setActiveElements([
+        {datasetIndex: index[1], index: this.myChart.data.labels.indexOf(index[0])},
+      ]);
+      this.myChart.update();
+      document.getElementsByClassName('focus')[0].focus();
+    },
   },
 
   mounted() {
@@ -348,53 +372,23 @@ select
   margin-top: v-bind(indent + 'px');
   height: fit-content;
   position: relative;
+  top: v-bind(top);
   z-index: 0;
 }
 
 #myChart
 {
-  width: 1000px;
+  width: 1100px;
   height: v-bind(height);
 }
 
 .block
 {
-  position: absolute;
-  top: 120px;
-  width: 1000px;
-  background: white;
-  height: 500px;
-  z-index: 1;
-}
-
-.buttons
-{
-  display: flex;
-  flex-direction: column;
   position: relative;
-  left: 1050px;
-  top: v-bind(-height + 80 + 'px');
-  width: 100px;
-}
-
-.buttons button
-{
-  margin-bottom: 45px;
-}
-
-.pair
-{
-  display: flex;
-}
-
-.pair button
-{
-  margin-right: 5px;
-  background: none;
-  border-width: 0;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
+  width: 1110px;
+  background: white;
+  height: 300px;
+  z-index: 1;
 }
 
 .failure
@@ -423,7 +417,6 @@ textarea
   border-radius: 15px;
   resize: none;
   outline: none;
-  font-family: "Times New Roman";
   font-size: 16px;
 }
 
@@ -434,8 +427,13 @@ textarea
   width: 120px;
   background: #8482FF;
   color: #FCFF7C;
-  font-family: "Times New Roman";
   font-size: 16px;
+}
+
+.focus
+{
+  border-width: 0;
+  background: none;
 }
 
 

@@ -5,7 +5,11 @@
        @mouseover="visible = rec.id" @mouseleave="visible = false">
       <div class="info" v-bind:style="{background: setColor(rec.status)}">
         <pre>{{rec.start}} - {{rec.end}}      кол-во дней: {{totalDays(rec.start, rec.end)}}          </pre>
-        <div class="status" v-bind:style="{borderColor: setBorder(rec.status)}">{{rec.status}}</div>
+        <div class="status"
+             v-bind:style="{
+          borderColor: setBorder(rec.status),
+          color: setBorder(rec.status)
+        }">{{rec.status}}</div>
       </div>
 <!--      <button-icon class="edit" v-if="checkEdit(rec.status, rec.id) ">-->
 <!--        <img src="@/components/images/EditIcon.png">-->
@@ -41,30 +45,30 @@ export default {
     setColor(status){
       switch (status){
         case 'Утверждено':
-          return '#81ff8a';
+          return '#b6faba';
         case 'Ожидание':
-          return '#fdc581';
+          return '#ffd7a6';
         case 'Использовано':
-          return '#8886fc';
+          return '#b2b0ff';
         case 'Отказ':
-          return '#fc7a7a';
+          return '#ffc4b9';
         case 'Отменено':
-          return '#9E9E9E';
+          return '#c0c0c0';
       }
     },
 
     setBorder(status){
       switch (status){
         case 'Утверждено':
-          return '#22d346';
+          return '#01b026';
         case 'Ожидание':
-          return '#fa8d0c';
+          return '#d07100';
         case 'Использовано':
-          return '#5d3ca4';
+          return '#5b30b7';
         case 'Отказ':
-          return '#ce2222';
+          return '#d70000';
         case 'Отменено':
-          return '#777777';
+          return '#606060';
       }
     },
 
@@ -115,13 +119,15 @@ img
 
 pre
 {
-  font-size: 16px;
-  font-family: "Times New Roman";
+  font-size: 14px;
+  font-family: "Arial";
+  margin-left: 10px;
 }
 
 
 .info
 {
+  left: 0;
   display: flex;
   justify-content: space-between;
   width: 500px;
@@ -139,7 +145,9 @@ pre
   padding-left: 10px;
   padding-right: 10px;
   text-align: center;
-  margin-top: 15px;
+  margin-top: 12px;
+  margin-right: 10px;
+
 }
 
 </style>

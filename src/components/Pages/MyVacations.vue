@@ -2,46 +2,34 @@
   <sample-page
     :choice="'myVacations'"
     :admin="isAdmin">
-    <h3>Осталось отпускных дней: {{left}}</h3>
-    <div class="prog">
-        <div class="progBar"/>
-    </div>
-<!--    <div class="progress">-->
-<!--      <div class="bar" style="width: 30%;"></div>-->
-<!--    </div>-->
-<!--    <div class="fill">-->
-<!--      <div class="prev"/>-->
-<!--      <div class="present"/>-->
-<!--      <div class="year">-->
-<!--        <p style="left: 0">2021</p>-->
-<!--        <p style="left: 290px">2022</p>-->
-<!--      </div>-->
-<!--    </div>-->
-    <my-button class="calendar">
-      <img src="@/components/images/CalendarIcon.png"/>
-      <p>В режиме календаря</p>
-    </my-button>
-    <div class="plan">
-      <h1>Запланированные отпуска</h1>
-      <my-table
-        :records="myPlans"
-        @Del="delPlan"
-      />
-      <h1 style="margin-top: 20px">История отпусков</h1>
-      <my-table
-        :records="myHistory"
-        @Del="delHistory"
+        <h2>Осталось отпускных дней: {{left}}</h2>
+        <div class="prog">
+          <div class="progBar"/>
+        </div>
+        <my-button class="calendar">
+          <img src="@/components/images/CalendarIcon.png"/>
+          <p>В режиме календаря</p>
+        </my-button>
+        <div class="plan">
+          <h1>Запланированные отпуска</h1>
+          <my-table
+              :records="myPlans"
+              @Del="delPlan"
+          />
+          <h1 style="margin-top: 20px">История отпусков</h1>
+          <my-table
+              :records="myHistory"
+              @Del="delHistory"
 
-      />
-    </div>
-    </sample-page>
-
+          />
+        </div>
+  </sample-page>
 </template>
 
 <script>
-import SamplePage from "@/components/Samples/SamplePage";
 import MyTable from "@/components/MyTable";
 import MyButton from "@/components/UI/MyButton";
+import SamplePage from "@/components/Samples/SamplePage";
 
 export default {
   name: "MyVacations",
@@ -66,6 +54,8 @@ export default {
         {id: 5, start: '01.01.2022', end: '03.05.2022', dateRequest: '01.06.2021', paid: 'Да', status: 'Отказ',
           explanation: '',},
         {id: 6, start: '01.01.2022', end: '02.02.2022', dateRequest: '01.06.2021', paid: 'Нет', status: 'Удалено',
+          explanation: '',},
+        {id: 7, start: '01.01.2022', end: '02.02.2022', dateRequest: '01.06.2021', paid: 'Нет', status: 'Ожидание',
           explanation: '',},
 
       ],
@@ -107,41 +97,29 @@ export default {
 </script>
 
 <style scoped>
-
-h3
-{
-  font-family: "Times New Roman";
-  font-weight: bold;
-  font-size: 20px;
-  height: fit-content;
-  margin-left: 10px;
-}
-
 .prog
 {
   width: 300px;
   height: 20px;
   margin-left: 30px;
-  border-radius: 10px;
+  margin-bottom: 20px;
   background: #FFFFFF;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 100px;
 }
 
 .progBar
 {
   width: v-bind(width);
-  background: #8886fc;
+  background: #a09fff;
   height: 100%;
   border-radius: 100px;
 }
 
-
 .plan
 {
-  position: absolute;
-  top: 100px;
-  left: 10px;
+  margin-left: 10px;
+  height: fit-content;
 }
 
 .plan h1
@@ -156,13 +134,14 @@ h3
 .calendar
 {
   position: absolute;
+  top: 0;
+  right: 0;
   width: 230px;
   height: 50px;
-  left: 940px;
-  top: 30px;
   background: white;
   border-radius: 40px;
-  margin: 10px;
+  color: black;
+
 }
 
 .calendar img
@@ -177,21 +156,8 @@ h3
   position: absolute;
   left: 55px;
   top: -3px;
-  font-family: "Times New Roman";
   font-size: 18px;
 }
-
-/*.progress {*/
-/*  position: relative;*/
-/*  width: 200px;*/
-/*  height: 30px;*/
-/*  background-color: #888;*/
-/*}*/
-/*.bar {*/
-/*  width: 30%;*/
-/*  height: 100%;*/
-/*  background-color: #f40;*/
-/*}*/
 
 
 

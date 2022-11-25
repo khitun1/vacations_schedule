@@ -1,37 +1,28 @@
 <template>
   <sample-hat/>
-  <div class="panel" style="position: fixed; z-index: 2;">
-    <p>Хитун Иван Михайлович</p>
-    <button-icon class="btn">
-      <img src="@/components/images/NoticeIcon.png">
-    </button-icon>
-    <router-link to="/">
-      <button-icon class="btn">
-      <img src="@/components/images/ExitIcon.png">
-      </button-icon>
-    </router-link>
-  </div>
-  <sample-nav-bar
-      :choice="choice"
-      :admin="admin"
-  />
-  <div class="work">
-    <slot></slot>
-  </div>
+    <div class="main">
+      <div class="bar" :style="{height: 'this.$refs.info.clientHeight'}">
+        <sample-nav-bar
+            :choice="choice"
+            :admin="admin"
+        />
+      </div>
+      <div class="info">
+        <slot></slot>
+      </div>
+    </div>
 </template>
 
 <script>
 import SampleHat from "@/components/Samples/SampleHat";
 import SampleNavBar from "@/components/Samples/SampleNavBar";
-import ButtonIcon from "@/components/UI/ButtonIcon";
 
 export default {
   name: "SamplePage",
 
   components:{
-    ButtonIcon,
+    SampleNavBar,
     SampleHat,
-    SampleNavBar
   },
 
   props: {
@@ -50,33 +41,15 @@ export default {
 </script>
 
 <style>
-
-.work
+.main
 {
-  position: absolute;
-  left: 300px;
-  width: 1200px;
-  top: 100px;
-  height: 600px;
-}
-
-.btn
-{
-  left: 1430px;
-  top: 18px;
-  margin-right: 10px;
-}
-
-.panel p
-{
-  position: absolute;
-  left: 1000px;
-  top: 6px;
-  width: 400px;
-  height: 40px;
-  font-family: "Times New Roman";
-  font-size: 18px;
-  text-align: right;
+  display: flex;
+  justify-items: flex-start;
+  background: white;
+  border-radius: 10px;
+  margin-left: 6px;
+  width: 99%;
+  min-height: 650px;
 }
 
 img
@@ -84,5 +57,21 @@ img
   height: 25px;
   width: 25px;
 }
+
+.info
+{
+  position: relative;
+  width: 80%;
+  padding-left: 10px;
+}
+
+.bar
+{
+  width: 300px;
+  background: #f6f6f6;
+  padding-left: 10px;
+  border-radius: 10px 0 0 10px;
+}
+
 
 </style>

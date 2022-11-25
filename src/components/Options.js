@@ -73,7 +73,7 @@ export function options() // config for chart
                                 '   Конец: ' + moment(end).format('DD.MM.YYYY') + '    Кол-во дней:  ' + dif;
                         }
                         return label;
-                    }
+                    },
                 }
             }
         }

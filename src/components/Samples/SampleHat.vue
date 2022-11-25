@@ -1,6 +1,17 @@
 <template>
   <div class="hat">
     <h1>Планирование отпусков</h1>
+    <div class="panel">
+      <p>Хитун Иван Михайлович</p>
+      <button-icon class="btn">
+        <img src="@/components/images/NoticeIcon.png">
+      </button-icon>
+      <router-link to="/">
+        <button-icon class="btn">
+          <img src="@/components/images/ExitIcon.png">
+        </button-icon>
+      </router-link>
+    </div>
   </div>
 </template>
 
@@ -9,26 +20,39 @@
 </script>
 
 <style scoped>
-.hat
+
+
+.panel p
 {
-  position: fixed;
-  width: 100%;
-  height: 10%;
-  top: 0;
-  left: 0;
-  background: #DDDDDD;
-  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
-  z-index: 1;
+  position: relative;
+  top: 6px;
+  width: fit-content;
+  left: -50px;
+  height: 40px;
+
+  font-size: 18px;
 }
 
-.hat h1
+.panel
 {
-  position: inherit;
-  left: 15px;
-  top: 5px;
-  font-size: 28px;
-  font-family: "Times New Roman";
-  color: #2d2d2d;
+  display: flex;
+  padding: 10px;
+  right: 20px;
+  position: absolute;
+  top: -10px;
+}
+
+.btn
+{
+  position: relative;
+  top: 20px;
+  margin-right: 20px;
+}
+
+img
+{
+  height: 25px;
+  width: 25px;
 }
 
 

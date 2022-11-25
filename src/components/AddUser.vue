@@ -1,31 +1,56 @@
 <template>
-  <h1>Новый пользователь</h1>
-    <form @submit.prevent>
-      <my-input class="in" :placeholder="surname"
-                v-model="user.surname"
-                v-bind:style="{boxShadow: user.surname === '' && flag? color : ''}"/>
-      <my-input class="in" :placeholder="name"
-                v-model="user.name"
-                v-bind:style="{boxShadow: user.name === '' && flag? color : ''}"/>
-      <my-input class="in" :placeholder="lastname"
-                v-model="user.lastname"
-                v-bind:style="{boxShadow: user.lastname === '' && flag? color : ''}"/>
-      <my-input class="in" :placeholder="log"
-                v-model="user.login"
-                v-bind:style="{boxShadow: user.login === '' && flag? color : ''}"/>
-      <my-input class="in" :placeholder="pas" :type="typePassword"
-                v-model="user.password"
-                v-bind:style="{boxShadow: user.password === '' && flag? color : ''}"/>
-      <button-icon style="top: 8px;" @click="typePassword = typePassword === 'text'? 'password': 'text'">
-        <img src="@/components/images/WatchIcon.png" />
+  <my-button @click="visibleForm = true; this.$emit('hideSet', true)"
+             v-show="hideUser? false: !visibleForm"
+             class="open" >
+    Добавить нового пользователя
+  </my-button>
+    <form @submit.prevent  class="form" v-show="visibleForm">
+      <button-icon class="back"
+          @click="clear">
+        <img src="@/components/images/BackIcon.png">
       </button-icon>
-      <my-input class="in" :placeholder="dep"
-                v-model="user.department"
-                v-bind:style="{boxShadow: user.department === '' && flag? color : ''}"/>
-      <p class="error" v-show="error">{{ errorMsg }}</p>
-      <my-button class="create" @click="createUser">
-        Добавить
-      </my-button>
+      <h2>Новый пользователь</h2>
+      <div>
+        <my-input class="in" :placeholder="surname"
+                  v-model="user.surname"
+                  v-bind:style="{boxShadow: user.surname === '' && flag? color : ''}"/>
+        <my-input class="in" :placeholder="name"
+                  v-model="user.name"
+                  v-bind:style="{boxShadow: user.name === '' && flag? color : ''}"/>
+        <my-input class="in" :placeholder="lastname"
+                  v-model="user.lastname"
+                  v-bind:style="{boxShadow: user.lastname === '' && flag? color : ''}"/>
+        <my-input class="in" :placeholder="log"
+                  v-model="user.login"
+                  v-bind:style="{boxShadow: user.login === '' && flag? color : ''}"/>
+        <div>
+          <my-input class="in" :placeholder="pas" :type="typePassword" style="left: 20px"
+                    v-model="user.password"
+                    v-bind:style="{boxShadow: user.password === '' && flag? color : ''}"/>
+          <button-icon style="top: 8px; left: 15px" @click="typePassword = typePassword === 'text'? 'password': 'text'">
+            <img src="@/components/images/WatchIcon.png" />
+          </button-icon>
+        </div>
+        <my-select class="selector" v-model="user.department"
+                   v-bind:style="{boxShadow: user.department === '' && flag? color : ''}">
+          <option selected value="" disabled>Выберите отдел</option>
+          <option v-for="dep in deps"
+                  :key="dep.id">
+            <p>{{dep.name}}</p>
+          </option>
+        </my-select>
+        <p class="error" v-show="error">{{ errorMsg }}</p>
+
+        <div class="pair">
+          <my-button class="create" @click="createUser">
+            Добавить
+          </my-button>
+<!--          <my-button class="cancel" @click="clear">-->
+<!--            Закрыть-->
+<!--          </my-button>-->
+        </div>
+      </div>
+
     </form>
 </template>
 
@@ -33,9 +58,10 @@
 import MyInput from "@/components/UI/MyInput";
 import MyButton from "@/components/UI/MyButton";
 import ButtonIcon from "@/components/UI/ButtonIcon";
+import MySelect from "@/components/UI/MySelect";
 export default {
   name: "AddUser",
-  components: {ButtonIcon, MyButton, MyInput},
+  components: {MySelect, ButtonIcon, MyButton, MyInput},
   props: {
     users: {
       type: Array,
@@ -44,8 +70,13 @@ export default {
     deps: {
       type: Array,
       required: false,
+    },
+    hideUser: {
+      type: Boolean,
+      required: true,
     }
   },
+
   data() {
     return {
       color: 'inset 0px 0px 5px red',
@@ -68,6 +99,7 @@ export default {
       errorMsg: 'sad',
       typePassword: 'text',
       flag: false,
+      visibleForm: false,
    }
   },
   methods: {
@@ -96,23 +128,29 @@ export default {
       else {
         this.user.id = Date.now()
         this.$emit('create', this.user)
-        this.user = {
-          surname: '',
-          name: '',
-          lastname: '',
-          login: '',
-          password: '',
-          department: '',
-        }
-        this.surname = 'Фамилия';
-        this.name = 'Имя';
-        this.lastname = 'Отчество';
-        this.log = 'Логин';
-        this.pas = 'Пароль';
-        this.dep = 'Отдел';
-        this.error = false;
-        this.flag = false;
+        this.clear();
       }
+    },
+
+    clear(){
+      // this.user = {
+      //   surname: '',
+      //   name: '',
+      //   lastname: '',
+      //   login: '',
+      //   password: '',
+      //   department: '',
+      // };
+      // this.surname = 'Фамилия';
+      // this.name = 'Имя';
+      // this.lastname = 'Отчество';
+      // this.log = 'Логин';
+      // this.pas = 'Пароль';
+      // this.dep = 'Отдел';
+      this.error = false;
+      this.flag = false;
+      this.visibleForm = false;
+      this.$emit('hideSet', false)
     }
   }
 }
@@ -121,23 +159,32 @@ export default {
 <style scoped>
 form
 {
+  display: flex;
+  flex-direction: column;
+  position: relative;
   width: 400px;
-  margin-left: 40px;
+  text-align: center;
+  padding-left: 15px;
+  border-radius: 10px;
+  top: 20%;
+  left: 20px;
+  margin-bottom: 15px;
+  background: #f5f5f5;
 }
 
-.create
+.create, .cancel
 {
   width: 250px;
   height: 37px;
-  color: #FCFF7C;
-  background: #9492FF;
-  margin-left: -10px;
+  margin-left: 30px;
   font-size: 18px;
 }
 
 .in
 {
   height: 22px;
+  width: 250px;
+  margin-left: 10px;
   font-size: 16px;
 }
 
@@ -149,6 +196,26 @@ form
   left: 25px;
   font-size: larger;
   font-weight: bold;
+}
+
+.open
+{
+  height: 40px;
+  width: 250px;
+}
+
+.selector
+{
+  width: 260px;
+  margin-left: 10px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.back
+{
+  margin-top: 10px;
+  margin-left: -8px;
 }
 
 

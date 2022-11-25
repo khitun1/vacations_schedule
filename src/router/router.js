@@ -2,7 +2,7 @@ import MyVacations from "@/components/Pages/MyVacations";
 import {createRouter, createWebHistory} from "vue-router";
 import TakeVacation from "@/components/Pages/TakeVacation";
 import AllVacations from "@/components/Pages/AllVacations";
-import SetSignature from "@/components/Pages/SetSignature";
+import AdminPage from "@/components/Pages/AdminPage";
 import MySettings from "@/components/Pages/MySettings";
 import StartScreen from "@/components/Pages/StartScreen";
 
@@ -30,7 +30,10 @@ const routes = [
     {
         path: '/requestVacation',
         component: TakeVacation,
-        props: { isAdmin: admin},
+        props: {
+            isAdmin: admin,
+            left: left,
+            total: total,},
     },
     {
         path: '/allVacations',
@@ -42,8 +45,8 @@ const routes = [
         },
     },
     {
-        path: '/setSignature',
-        component: SetSignature,
+        path: '/admin',
+        component: AdminPage,
         props: { isAdmin: admin},
     },
     {

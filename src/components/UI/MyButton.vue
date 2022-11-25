@@ -22,5 +22,7 @@ button
   border-radius: 15px;
   cursor: pointer;
   font-size: 16px;
+  color: #fcff65;
+  background: #a8a6ff;
 }
 </style>

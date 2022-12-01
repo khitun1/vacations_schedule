@@ -13,7 +13,9 @@
     "core-js": "^3.8.3",
     "date-fns": "^2.29.3",
     "moment": "^2.29.4",
+    "v-calendar": "^3.0.0-alpha.8",
     "vue": "^3.2.45",
+    "vue-multiselect": "^3.0.0-alpha.2",
     "vue-router": "^4.1.6",
     "vuelidate": "^0.7.7"
   },

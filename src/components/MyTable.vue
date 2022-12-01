@@ -21,13 +21,10 @@
 </template>
 
 <script>
-import ButtonIcon from "@/components/UI/ButtonIcon";
 import moment from "moment";
+
 export default {
   name: "MyTable",
-  components: {
-    ButtonIcon
-  },
 
   data(){
     return{
@@ -82,7 +79,7 @@ export default {
     },
 
     totalDays(start,end){
-      return moment(end, 'DD.MM.YYYY').diff(moment(start, 'DD.MM.YYYY'), 'days');
+      return moment(end, 'DD.MM.YYYY').diff(moment(start, 'DD.MM.YYYY'), 'days') + 1;
     }
   }
 }
@@ -109,6 +106,7 @@ img
   margin-bottom: 10px;
   margin-right: 50px;
   width: 600px;
+
 }
 
 .del
@@ -134,6 +132,7 @@ pre
   padding: 5px;
   border-radius: 10px;
   cursor: default;
+  color: #595959;
 }
 
 .status
@@ -147,7 +146,6 @@ pre
   text-align: center;
   margin-top: 12px;
   margin-right: 10px;
-
 }
 
 </style>

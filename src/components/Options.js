@@ -3,6 +3,7 @@ import moment from "moment";
 export function options() // config for chart
 {
     return {
+
         indexAxis: 'y',
         animation: false,
         barPercentage: 0.5,
@@ -14,41 +15,41 @@ export function options() // config for chart
                 time: {
                     unit: 'month'
                 },
-                min: minDate,
-                max: maxDate,
+                min: '2022-01-01',
+                max: '2022-12-31',
                 ticks: {
                     align: 'start',
                     stepSize: 1,
-                    callback: function (value) {
-                        switch (value) {
-                            case 'Jan ' + year:
-                                return '  Январь'
-                            case 'Feb ' + year:
-                                return ' Февраль'
-                            case 'Mar ' + year:
-                                return '    Март'
-                            case 'Apr ' + year:
-                                return '  Апрель'
-                            case 'May ' + year:
-                                return '     Май'
-                            case 'Jun ' + year:
-                                return '    Июнь'
-                            case 'Jul ' + year:
-                                return '    Июль'
-                            case 'Aug ' + year:
-                                return '   Август'
-                            case 'Sep ' + year:
-                                return ' Сентябрь'
-                            case 'Oct ' + year:
-                                return '  Октябрь'
-                            case 'Nov ' + year:
-                                return '   Ноябрь'
-                            case 'Dec ' + year:
-                                return '  Декабрь'
-                            default:
-                                break
-                        }
-                    }
+                    // callback: function (value) {
+                    //     switch (value) {
+                    //         case 'Jan ' + year:
+                    //             return '  Январь'
+                    //         case 'Feb ' + year:
+                    //             return ' Февраль'
+                    //         case 'Mar ' + year:
+                    //             return '    Март'
+                    //         case 'Apr ' + year:
+                    //             return '  Апрель'
+                    //         case 'May ' + year:
+                    //             return '     Май'
+                    //         case 'Jun ' + year:
+                    //             return '    Июнь'
+                    //         case 'Jul ' + year:
+                    //             return '    Июль'
+                    //         case 'Aug ' + year:
+                    //             return '   Август'
+                    //         case 'Sep ' + year:
+                    //             return ' Сентябрь'
+                    //         case 'Oct ' + year:
+                    //             return '  Октябрь'
+                    //         case 'Nov ' + year:
+                    //             return '   Ноябрь'
+                    //         case 'Dec ' + year:
+                    //             return '  Декабрь'
+                    //         default:
+                    //             break
+                    //     }
+                    // }
                 }
             }
         },
@@ -89,6 +90,4 @@ export function viewDate(date) // collect date in view 'dd.mm.yy'
     return view
 }
 
-let year = String(new Date().getFullYear()) // get current year
-let minDate = year + '-01-01' // collect min for chart
-let maxDate = year + '-12-31' // collect max for chart
+//let year = String(new Date().getFullYear())

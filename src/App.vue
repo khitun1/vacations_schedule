@@ -19,13 +19,13 @@ body
 }
 
 body::-webkit-scrollbar {
-  width: 10px;               /* ширина всей полосы прокрутки */
+  width: 10px;
 }
 
 
 body::-webkit-scrollbar-thumb {
-  background-color: #7e7e7e;    /* цвет бегунка */
-  border-radius: 20px;       /* округлось бегунка */
+  background-color: #7e7e7e;
+  border-radius: 20px;
 }
 
 </style>

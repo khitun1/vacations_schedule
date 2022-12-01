@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: "MyInput",
+  name: "my-input",
   props: {
     modelValue: [String, Number]
   },
@@ -27,7 +27,7 @@ input
   font-family: "Times New Roman";
   border-width: 0;
   font-size: 16px;
-  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
+  box-shadow: inset 4px 4px 7px rgba(103, 101, 101, 0.15);
   outline: none;
 }
 </style>

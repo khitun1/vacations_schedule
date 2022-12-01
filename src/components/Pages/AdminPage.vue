@@ -88,9 +88,10 @@ export default {
 
 
     setCon(con){
-      this.departments.find(p => p.id === con.id).min = con.min;
-      this.departments.find(p => p.id === con.id).total = con.total;
-      this.departments.find(p => p.id === con.id).percent = con.percent;
+      this.departments.find(p => p.id === con.id).min = parseInt(con.min) ;
+      this.departments.find(p => p.id === con.id).total = parseInt(con.total);
+      this.departments.find(p => p.id === con.id).percent = parseInt(con.percent);
+      this.departments.find(p => p.id === con.id).max = parseInt(con.max);
     },
 
     HideSet(check){

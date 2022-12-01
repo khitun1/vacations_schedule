@@ -31,14 +31,20 @@
             <img src="@/components/images/WatchIcon.png" />
           </button-icon>
         </div>
-        <my-select class="selector" v-model="user.department"
-                   v-bind:style="{boxShadow: user.department === '' && flag? color : ''}">
-          <option selected value="" disabled>Выберите отдел</option>
-          <option v-for="dep in deps"
-                  :key="dep.id">
-            <p>{{dep.name}}</p>
-          </option>
-        </my-select>
+        <VueMultiselect class="selectDep"
+                        v-model="user.department"
+                        :options="namesDeps"
+                        :show-no-results="false"
+                        placeholder="Выберите отдел"
+                        :show-labels="false"/>
+<!--        <my-select class="selector" v-model="user.department"-->
+<!--                   v-bind:style="{boxShadow: user.department === '' && flag? color : ''}">-->
+<!--          <option selected value="" disabled>Выберите отдел</option>-->
+<!--          <option v-for="dep in deps"-->
+<!--                  :key="dep.id">-->
+<!--            <p>{{dep.name}}</p>-->
+<!--          </option>-->
+<!--        </my-select>-->
         <p class="error" v-show="error">{{ errorMsg }}</p>
 
         <div class="pair">
@@ -55,13 +61,22 @@
 </template>
 
 <script>
-import MyInput from "@/components/UI/MyInput";
-import MyButton from "@/components/UI/MyButton";
-import ButtonIcon from "@/components/UI/ButtonIcon";
-import MySelect from "@/components/UI/MySelect";
+import VueMultiselect from "vue-multiselect";
 export default {
   name: "AddUser",
-  components: {MySelect, ButtonIcon, MyButton, MyInput},
+
+  components: {
+    VueMultiselect,
+  },
+
+  computed: {
+    namesDeps: function (){
+      let arr = [];
+      this.deps.forEach(p => arr.push(p.name));
+      return arr;
+    }
+  },
+
   props: {
     users: {
       type: Array,
@@ -204,19 +219,20 @@ form
   width: 250px;
 }
 
-.selector
-{
-  width: 260px;
-  margin-left: 10px;
-  margin-top: 15px;
-  margin-bottom: 20px;
-}
-
 .back
 {
   margin-top: 10px;
   margin-left: -8px;
 }
 
+.selectDep
+{
+  height: 30px;
+  width: 260px;
+  margin-left: 71px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
+}
 
 </style>

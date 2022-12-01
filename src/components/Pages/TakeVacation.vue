@@ -2,25 +2,81 @@
   <sample-page
       :choice="'takeVacation'"
       :admin="isAdmin">
-    <h1>Планировщик отпусков</h1>
-    <b-calendar></b-calendar>
-    <h2>Осталось отпускных дней: {{left}}</h2>
-    <div class="prog">
-      <div class="progBar"/>
+    <h2 style="margin-top: 40px">Календарь отпусков</h2>
+    <div style="display: flex">
+      <v-date-picker is-range :rows="1" :columns="3" v-model="date"
+                     @click="showDate"
+                     :attributes="attrs"
+                     :disabled-dates="dis"
+                      style="  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));"/>
+      <div style="margin: -20px 0 0 30px">
+        <h2 style="margin-top: -20px">Осталось отпускных дней: {{left}}</h2>
+        <div class="prog">
+          <div class="progBar"/>
+        </div>
+      </div>
     </div>
-<!--      <label class="checkbox">-->
-<!--        <input type="checkbox" class="check_input" v-model="record.paid"/>-->
-<!--        <div class="check_div"/>-->
-<!--      </label>-->
+
+
+    <h2>Выбранные даты</h2>
+
+    <div class="wishes">
+      <div class="wishesDates"
+           v-for="wish in wishes" :key="wish.id">
+        <p>{{wish.start}} - {{wish.end}}</p>
+        <label class="checkbox">
+          <input type="checkbox" class="check_input" v-model="paid[wishes.indexOf(wish)]"/>
+          <div class="check_div"/>
+        </label>
+        <my-button @click="send(wish)">Отправить заявку</my-button>
+        <my-button @click="del(wish.id)">Удалить</my-button>
+      </div>
+      <my-button v-if="wishes.length > 1"
+                  style="padding: 5px 15px"
+                  @click="sendAll">
+        Отправить все
+      </my-button>
+    </div>
+<!--    <v-date-picker :rows="3" :columns="4"   :value="null"-->
+<!--                   color="red"-->
+<!--                   is-dark-->
+<!--                   is-range/>-->
+
   </sample-page>
 </template>
 
 <script>
 import SamplePage from "@/components/Samples/SamplePage";
+import moment from "moment";
+import MyButton from "@/components/UI/MyButton";
+
 
 
 export default {
   name: "TakeVacation",
+
+  computed: {
+    width: function(){
+      return 100 - this.left / this.total * 100 + '%';
+    },
+
+    attrs: function (){
+      let attrs =  [];
+      this.myPlans.forEach(p => attrs.push(this.chooseColor(p)));
+      this.myHistory.forEach(p => attrs.push(this.chooseColor(p)));
+      this.selectedAttrs.forEach(p => attrs.push(p));
+      return attrs;
+    },
+
+    dis: function(){
+      let dis =  [];
+      this.myPlans.forEach(p => dis.push(this.disDates(p)));
+      this.myHistory.forEach(p => dis.push(this.disDates(p)));
+      this.selectedDis.forEach(p => dis.push(p));
+      return dis;
+    }
+  },
+
   data()
   {
     return {
@@ -29,43 +85,53 @@ export default {
         department: 'Developers', daysLeft: 10,
       },
 
+      selectedAttrs: [
+
+      ],
+
+      selectedDis: [
+        {
+          end: new Date(),
+        },
+      ],
+
+      visibleTake: false,
+
+      wishes: [],
+
+      date: null,
+
+      value: '',
+      context: null,
+
+      choice: {},
+
       types: [
         {id: 1, name: 'first'},
         {id: 2, name: 'second'},
         {id: 3, name: 'third'},
       ],
 
-      vacations : [
-        {id: 1, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '01.01.2022', end: '02.02.2022',
-          total: 12, paid: 'Да', type: '', dateRequest: '',
-          intersections: 'Нет', explanation: '', status: 'Ожидание', comment: '', countries: '',},
-        {id: 22, surname: 'Иванов', name: 'Владислав', lastname: 'Андреевич', start: '01.01.2022', end: '02.02.2022',
-          total: 20, paid: 'Нет', type: '', dateRequest: '',
-          intersections: 'Да', explanation: '', status: 'Ожидание', comment: '', countries: '',},
-      ],
-
       myPlans: [
-        {id: 1, start: '01.01.2022', end: '02.02.2022', total: 12, dateRequest: '01.06.2021', paid: 'Да', status: 'Утверждено',
+        {id: 1, start: '01.01.2023', end: '02.02.2023', total: 12, dateRequest: '01.06.2021', paid: 'Да', status: 'Утверждено',
           explanation: '',},
-        {id: 2, start: '01.01.2022', end: '02.02.2022', total: 12, dateRequest: '01.06.2021', paid: 'Нет', status: 'Ожидание',
+        {id: 2, start: '10.02.2023', end: '15.02.2023', total: 12, dateRequest: '01.06.2021', paid: 'Нет', status: 'Ожидание',
           explanation: '',},
         {id: 3, start: '01.01.2022', end: '02.02.2022', total: 12, dateRequest: '01.06.2021', paid: 'Да', status: 'Отказ',
           explanation: '',},
         {id: 4, start: '01.01.2022', end: '02.02.2022', total: 12, dateRequest: '01.06.2021', paid: 'Нет', status: 'Удалено',
           explanation: '',},
-
       ],
 
-      record: {
-       start: '',
-       end: '',
-       comment: '',
-       type: '',
-       countries: '',
-       paid: false,
-      },
+      myHistory: [
+        {id: 1, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Отменено',},
+        {id: 2, start: '01.11.2022', end: '05.11.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
+      ],
 
-      width: (100 - this.left / this.total * 100) + '%',
+      paid: [],
+
+      left: 70,
+      total: 100,
     }
   },
 
@@ -74,37 +140,119 @@ export default {
       type: Number,
       requested: true,
     },
-
-    total: {
-      type: Number,
-      requested: true,
-    },
-
-    left: {
-      type: Number,
-      requested: true,
-    },
   },
 
   components:{
+    MyButton,
     SamplePage,
   },
 
   methods: {
-    request(rec)
-    {
-      let date = new Date()
-      rec.paid = rec.paid === true? 'Да' : 'Нет';
-      rec.surname = this.current_user.surname;
-      rec.name = this.current_user.name;
-      rec.lastname = this.current_user.lastname;
-      rec.intersections = 'Нет';
-      rec.explanation = '';
-      rec.status = 'Ожидание';
-      rec.triplets = false;
-      rec.dateRequest = date.getDate() + '.' + date.getMonth() + '.' + date.getFullYear();
-      this.vacations.push(rec);
-      this.myPlans.push(rec);
+
+    showDate(){
+      const cur_id = new Date();
+      if (this.date !== null){
+        this.date =
+            {
+              start: moment(this.date.start).format('DD.MM.YYYY'),
+              end: moment(this.date.end).format('DD.MM.YYYY'),
+              id: new Date(),
+              bindId: cur_id,
+            }
+        this.wishes.push(this.date);
+        this.selectedAttrs.push({
+          id: cur_id,
+          highlight: {
+            start: { fillMode: 'transparent' },
+            base: { fillMode: 'light', color: 'gray'},
+            end: { fillMode: 'transparent' },
+          },
+          dates: { start: moment(this.date.start, 'DD.MM.YYYY')._d, end: moment(this.date.end, 'DD.MM.YYYY')._d },
+        })
+        this.selectedDis.push({
+          id: cur_id,
+          start: moment(this.date.start, 'DD.MM.YYYY')._d,
+          end: moment(this.date.end, 'DD.MM.YYYY')._d,
+        })
+        this.date = null;
+      }
+    },
+
+    del(id){
+      this.selectedAttrs.splice(this.selectedAttrs.findIndex(p => p.id === this.wishes.find(p => p.id === id).bindId) ,1);
+      this.selectedDis.splice(this.selectedDis.findIndex(p => p.id === this.wishes.find(p => p.id === id).bindId) ,1);
+      this.wishes.splice(this.wishes.findIndex(p => p.id === id), 1);
+    },
+
+    send(wish){
+      let record = {
+        id: wish.id,
+        start: wish.start,
+        end: wish.end,
+        dateRequest: moment().format('DD.MM.YYYY'),
+        paid: this.paid[this.wishes.indexOf(wish)] ? 'Да' : 'Нет',
+        status: 'Ожидание',
+      }
+      if (this.totalDays(record.start, record.end) <= this.left){
+        this.left -= this.totalDays(record.start, record.end);
+        this.myPlans.push(record);
+        this.del(wish.id);
+      }
+      else (alert('Выбрано больше дней, чем доступно!'));
+    },
+
+    sendAll(){
+      let record = {};
+      let total = 0;
+      this.wishes.forEach(p => {
+        total += this.totalDays(p.start, p.end);
+      });
+      if (total <= this.left){
+        this.wishes.forEach(p => {
+          record = {
+            id: p.id,
+            start: p.start,
+            end: p.end,
+            dateRequest: moment().format('DD.MM.YYYY'),
+            paid: this.paid[this.wishes.indexOf(p)] ? 'Да' : 'Нет',
+            status: 'Ожидание',
+          }
+          this.left -= this.totalDays(record.start, record.end);
+          this.myPlans.push(record);
+        })
+        this.selectedAttrs = [];
+        this.wishes = [];
+      }
+      else (alert('Выбрано больше дней, чем доступно!'));
+    },
+
+    totalDays(start,end){
+      return moment(end, 'DD.MM.YYYY').diff(moment(start, 'DD.MM.YYYY'), 'days') + 1;
+    },
+
+    chooseColor(rec){
+        return {
+          id: new Date(),
+          highlight: {
+            start: { fillMode: 'transparent' },
+            base: { fillMode: 'light', color: rec.status === 'Утверждено'? 'green':
+                  rec.status === 'Ожидание'? 'yellow': rec.status === 'Использовано' ? 'purple': 'none'},
+            end: { fillMode: 'transparent' },
+          },
+          dates: { start: moment(rec.start, 'DD.MM.YYYY')._d, end: moment(rec.end, 'DD.MM.YYYY')._d },
+        }
+    },
+
+    disDates(rec){
+      return{
+        id: new Date(),
+        start: moment(rec.start, 'DD.MM.YYYY')._d,
+        end: moment(rec.end, 'DD.MM.YYYY')._d,
+      }
+    },
+
+    checkAmount(){
+
     },
   },
 }
@@ -112,11 +260,32 @@ export default {
 
 <style scoped>
 
+h2
+{
+  margin-left: 20px;
+}
+
+.wishes
+{
+  position: relative;
+  width: 744px;
+  height: fit-content;
+  min-height: 200px;
+  background: white;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
+  border-width: 0;
+  padding: 10px 5px 5px;
+}
+
 .prog
 {
   width: 300px;
   height: 20px;
-  margin-left: 30px;
+  margin-left: 50px;
   margin-bottom: 20px;
   background: #FFFFFF;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
@@ -132,9 +301,8 @@ export default {
 }
 .checkbox
 {
-  position: absolute;
-  left: 150px;
-  top: -3px;
+  position: relative;
+  top: 7px;
 }
 
 .check_div
@@ -179,6 +347,44 @@ export default {
 .check_div:hover
 {
   filter: brightness(1.2);
+}
+
+.wishesDates
+{
+  display: flex;
+  flex-direction: row;
+  background: #f3f3f3;
+  height: 48px;
+  justify-content: space-between;
+  padding-left: 20px;
+  padding-right: 20px;
+  font-family: "Arial";
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.wishesDates button
+{
+  top: -10px;
+  margin-bottom: 2px;
+  padding: 0 15px 2px;
+}
+
+
+.take
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 50px;
+  width: 500px;
+  background: white;
+  margin-top: 50px;
+  height: 80px;
+  filter: drop-shadow(0 5px 5px #7e7e7e);
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 10px;
 }
 
 </style>

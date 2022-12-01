@@ -3,13 +3,19 @@
       :choice="'allVacations'"
       :admin="isAdmin">
       <h2>Запросы на подпись отпуска</h2>
-      <my-select v-model="choice" @change="chartClick">
-        <option selected disabled value="">Выберите отдел</option>
-        <option v-for="dep in departments"
-                :key="dep.id">
-          {{ dep.name }}
-        </option>
-      </my-select>
+    <VueMultiselect class="select1"
+        v-model="choice"
+        :options="namesDeps" :show-no-results="false"
+        @close="chartClick"
+        placeholder="Выберите отдел"
+        :show-labels="false"/>
+<!--      <my-select v-model="choice" @change="chartClick" >-->
+<!--        <option selected disabled value="">Выберите отдел</option>-->
+<!--        <option v-for="dep in departments"-->
+<!--                :key="dep.id" >-->
+<!--          {{ dep.name }}-->
+<!--        </option>-->
+<!--      </my-select>-->
         <signature-table
             :requested="vacations"
             :clickedName="clickedName"
@@ -17,8 +23,8 @@
             :clicked="clickEvent"
             @accepted="accept"
             @showWindow="show"
-            @showRec="showData"
-        />
+            @showRec="showData">
+        </signature-table>
       <form @submit.prevent class="failure" v-show="expVis">
         <h3>Укажите причину отказа</h3>
         <textarea v-model="explanation"></textarea>
@@ -30,9 +36,8 @@
       <div class="chart">
         <canvas id="myChart"
                 :style="{height: height + 'px'}"
-                @click="showRec"/>
+                @click="showRec" tabindex="-1"/>
       </div>
-    <button class="focus"></button>
 <!--      <div class="buttons">-->
 <!--        <div class="pair" v-for="vac in vacations.filter(p => p.number === 1)"-->
 <!--             :key="vac.id" >-->
@@ -52,14 +57,13 @@
 </template>
 
 <script>
-import MySelect from "@/components/UI/MySelect";
 import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
 import {options} from "@/components/Options";
 import moment from "moment";
 import SignatureTable from "@/components/SignatureTable";
-import MyButton from "@/components/UI/MyButton";
 import SamplePage from "@/components/Samples/SamplePage";
+import VueMultiselect from 'vue-multiselect';
 
 
 export default {
@@ -68,12 +72,12 @@ export default {
   data() {
     return{
       departments: [
-        {id: 2, name: 'first', min: 7, total: 55, percent: 30, amount: 15},
-        {id: 3, name: 'sdgsg', min: 7, total: 55, percent: 30, amount: 15},
+        {id: 2, name: 'first', min: 7, total: 55, percent: 30, amounts: 15},
+        {id: 3, name: 'sdgsg', min: 7, total: 55, percent: 30, amounts: 15},
       ],
 
       all : [
-        {id: 1, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '01.01.2022', end: '20.01.2022',
+        {id: 1, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '01.01.2023', end: '20.01.2023',
           paid: 'Да', department: 'first', number: 1,
           intersections: 'Нет', status: 'Ожидание',},
         {id: 22, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '02.02.2022', end: '20.02.2022',
@@ -107,7 +111,6 @@ export default {
       intersections:  [],
       amount:  0,
       choice: '',
-      visible: false,
       indent: 0,
       expVis: false,
       explanation: '',
@@ -120,9 +123,8 @@ export default {
 
   components: {
     SamplePage,
-    MySelect,
+    VueMultiselect,
     SignatureTable,
-    MyButton,
   },
 
   props: {
@@ -130,12 +132,6 @@ export default {
       type: Number,
       requested: true,
     },
-    selected:{
-      type: Number,
-    },
-    dep:{
-      type: String,
-    }
   },
 
   computed: {
@@ -154,6 +150,12 @@ export default {
     top: function(){
       return this.vacations.length === 0? '-250px': 0;
     },
+
+    namesDeps: function (){
+      let arr = [];
+      this.departments.forEach(p => arr.push(p.name));
+      return arr;
+    }
   },
 
   methods:{
@@ -164,7 +166,6 @@ export default {
       dates.push(moment(this.vacations[number].end, 'DD.MM.YYYY').format('YYYY-MM-DD'));
       return dates;
     },
-
 
     getId(name) // find name for add record, if number of vacation > 1
     {
@@ -191,7 +192,7 @@ export default {
           grouped: false,
           data: [],
           backgroundColor: this.colors[n-1],
-          hoverBackgroundColor: '#548aff',
+          hoverBackgroundColor: '#ffed76',
         })
     },
 
@@ -268,7 +269,7 @@ export default {
 
     intersection(i) // find intersection
     {
-      let quarter = Math.floor(this.percent * this.departments[i].amount);
+      let quarter = Math.floor(this.percent * this.departments.find(p => p.name === this.vacations[i].department).amounts);
       let range;
       for (let j = 0; j < i; j++){
         if(!this.findIntersection(i,j)) {
@@ -284,7 +285,6 @@ export default {
       this.myChart.data.datasets = [];
       this.intersections = [];
       this.amount = 0;
-      this.visible = true;
       this.myChart.data.labels = this.getLabels();
       for(let i = 0; i < this.vacations.length; i++){
           let n = this.vacations[i].number;
@@ -328,15 +328,16 @@ export default {
       let clickedIndex = this.myChart.getActiveElements()[0].index;
       this.clickedName = this.myChart.data.labels[clickedIndex];
       this.clickedNumber = this.myChart.getActiveElements()[0].datasetIndex;
-      console.log( this.clickedName, this.clickedNumber)
     },
 
     showData(index){
       this.myChart.setActiveElements([
         {datasetIndex: index[1], index: this.myChart.data.labels.indexOf(index[0])},
       ]);
+      this.myChart.options.scales.x.min = index[2] + '-01-01';
+      this.myChart.options.scales.x.max = index[2] + '-12-31';
       this.myChart.update();
-      document.getElementsByClassName('focus')[0].focus();
+      document.getElementById('myChart') .focus();
     },
   },
 
@@ -352,18 +353,20 @@ export default {
 }
 </script>
 
+<style src="vue-multiselect/dist/vue-multiselect.css">
+
+
+</style>
+
 <style scoped>
 
-select
+.select1
 {
-  position: relative;
-  left: 30px;
-  text-align: center;
-  font-size: 16px;
-  width: 250px;
-  cursor: pointer;
-  outline: none;
+  width: 300px;
+  margin-left: 40px;
   margin-bottom: 20px;
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
+  outline: none;
 }
 
 .chart
@@ -381,6 +384,8 @@ select
   width: 1100px;
   height: v-bind(height);
 }
+
+
 
 .block
 {
@@ -430,11 +435,55 @@ textarea
   font-size: 16px;
 }
 
-.focus
-{
-  border-width: 0;
-  background: none;
-}
 
 
 </style>
+
+<style>
+.multiselect__option--highlight
+{
+  background: #e7e7e7;
+  outline: none;
+  color: black;
+}
+
+.multiselect__option--selected.multiselect__option--highlight
+{
+  background: #e7e7e7;
+  color: black;
+}
+
+.multiselect__tags {
+  min-height: 20px;
+  display: block;
+  padding: 7px 0 0 0;
+  border-radius: 20px;
+  background: #fff;
+  font-size: 16px;
+  text-align: center;
+}
+
+.multiselect__content-wrapper::-webkit-scrollbar {
+  width: 7px;
+}
+
+.multiselect__content-wrapper::-webkit-scrollbar-thumb {
+  background-color: #7e7e7e;
+  border-radius: 20px;
+}
+
+.multiselect__option {
+  display: block;
+  padding: 12px;
+  min-height: 40px;
+  line-height: 16px;
+  text-decoration: none;
+  text-transform: none;
+  vertical-align: middle;
+  position: relative;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+</style>
+

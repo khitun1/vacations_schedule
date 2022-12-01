@@ -28,14 +28,12 @@
 
 <script>
 import MyTable from "@/components/MyTable";
-import MyButton from "@/components/UI/MyButton";
 import SamplePage from "@/components/Samples/SamplePage";
 
 export default {
   name: "MyVacations",
 
   components:{
-    MyButton,
     MyTable,
     SamplePage,
   },
@@ -63,6 +61,8 @@ export default {
       myHistory: [
         {id: 1, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Отменено',},
         {id: 2, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
+        {id: 31, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Отменено',},
+        {id: 22, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
       ],
 
         width: (100 - this.left / this.total * 100) + '%',

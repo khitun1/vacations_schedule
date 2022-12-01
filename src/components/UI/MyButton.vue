@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "MyButton"
+  name: "my-button"
 }
 </script>
 
@@ -22,7 +22,7 @@ button
   border-radius: 15px;
   cursor: pointer;
   font-size: 16px;
-  color: #fcff65;
+  color: #ffffff;
   background: #a8a6ff;
 }
 </style>

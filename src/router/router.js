@@ -9,8 +9,6 @@ import StartScreen from "@/components/Pages/StartScreen";
 let admin = 1;
 let left = 20;
 let total = 100;
-let selected = 1;
-let dep = 'first';
 
 
 const routes = [
@@ -40,8 +38,6 @@ const routes = [
         component: AllVacations,
         props: {
             isAdmin: admin,
-            selected: selected,
-            dep: dep,
         },
     },
     {

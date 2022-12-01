@@ -8,7 +8,7 @@
          @mouseover="visible=vac.id" @mouseleave="visible = false"
           tabindex="-1">
       <div class="info" v-bind:style="{background: vac.intersections === 'Нет'? '#d9ccff': '#ffd8d1'}">
-        <button class="withOutInter" @click="showData(vac.surname, vac.name, vac.lastname, vac.number)">
+        <button class="withOutInter" @click="showData(vac)">
 <!--          <p class="name">-->
 <!--            {{vac.surname}} {{vac.name}} {{vac.lastname}}-->
 <!--          </p>-->
@@ -57,6 +57,8 @@ export default {
       menuVisible: 0,
       visible: false,
       index: [],
+      prevPerson: null,
+      prevRec: null,
     }
   },
 
@@ -71,8 +73,21 @@ export default {
 
   watch: {
     clicked(){
-      let person = document.getElementsByClassName('person')[this.uniq.indexOf(this.clickedName)];
-      person.getElementsByClassName('rec')[this.clickedNumber].focus();
+      if (this.uniq.indexOf(this.clickedName) !== -1)
+      {
+        let person;
+        if (this.prevPerson !== null){
+          person = document.getElementsByClassName('person')[this.prevPerson];
+          person.getElementsByClassName('rec')[this.prevRec].style.filter = 'none';
+        }
+        console.log(person);
+        this.prevPerson = this.uniq.indexOf(this.clickedName);
+        this.prevRec = this.clickedNumber;
+        person = (document.getElementsByClassName('person')[this.prevPerson]);
+        person.getElementsByClassName('rec')[this.prevRec].focus();
+        person.getElementsByClassName('rec')[this.prevRec].style.filter = 'drop-shadow(0 2px 12px #7951f5)';
+        console.log(person);
+      }
     },
   },
 
@@ -82,9 +97,19 @@ export default {
       return moment(end, 'DD.MM.YYYY').diff(moment(start, 'DD.MM.YYYY'), 'days');
     },
 
-    showData(surname, name, lastname, num){
-      this.index[0] = surname + ' ' + name + ' ' + lastname;
-      this.index[1] = num - 1;
+    showData(vac){
+      let person;
+      if (this.prevPerson !== null){
+        person = document.getElementsByClassName('person')[this.prevPerson];
+        person.getElementsByClassName('rec')[this.prevRec].style.filter = 'none';
+      }
+      this.prevPerson = this.uniq.indexOf(vac.surname + ' ' + vac.name + ' ' + vac.lastname);
+      this.prevRec = vac.number - 1;
+      person = document.getElementsByClassName('person')[this.prevPerson];
+      person.getElementsByClassName('rec')[this.prevRec].style.filter = 'drop-shadow(0 2px 12px #7951f5)';
+      this.index[0] = vac.surname + ' ' + vac.name + ' ' + vac.lastname;
+      this.index[1] = vac.number - 1;
+      this.index[2] = vac.start.split('.')[2];
       this.$emit('showRec', this.index);
     },
 
@@ -124,8 +149,6 @@ export default {
   width: 100%;
   background: none;
   border-width: 0;
-  /*filter: brightness(1.5);*/
-  /*filter: contrast(200%);*/
 }
 
 .info
@@ -153,6 +176,7 @@ p
 {
   margin-right: 30px;
   text-align: left;
+  color: #595959;
 }
 
 .inters
@@ -206,6 +230,7 @@ textarea
   background: #efefef;
   border-radius: 10px;
   margin-bottom: 10px;
+  margin-left: 15px;
   width: 63%;
 }
 

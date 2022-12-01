@@ -77,18 +77,25 @@
     </my-button>
 
     <div v-show="visibleCon" class="con">
-      <button-icon style="margin-left: -110px"
+      <button-icon class="back"
                    @click="visibleCon = false; this.$emit('hideUser', false)">
         <img src="@/components/images/BackIcon.png">
       </button-icon>
       <h2>Назначить условия</h2>
-      <my-select class="choice" v-model="selectedDep" @change="changeConditions">
-        <option selected value="" disabled>Выберите отдел</option>
-        <option v-for="dep in deps"
-                :key="dep.id">
-          <p>{{dep.name}}</p>
-        </option>
-      </my-select>
+      <VueMultiselect class="selectDep"
+                      v-model="selectedDep"
+                      :options="namesDeps"
+                      placeholder="Выберите отдел"
+                      :show-no-results="false"
+                      :show-labels="false"
+                      @close="changeConditions"/>
+<!--      <my-select class="choice" v-model="selectedDep" @change="changeConditions">-->
+<!--        <option selected value="" disabled>Выберите отдел</option>-->
+<!--        <option v-for="dep in deps"-->
+<!--                :key="dep.id">-->
+<!--          <p>{{dep.name}}</p>-->
+<!--        </option>-->
+<!--      </my-select>-->
 
       <div class="conditions">
         <div>
@@ -118,12 +125,13 @@
 </template>
 
 <script>
-import MyInput from "@/components/UI/MyInput";
-import MyButton from "@/components/UI/MyButton";
-import MySelect from "@/components/UI/MySelect";
-import ButtonIcon from "@/components/UI/ButtonIcon";
+import VueMultiselect from "vue-multiselect";
 export default {
   name: "SetData",
+
+  components: {
+    VueMultiselect,
+  },
 
   computed:{
     searchDep: function(){
@@ -146,7 +154,12 @@ export default {
 
     cursor: function(){
       return !(this.deps.find(p => p.name === this.dep) || this.types.find(p => p.name === this.type));
+    },
 
+    namesDeps: function (){
+      let arr = [];
+      this.deps.forEach(p => arr.push(p.name));
+      return arr;
     },
   },
 
@@ -197,11 +210,6 @@ export default {
     }
   },
 
-  components: {
-    ButtonIcon,
-    MySelect,
-    MyButton,
-    MyInput},
   methods: {
 
     createDep(flag) {
@@ -462,7 +470,10 @@ form
 
 .back
 {
-  margin-left: -35px;
+  width: fit-content;
+  height: 25px;
+  border-radius: 100%;
+  padding: 0px 0px 0px;
 }
 
 .accept
@@ -487,6 +498,21 @@ form
   height: 80%;
   font-size: 16px;
   font-family: "Times New Roman";
+}
+
+.selectDep
+{
+  height: 30px;
+  width: 260px;
+  margin-left: 10px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
+}
+
+.back:hover
+{
+  background: #c5c5c5;
 }
 
 </style>

@@ -16,8 +16,6 @@
 </template>
 
 <script>
-import MyInput from "@/components/UI/MyInput";
-import MyButton from "@/components/UI/MyButton";
 
 export default {
   name: "StartScreen",
@@ -26,11 +24,6 @@ export default {
     return {
       isAdmin: 2,
     }
-  },
-
-  components:{
-    MyInput,
-    MyButton,
   },
 }
 </script>
@@ -67,17 +60,6 @@ h3
   border-radius: 10px;
 }
 
-button
-{
-  position: absolute;
-  width: 240px;
-  height: 30px;
-  background: #595959;
-  color: white;
-  left: -5px;
-  bottom: 10px;
-}
-
 
 input
 {
@@ -98,6 +80,17 @@ input
   left: 100px;
   width: fit-content;
   height: fit-content;
+}
+
+.test
+{
+  position: absolute;
+  width: 240px;
+  height: 30px;
+  background: #595959;
+  color: white;
+  left: -5px;
+  bottom: 10px;
 }
 
 </style>

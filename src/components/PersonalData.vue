@@ -71,12 +71,9 @@
 </template>
 
 <script>
-import ButtonIcon from "@/components/UI/ButtonIcon";
-import MyButton from "@/components/UI/MyButton";
-import MyInput from "@/components/UI/MyInput";
 export default {
   name: "PersonalData",
-  components: {MyInput, MyButton, ButtonIcon},
+
   props: {
     user: {
       type: Object,

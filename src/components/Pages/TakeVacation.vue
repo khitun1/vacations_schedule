@@ -8,7 +8,7 @@
                      @click="showDate"
                      :attributes="attrs"
                      :disabled-dates="dis"
-                      style="  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));"/>
+                      style="filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25))"/>
       <div style="margin: -20px 0 0 30px">
         <h2 style="margin-top: -20px">Осталось отпускных дней: {{left}}</h2>
         <div class="prog">
@@ -16,10 +16,7 @@
         </div>
       </div>
     </div>
-
-
     <h2>Выбранные даты</h2>
-
     <div class="wishes">
       <div class="wishesDates"
            v-for="wish in wishes" :key="wish.id">
@@ -113,13 +110,13 @@ export default {
       ],
 
       myPlans: [
-        {id: 1, start: '01.01.2023', end: '02.02.2023', total: 12, dateRequest: '01.06.2021', paid: 'Да', status: 'Утверждено',
+        {id: 1, start: '01.01.2023', end: '02.02.2023', total: 12, dateRequest: '01.06.2021', number: 1, paid: 'Да', status: 'Утверждено',
           explanation: '',},
-        {id: 2, start: '10.02.2023', end: '15.02.2023', total: 12, dateRequest: '01.06.2021', paid: 'Нет', status: 'Ожидание',
+        {id: 2, start: '10.02.2023', end: '15.02.2023', total: 12, dateRequest: '01.06.2021', number: 2, paid: 'Нет', status: 'Ожидание',
           explanation: '',},
-        {id: 3, start: '01.01.2022', end: '02.02.2022', total: 12, dateRequest: '01.06.2021', paid: 'Да', status: 'Отказ',
+        {id: 3, start: '20.02.2023', end: '25.02.2023', total: 12, dateRequest: '01.06.2021', number: 3, paid: 'Да', status: 'Отказ',
           explanation: '',},
-        {id: 4, start: '01.01.2022', end: '02.02.2022', total: 12, dateRequest: '01.06.2021', paid: 'Нет', status: 'Удалено',
+        {id: 4, start: '01.01.2022', end: '02.02.2022', total: 12, dateRequest: '01.06.2021', number: 4, paid: 'Нет', status: 'Удалено',
           explanation: '',},
       ],
 
@@ -185,10 +182,18 @@ export default {
     },
 
     send(wish){
+      let last = 0;
+      this.myPlans.forEach(p => {
+        if (p.number > last) {
+          last = p.number
+        }
+      });
+      last += 1;
       let record = {
         id: wish.id,
         start: wish.start,
         end: wish.end,
+        number: last,
         dateRequest: moment().format('DD.MM.YYYY'),
         paid: this.paid[this.wishes.indexOf(wish)] ? 'Да' : 'Нет',
         status: 'Ожидание',
@@ -236,7 +241,7 @@ export default {
           highlight: {
             start: { fillMode: 'transparent' },
             base: { fillMode: 'light', color: rec.status === 'Утверждено'? 'green':
-                  rec.status === 'Ожидание'? 'yellow': rec.status === 'Использовано' ? 'purple': 'none'},
+                  rec.status === 'Ожидание'? 'yellow': rec.status === 'Использовано' ? 'purple': rec.status === 'Отказ' ? 'red':'none'},
             end: { fillMode: 'transparent' },
           },
           dates: { start: moment(rec.start, 'DD.MM.YYYY')._d, end: moment(rec.end, 'DD.MM.YYYY')._d },

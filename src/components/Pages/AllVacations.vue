@@ -3,20 +3,15 @@
       :choice="'allVacations'"
       :admin="isAdmin">
       <h2>Запросы на подпись отпуска</h2>
-    <VueMultiselect class="select1"
+    <VueMultiselect
+        class="chooseDep"
         v-model="choice"
-        :options="namesDeps" :show-no-results="false"
+        :options="namesDeps"
+        :show-no-results="false"
         @close="chartClick"
         placeholder="Выберите отдел"
         :show-labels="false"/>
-<!--      <my-select v-model="choice" @change="chartClick" >-->
-<!--        <option selected disabled value="">Выберите отдел</option>-->
-<!--        <option v-for="dep in departments"-->
-<!--                :key="dep.id" >-->
-<!--          {{ dep.name }}-->
-<!--        </option>-->
-<!--      </my-select>-->
-        <signature-table
+    <signature-table
             :requested="vacations"
             :clickedName="clickedName"
             :clickedNumber="clickedNumber"
@@ -24,35 +19,20 @@
             @accepted="accept"
             @showWindow="show"
             @showRec="showData">
-        </signature-table>
-      <form @submit.prevent class="failure" v-show="expVis">
-        <h3>Укажите причину отказа</h3>
-        <textarea v-model="explanation"></textarea>
-        <my-button @click="explain(id)">Отправить</my-button>
-        <my-button @click="expVis=false; this.explanation = ''">Отменить</my-button>
-      </form>
-      <h2>График отпусков</h2>
-      <div class="block" v-show="this.vacations.length === 0"></div>
-      <div class="chart">
-        <canvas id="myChart"
-                :style="{height: height + 'px'}"
-                @click="showRec" tabindex="-1"/>
-      </div>
-<!--      <div class="buttons">-->
-<!--        <div class="pair" v-for="vac in vacations.filter(p => p.number === 1)"-->
-<!--             :key="vac.id" >-->
-<!--          <button style="color: #17c42c" :style="vac.status === 'Ожидание' && vac.intersections === 'Нет'?-->
-<!--              {background: 'default'}: {background: 'white', color: 'white', borderWidth: 0}"-->
-<!--                  @click="accept(vac.id)">-->
-<!--            &#10004;-->
-<!--          </button>-->
-<!--          <button style="color: #fd2626" :style="vac.status === 'Ожидание'?-->
-<!--              {background: 'default'}: {background: 'white', color: 'white', borderWidth: 0}"-->
-<!--                  @click="show(vac.id)">-->
-<!--            &#10006;-->
-<!--          </button>-->
-<!--        </div>-->
-<!--      </div>-->
+    </signature-table>
+    <form @submit.prevent class="failure" v-show="expVis">
+      <h3>Укажите причину отказа</h3>
+      <textarea v-model="explanation"></textarea>
+      <my-button @click="explain(id)">Отправить</my-button>
+      <my-button @click="expVis=false; this.explanation = ''">Отменить</my-button>
+    </form>
+    <h2>График отпусков</h2>
+    <div class="block" v-show="this.vacations.length === 0"></div>
+    <div class="chart">
+      <canvas id="myChart"
+              :style="{height: height + 'px'}"
+              @click="showRec" tabindex="-1"/>
+    </div>
   </sample-page>
 </template>
 
@@ -77,7 +57,7 @@ export default {
       ],
 
       all : [
-        {id: 1, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '01.01.2023', end: '20.01.2023',
+        {id: 1111, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '01.01.2022', end: '20.01.2022',
           paid: 'Да', department: 'first', number: 1,
           intersections: 'Нет', status: 'Ожидание',},
         {id: 22, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '02.02.2022', end: '20.02.2022',
@@ -105,7 +85,6 @@ export default {
           paid: 'Нет', department: 'sdgsg', number: 1,
           intersections: 'Нет', status: 'Ожидание',},
   ],
-
 
       colors:  ['lightblue', 'deepskyblue' , 'royalblue ', 'blue', 'darkblue', 'purple'],
       intersections:  [],
@@ -159,28 +138,24 @@ export default {
   },
 
   methods:{
-    getDates(number) // get vacation range
-    {
+    getDates(number){ // get vacation range
       let dates = [];
       dates.push(moment(this.vacations[number].start, 'DD.MM.YYYY').format('YYYY-MM-DD'));
       dates.push(moment(this.vacations[number].end, 'DD.MM.YYYY').format('YYYY-MM-DD'));
       return dates;
     },
 
-    getId(name) // find name for add record, if number of vacation > 1
-    {
+    getId(name){ // find name for add record, if number of vacation > 1
       return this.myChart.data.labels.indexOf(name);
     },
 
-    getLabels()  // get unique names
-    {
+    getLabels(){  // get unique names
       let labels = [];
       this.vacations.forEach(p => labels.push(p.surname + ' ' + p.name + ' ' + p.lastname));
       return [...new Set(labels)];
     },
 
-    findSet(n) // create dataset for nonexistent number of vacation
-    {
+    findSet(n){ // create dataset for nonexistent number of vacation
       let check = 0;
       let label = 'Отпуск ' + n;
       this.myChart.data.datasets.forEach(p => {
@@ -196,8 +171,7 @@ export default {
         })
     },
 
-    getLastDate(inter) // get last date in date set of intersections
-    {
+    getLastDate(inter){ // get last date in date set of intersections
       let help = [];
       inter.forEach(p => {
         help.push(moment(p, 'DD.MM.YYYY').diff('01.01.2022', 'days'));
@@ -205,8 +179,7 @@ export default {
       return help.indexOf(Math.max(...help));
     },
 
-    findIntersection(i, j)
-    {
+    findIntersection(i, j){
       let iStart = moment(this.vacations[i].start, 'DD.MM.YYYY');
       let jStart = moment(this.vacations[j].start, 'DD.MM.YYYY');
       let iEnd = moment(this.vacations[i].end, 'DD.MM.YYYY');
@@ -216,8 +189,7 @@ export default {
     },
 
 
-    getRange(i,j)
-    {
+    getRange(i,j){
       let iStart = moment(this.vacations[i].start, 'DD.MM.YYYY');
       let jStart = moment(this.vacations[j].start, 'DD.MM.YYYY');
       if(iStart.diff('01.01.2022', 'days') > jStart.diff('01.01.2022', 'days'))
@@ -225,8 +197,7 @@ export default {
       return jStart.diff('01.01.2022', 'days');
     },
 
-    draw(i,range, quarter)
-    {
+    draw(i,range, quarter){
       let inters = [];
       let start;
       let end;
@@ -267,8 +238,7 @@ export default {
       }
     },
 
-    intersection(i) // find intersection
-    {
+    intersection(i){ // find intersection
       let quarter = Math.floor(this.percent * this.departments.find(p => p.name === this.vacations[i].department).amounts);
       let range;
       for (let j = 0; j < i; j++){
@@ -279,9 +249,7 @@ export default {
       }
     },
 
-
-    chartClick()
-    {
+    chartClick(){
       this.myChart.data.datasets = [];
       this.intersections = [];
       this.amount = 0;
@@ -300,6 +268,28 @@ export default {
     },
 
     explain(){
+      let surname = this.all.find(p => p.id === this.id).surname;
+      let name = this.all.find(p => p.id === this.id).name;
+      let lastname = this.all.find(p => p.id === this.id).lastname;
+      let arr = [surname, name, lastname];
+      let count = [];
+      const num = this.all.find(p => p.id === this.id).number;
+      this.all.forEach(p => p.surname === arr[0] && p.name === arr[1] && p.lastname === arr[2] ? count.push(p) : false);
+      const len = count.length;
+      if (num < len) {
+        this.all.forEach(p => {
+          if (p.surname === arr[0] && p.name === arr[1] && p.lastname === arr[2]) {
+            if (p.number === num) {
+              p.number = 0;
+            } else {
+              if (p.number > num) {
+                p.number -= 1
+              }
+            }
+          }
+        })
+      }
+      console.log(arr);
       this.expVis = false;
       this.indent = 0;
       this.all.find(p => p.id === this.id).explanation = this.explanation;
@@ -360,7 +350,7 @@ export default {
 
 <style scoped>
 
-.select1
+.chooseDep
 {
   width: 300px;
   margin-left: 40px;
@@ -385,8 +375,6 @@ export default {
   height: v-bind(height);
 }
 
-
-
 .block
 {
   position: relative;
@@ -403,14 +391,13 @@ export default {
   left: 300px;
   width: 400px;
   height: 300px;
-  background: #946cda;
+  background: #be9cff;
   color: #FCFF7C;
   border-width: 0;
   filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
   border-radius: 40px;
   text-align: center;
 }
-
 
 textarea
 {
@@ -425,7 +412,6 @@ textarea
   font-size: 16px;
 }
 
-
 .failure button
 {
   height: 30px;
@@ -434,8 +420,6 @@ textarea
   color: #FCFF7C;
   font-size: 16px;
 }
-
-
 
 </style>
 

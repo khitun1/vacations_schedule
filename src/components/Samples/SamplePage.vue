@@ -4,8 +4,7 @@
       <div class="bar" :style="{height: 'this.$refs.info.clientHeight'}">
         <sample-nav-bar
             :choice="choice"
-            :admin="admin"
-        />
+            :admin="admin"/>
       </div>
       <div class="info">
         <slot></slot>

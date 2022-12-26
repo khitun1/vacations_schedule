@@ -5,10 +5,7 @@
     Добавить нового пользователя
   </my-button>
     <form @submit.prevent  class="form" v-show="visibleForm">
-      <button-icon class="back"
-          @click="clear">
-        <img src="@/components/images/BackIcon.png">
-      </button-icon>
+      <button-back @click="clear"/>
       <h2>Новый пользователь</h2>
       <div>
         <my-input class="in" :placeholder="surname"
@@ -46,7 +43,6 @@
 <!--          </option>-->
 <!--        </my-select>-->
         <p class="error" v-show="error">{{ errorMsg }}</p>
-
         <div class="pair">
           <my-button class="create" @click="createUser">
             Добавить

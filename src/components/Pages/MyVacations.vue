@@ -6,22 +6,19 @@
         <div class="prog">
           <div class="progBar"/>
         </div>
-        <my-button class="calendar">
-          <img src="@/components/images/CalendarIcon.png"/>
-          <p>В режиме календаря</p>
-        </my-button>
+<!--        <my-button class="calendar">-->
+<!--          <img src="@/components/images/CalendarIcon.png"/>-->
+<!--          <p>В режиме календаря</p>-->
+<!--        </my-button>-->
         <div class="plan">
           <h1>Запланированные отпуска</h1>
           <my-table
               :records="myPlans"
-              @Del="delPlan"
-          />
+              @Del="delPlan"/>
           <h1 style="margin-top: 20px">История отпусков</h1>
           <my-table
               :records="myHistory"
-              @Del="delHistory"
-
-          />
+              @Del="delHistory"/>
         </div>
   </sample-page>
 </template>

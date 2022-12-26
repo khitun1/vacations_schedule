@@ -4,9 +4,7 @@
       Отделы
     </my-button>
     <form @submit.prevent v-show="visibleDep">
-      <button-icon class="back" @click="visibleDep = false; this.$emit('hideUser', false)">
-        <img src="@/components/images/BackIcon.png">
-      </button-icon>
+      <button-back @click="visibleDep = false; this.$emit('hideUser', false)"/>
       <h2>Отделы</h2>
       <div>
         <my-input class="new" placeholder="Найти или добавить отдел"
@@ -19,31 +17,29 @@
 <!--        <my-button class="cancel" @click="visibleDep = false; this.$emit('hideUser', false)">Закрыть</my-button>-->
       </div>
       <h2>Список отделов</h2>
-        <div class="rec"
-             v-for="dep in activeDeps" :key="dep.id">
-            <input id="nameDep" :readonly="readDep" :value="dep.name">
-          <button-icon class="edit"
+      <div class="rec"
+           v-for="dep in activeDeps" :key="dep.id">
+        <input id="nameDep" :readonly="readDep" :value="dep.name">
+        <button-icon class="edit"
                        v-if="changeDep !== dep.id"
                        @click="changeDep = dep.id; readDep = false">
-            <img src="@/components/images/EditIcon.png">
-          </button-icon>
-          <button class="accept"
+          <img src="@/components/images/EditIcon.png">
+        </button-icon>
+        <button class="accept"
                   v-if="changeDep === dep.id" @click="changeNameDep(dep.id, dep.name); readDep = true;"
                   :style="{cursor: (cursorChange) ? 'pointer' : 'default'}">
             &#10004;
-          </button>
+        </button>
         </div>
     </form>
 
-    <my-button @click="visibleType = true; this.$emit('hideUser', true)"
-               v-show="hideSet || visibleDep || visibleCon? false: !visibleType">
-      Типы отпусков
-    </my-button>
+<!--    <my-button @click="visibleType = true; this.$emit('hideUser', true)"-->
+<!--               v-show="hideSet || visibleDep || visibleCon? false: !visibleType">-->
+<!--      Типы отпусков-->
+<!--    </my-button>-->
 
     <form @submit.prevent v-show="visibleType">
-      <button-icon class="back" @click="visibleType = false; this.$emit('hideUser', false)">
-        <img src="@/components/images/BackIcon.png">
-      </button-icon>
+      <button-back @click="visibleType = false; this.$emit('hideUser', false)"/>
       <h2>Добавить тип отпуска</h2>
       <div>
         <my-input class="new" placeholder="Найти или добавить тип отпуска"
@@ -77,10 +73,7 @@
     </my-button>
 
     <div v-show="visibleCon" class="con">
-      <button-icon class="back"
-                   @click="visibleCon = false; this.$emit('hideUser', false)">
-        <img src="@/components/images/BackIcon.png">
-      </button-icon>
+      <button-back @click="visibleCon = false; this.$emit('hideUser', false)"/>
       <h2>Назначить условия</h2>
       <VueMultiselect class="selectDep"
                       v-model="selectedDep"
@@ -242,6 +235,7 @@ export default {
         case 1:
           if(this.changeMin === false)
           {
+            this.condition.min = parseInt(this.condition.min);
             if (this.validate(this.condition.min)) {
               if (this.condition.min > this.condition.max)
               {
@@ -265,6 +259,7 @@ export default {
         case 2:
           if(this.changeMax === false)
           {
+            this.condition.max = parseInt(this.condition.max);
             if (this.validate(this.condition.max)) {
               if (this.condition.min > this.condition.max)
               {
@@ -288,6 +283,7 @@ export default {
         case 3:
           if(this.changeTotal === false)
           {
+            this.condition.total = parseInt(this.condition.total);
             if(this.validate(this.condition.total)) {
               this.changeTotal = true;
               this.totalText = 'Изменить';
@@ -304,6 +300,7 @@ export default {
         case 4:
           if(this.changePercent === false)
           {
+            this.condition.percent = parseInt(this.condition.percent);
             if(this.validate(this.condition.percent) && this.condition.percent < 100) {
               this.changePercent = true;
               this.percentText = 'Изменить';
@@ -328,7 +325,7 @@ export default {
     },
 
     validate(con){
-      return (parseInt(con) && con > 0 && con % 1 === 0)
+      return con && con > 0 && con % 1 === 0
     },
 
     changeNameDep(id, name){
@@ -383,26 +380,13 @@ form button
   height: 30px;
 }
 
-.add, .cancel
+.add
 {
   margin-left: 50px;
   margin-top: 4px;
   width: 200px;
   top: 3px;
   font-size: 16px;
-}
-
-.choice
-{
-  width: 300px;
-  height: 30px;
-
-}
-
-select
-{
-  width: 200px;
-  text-align: center;
 }
 
 .error
@@ -468,14 +452,6 @@ form
   height: 30px;
 }
 
-.back
-{
-  width: fit-content;
-  height: 25px;
-  border-radius: 100%;
-  padding: 0px 0px 0px;
-}
-
 .accept
 {
   background: #cccccc;
@@ -508,11 +484,6 @@ form
   margin-top: 15px;
   margin-bottom: 20px;
   filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
-}
-
-.back:hover
-{
-  background: #c5c5c5;
 }
 
 </style>

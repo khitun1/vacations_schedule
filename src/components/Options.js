@@ -20,36 +20,36 @@ export function options() // config for chart
                 ticks: {
                     align: 'start',
                     stepSize: 1,
-                    // callback: function (value) {
-                    //     switch (value) {
-                    //         case 'Jan ' + year:
-                    //             return '  Январь'
-                    //         case 'Feb ' + year:
-                    //             return ' Февраль'
-                    //         case 'Mar ' + year:
-                    //             return '    Март'
-                    //         case 'Apr ' + year:
-                    //             return '  Апрель'
-                    //         case 'May ' + year:
-                    //             return '     Май'
-                    //         case 'Jun ' + year:
-                    //             return '    Июнь'
-                    //         case 'Jul ' + year:
-                    //             return '    Июль'
-                    //         case 'Aug ' + year:
-                    //             return '   Август'
-                    //         case 'Sep ' + year:
-                    //             return ' Сентябрь'
-                    //         case 'Oct ' + year:
-                    //             return '  Октябрь'
-                    //         case 'Nov ' + year:
-                    //             return '   Ноябрь'
-                    //         case 'Dec ' + year:
-                    //             return '  Декабрь'
-                    //         default:
-                    //             break
-                    //     }
-                    // }
+                    callback: function (value) {
+                        switch (value) {
+                            case 'Jan ' + year:
+                                return '  Январь'
+                            case 'Feb ' + year:
+                                return ' Февраль'
+                            case 'Mar ' + year:
+                                return '    Март'
+                            case 'Apr ' + year:
+                                return '  Апрель'
+                            case 'May ' + year:
+                                return '     Май'
+                            case 'Jun ' + year:
+                                return '    Июнь'
+                            case 'Jul ' + year:
+                                return '    Июль'
+                            case 'Aug ' + year:
+                                return '   Август'
+                            case 'Sep ' + year:
+                                return ' Сентябрь'
+                            case 'Oct ' + year:
+                                return '  Октябрь'
+                            case 'Nov ' + year:
+                                return '   Ноябрь'
+                            case 'Dec ' + year:
+                                return '  Декабрь'
+                            default:
+                                break
+                        }
+                    }
                 }
             }
         },
@@ -90,4 +90,4 @@ export function viewDate(date) // collect date in view 'dd.mm.yy'
     return view
 }
 
-//let year = String(new Date().getFullYear())
+let year = String(new Date().getFullYear())

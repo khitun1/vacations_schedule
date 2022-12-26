@@ -5,11 +5,8 @@
     <personal-data
         :user="current_user"
         @eventChangePas="changePas"
-        @eventChangeLog="changeLog"
-    />
-
+        @eventChangeLog="changeLog"/>
   </sample-page>
-
 </template>
 
 <script>

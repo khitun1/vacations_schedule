@@ -48,7 +48,7 @@
           <my-input :readonly="changePassword" :type="typePassword"
                     v-model="newPassword"/>
           <button-icon class="watch" @click="typePassword = typePassword === 'text'? 'password' : 'text'"  >
-            <img src="@/components/images/WatchIcon.png">
+            <img src="@/images/WatchIcon.png">
           </button-icon>
         </td>
         <td>
@@ -71,6 +71,8 @@
 </template>
 
 <script>
+import store from "@/store";
+
 export default {
   name: "PersonalData",
 
@@ -95,7 +97,7 @@ export default {
     changePas(){
       if(this.changePassword === true) this.textPasBtn = 'Подтвердить';
       else{
-        this.$emit('eventChangePas', this.newPassword);
+        store.state.currentUser.password = this.newPassword;
         this.textPasBtn = 'Изменить пароль';
       }
       this.changePassword = !this.changePassword;
@@ -105,7 +107,7 @@ export default {
       if(this.changeLogin === true)  this.textLogBtn = 'Подтвердить';
       else
       {
-        this.$emit('eventChangeLog', this.newLogin);
+        store.state.currentUser.login = this.newLogin;
         this.textLogBtn = 'Изменить логин';
       }
       this.changeLogin = !this.changeLogin;

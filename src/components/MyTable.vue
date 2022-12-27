@@ -15,13 +15,14 @@
 <!--        <img src="@/components/images/EditIcon.png">-->
 <!--      </button-icon>-->
       <button-icon class="del" v-if="checkDel(rec.status, rec.id)" @click="Del(rec.id)">
-        <img src="@/components/images/DeleteIcon.png">
+        <img src="@/images/DeleteIcon.png">
       </button-icon>
   </div>
 </template>
 
 <script>
 import moment from "moment";
+import store from "@/store";
 
 export default {
   name: "MyTable",
@@ -70,7 +71,8 @@ export default {
     },
 
     Del(id){
-      this.$emit('Del', id)
+      store.state.selectedID = id;
+      store.commit('delVac');
     },
 
     checkDel(status, id){

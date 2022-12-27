@@ -1,16 +1,16 @@
 <template>
-    <my-button @click="visibleDep = true; this.$emit('hideUser', true)"
-                v-show="hideSet || visibleCon || visibleType? false: !visibleDep">
+    <my-button @click="$store.state.visibleAddDep = true"
+                v-show="!$store.getters.visibleAdminWindow">
       Отделы
     </my-button>
-    <form @submit.prevent v-show="visibleDep">
-      <button-back @click="visibleDep = false; this.$emit('hideUser', false)"/>
+    <form @submit.prevent v-show="$store.state.visibleAddDep">
+      <button-back @click="$store.state.visibleAddDep = false"/>
       <h2>Отделы</h2>
       <div>
         <my-input class="new" placeholder="Найти или добавить отдел"
                   v-model="dep"/>
         <my-button class="add"
-                   @click="cursor ? createDep(1) : false"
+                   @click="cursor ? create() : false"
                    :style="{cursor: (cursor && this.dep !== '') ? 'pointer' : 'default'}">
           Добавить отдел
         </my-button>
@@ -23,10 +23,10 @@
         <button-icon class="edit"
                        v-if="changeDep !== dep.id"
                        @click="changeDep = dep.id; readDep = false">
-          <img src="@/components/images/EditIcon.png">
+          <img src="@/images/EditIcon.png">
         </button-icon>
         <button class="accept"
-                  v-if="changeDep === dep.id" @click="changeNameDep(dep.id, dep.name); readDep = true;"
+                  v-if="changeDep === dep.id" @click="changeNameDep(dep.id)"
                   :style="{cursor: (cursorChange) ? 'pointer' : 'default'}">
             &#10004;
         </button>
@@ -44,7 +44,7 @@
       <div>
         <my-input class="new" placeholder="Найти или добавить тип отпуска"
                   v-model="type"/>
-        <my-button class="add" @click="cursor ? createDep(2) : false"
+        <my-button class="add" @click="cursor ? create() : false"
                    :style="{cursor: (cursor && this.type !=='') ? 'pointer' : 'default'}"
         >Добавить
         </my-button>
@@ -57,7 +57,7 @@
           <button-icon class="edit"
                        v-if="changeType !== type.id"
                        @click="changeType = type.id; readType = false">
-            <img src="@/components/images/EditIcon.png">
+            <img src="@/images/EditIcon.png">
           </button-icon>
           <button class="accept"
                   v-if="changeType === type.id" @click="changeNameType(type.id, type.name); readType = true;"
@@ -67,13 +67,13 @@
         </div>
     </form>
 
-    <my-button @click="visibleCon = true; this.$emit('hideUser', true)"
-               v-show="hideSet || visibleDep || visibleType? false: !visibleCon">
+    <my-button @click="$store.state.visibleChangeCon = true"
+               v-show="!$store.getters.visibleAdminWindow">
       Изменить условия
     </my-button>
 
-    <div v-show="visibleCon" class="con">
-      <button-back @click="visibleCon = false; this.$emit('hideUser', false)"/>
+    <div v-show="$store.state.visibleChangeCon" class="con">
+      <button-back @click="$store.state.visibleChangeCon = false"/>
       <h2>Назначить условия</h2>
       <VueMultiselect class="selectDep"
                       v-model="selectedDep"
@@ -119,6 +119,8 @@
 
 <script>
 import VueMultiselect from "vue-multiselect";
+import store from "@/store";
+
 export default {
   name: "SetData",
 
@@ -166,11 +168,6 @@ export default {
       type: Array,
       required: false,
     },
-
-    hideSet: {
-      type: Boolean,
-      required: true,
-    }
   },
 
   data() {
@@ -205,21 +202,23 @@ export default {
 
   methods: {
 
-    createDep(flag) {
+    create() {
       this.newOne.id = Date.now();
-      this.newOne.flag = flag;
       if(this.dep !== '')
       {
-          this.newOne.name = this.dep;
-          this.$emit('create', this.newOne);
-          this.dep = '';
+        this.newOne.name = this.dep;
+        this.newOne.min = 7;
+        this.newOne.total = 30;
+        this.newOne.percent = 30;
+        store.state.departments.push(this.newOne);
+        this.dep = '';
 
       }
       if(this.type !== '')
       {
-          this.newOne.name = this.type;
-          this.$emit('create', this.newOne);
-          this.type = '';
+        this.newOne.name = this.type;
+        store.state.types.push(this.newOne);
+        this.type = '';
       }
       this.newOne = {name: ''};
 
@@ -317,9 +316,9 @@ export default {
       }
 
       if (accept){
-          this.$emit('changeCon', this.condition);
-          this.errorNum = false;
-          this.errorMsg = '';
+        store.state.departments[store.state.departments.findIndex(p => p.id === this.condition.id)] = this.condition;
+        this.errorNum = false;
+        this.errorMsg = '';
       }
       else this.errorNum = true;
     },
@@ -328,18 +327,14 @@ export default {
       return con && con > 0 && con % 1 === 0
     },
 
-    changeNameDep(id, name){
-      if (this.deps.find(p => p.name === document.getElementById('nameDep').value) &&
-          name !== document.getElementById('nameDep').value) {
-        this.changeDep = true;
-        return;
+    changeNameDep(id){
+      let name = document.getElementById('nameDep').value;
+      if (store.state.departments.find(p => p.id === id).name !== name &&
+              store.state.departments.find(p => p.name === name) === undefined) {
+        store.state.departments.find(p => p.id === id).name = document.getElementById('nameDep').value;
       }
-      this.newOne.id = id;
-      this.newOne.name = document.getElementById('nameDep').value;
-      this.$emit('changeNameDep', this.newOne);
+      this.readDep = true;
       this.changeDep = true;
-      this.cursorChange = true;
-      this.newOne = {name: ''};
     },
 
     changeNameType(id, name){

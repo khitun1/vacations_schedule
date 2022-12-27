@@ -1,10 +1,10 @@
 <template>
-  <my-button @click="visibleForm = true; this.$emit('hideSet', true)"
-             v-show="hideUser? false: !visibleForm"
-             class="open" >
+  <my-button @click="$store.state.visibleAddUser = true"
+             v-show="!$store.getters.visibleAdminWindow"
+             class="open">
     Добавить нового пользователя
   </my-button>
-    <form @submit.prevent  class="form" v-show="visibleForm">
+    <form @submit.prevent  class="form" v-show="$store.state.visibleAddUser">
       <button-back @click="clear"/>
       <h2>Новый пользователь</h2>
       <div>
@@ -25,7 +25,7 @@
                     v-model="user.password"
                     v-bind:style="{boxShadow: user.password === '' && flag? color : ''}"/>
           <button-icon style="top: 8px; left: 15px" @click="typePassword = typePassword === 'text'? 'password': 'text'">
-            <img src="@/components/images/WatchIcon.png" />
+            <img src="@/images/WatchIcon.png" />
           </button-icon>
         </div>
         <VueMultiselect class="selectDep"
@@ -58,6 +58,8 @@
 
 <script>
 import VueMultiselect from "vue-multiselect";
+import store from "@/store";
+
 export default {
   name: "AddUser",
 
@@ -74,18 +76,10 @@ export default {
   },
 
   props: {
-    users: {
-      type: Array,
-      required: false,
-    },
     deps: {
       type: Array,
       required: false,
     },
-    hideUser: {
-      type: Boolean,
-      required: true,
-    }
   },
 
   data() {
@@ -124,7 +118,7 @@ export default {
       if(!this.user.login)  this.log = 'Введите логин!';
       if(!this.user.password)  this.pas = 'Введите пароль!';
       if(!this.user.department)  this.dep = 'Введите отдел!';
-      else if(this.users.find(p => p.login === this.user.login))
+      else if(store.state.users.find(p => p.login === this.user.login))
       {
         this.errorMsg = 'Пользователь с таким логином уже есть!';
         this.error = true;
@@ -138,7 +132,7 @@ export default {
 
       else {
         this.user.id = Date.now()
-        this.$emit('create', this.user)
+        store.state.users.push(this.user);
         this.clear();
       }
     },
@@ -160,8 +154,7 @@ export default {
       // this.dep = 'Отдел';
       this.error = false;
       this.flag = false;
-      this.visibleForm = false;
-      this.$emit('hideSet', false)
+      store.state.visibleAddUser = false;
     }
   }
 }

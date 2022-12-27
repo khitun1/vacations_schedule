@@ -4,11 +4,11 @@
     <div class="panel">
       <p>Хитун Иван Михайлович</p>
       <button-icon class="btn">
-        <img src="@/components/images/NoticeIcon.png">
+        <img src="@/images/NoticeIcon.png">
       </button-icon>
       <router-link to="/">
         <button-icon class="btn">
-          <img src="@/components/images/ExitIcon.png">
+          <img src="@/images/ExitIcon.png">
         </button-icon>
       </router-link>
     </div>

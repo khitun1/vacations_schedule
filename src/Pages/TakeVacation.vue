@@ -1,7 +1,5 @@
 <template>
-  <sample-page
-      :choice="'takeVacation'"
-      :admin="isAdmin">
+  <sample-page :choice="'takeVacation'">
     <h2 style="margin-top: 40px">Календарь отпусков</h2>
     <div style="display: flex">
       <v-date-picker is-range :rows="1" :columns="3" v-model="date"
@@ -10,7 +8,7 @@
                      :disabled-dates="dis"
                       style="filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25))"/>
       <div style="margin: -20px 0 0 30px">
-        <h2 style="margin-top: -20px">Осталось отпускных дней: {{left}}</h2>
+        <h2 style="margin-top: -20px">Осталось отпускных дней: {{$store.state.left}}</h2>
         <div class="prog">
           <div class="progBar"/>
         </div>
@@ -46,29 +44,26 @@
 import SamplePage from "@/components/Samples/SamplePage";
 import moment from "moment";
 import MyButton from "@/components/UI/MyButton";
-
-
+import store from "@/store";
 
 export default {
   name: "TakeVacation",
 
   computed: {
     width: function(){
-      return 100 - this.left / this.total * 100 + '%';
+      return 100 - store.state.left / store.state.total * 100 + '%';
     },
 
     attrs: function (){
       let attrs =  [];
-      this.myPlans.forEach(p => attrs.push(this.chooseColor(p)));
-      this.myHistory.forEach(p => attrs.push(this.chooseColor(p)));
+      store.state.myVacations.forEach(p => attrs.push(this.chooseColor(p)));
       this.selectedAttrs.forEach(p => attrs.push(p));
       return attrs;
     },
 
     dis: function(){
       let dis =  [];
-      this.myPlans.forEach(p => dis.push(this.disDates(p)));
-      this.myHistory.forEach(p => dis.push(this.disDates(p)));
+      store.state.myVacations.forEach(p => dis.push(this.disDates(p)));
       this.selectedDis.forEach(p => dis.push(p));
       return dis;
     }
@@ -103,40 +98,8 @@ export default {
 
       choice: {},
 
-      types: [
-        {id: 1, name: 'first'},
-        {id: 2, name: 'second'},
-        {id: 3, name: 'third'},
-      ],
-
-      myPlans: [
-        {id: 1, start: '01.01.2023', end: '02.02.2023', total: 12, dateRequest: '01.06.2021', number: 1, paid: 'Да', status: 'Утверждено',
-          explanation: '',},
-        {id: 2, start: '10.02.2023', end: '15.02.2023', total: 12, dateRequest: '01.06.2021', number: 2, paid: 'Нет', status: 'Ожидание',
-          explanation: '',},
-        {id: 3, start: '20.02.2023', end: '25.02.2023', total: 12, dateRequest: '01.06.2021', number: 3, paid: 'Да', status: 'Отказ',
-          explanation: '',},
-        {id: 4, start: '01.01.2022', end: '02.02.2022', total: 12, dateRequest: '01.06.2021', number: 4, paid: 'Нет', status: 'Удалено',
-          explanation: '',},
-      ],
-
-      myHistory: [
-        {id: 1, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Отменено',},
-        {id: 2, start: '01.11.2022', end: '05.11.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
-      ],
-
       paid: [],
-
-      left: 70,
-      total: 100,
     }
-  },
-
-  props: {
-    isAdmin:{
-      type: Number,
-      requested: true,
-    },
   },
 
   components:{
@@ -183,7 +146,7 @@ export default {
 
     send(wish){
       let last = 0;
-      this.myPlans.forEach(p => {
+      store.state.myVacations.forEach(p => {
         if (p.number > last) {
           last = p.number
         }
@@ -198,9 +161,9 @@ export default {
         paid: this.paid[this.wishes.indexOf(wish)] ? 'Да' : 'Нет',
         status: 'Ожидание',
       }
-      if (this.totalDays(record.start, record.end) <= this.left){
-        this.left -= this.totalDays(record.start, record.end);
-        this.myPlans.push(record);
+      if (this.totalDays(record.start, record.end) <= store.state.left){
+        store.state.left -= this.totalDays(record.start, record.end);
+        store.state.myVacations.push(record);
         this.del(wish.id);
       }
       else (alert('Выбрано больше дней, чем доступно!'));
@@ -212,7 +175,7 @@ export default {
       this.wishes.forEach(p => {
         total += this.totalDays(p.start, p.end);
       });
-      if (total <= this.left){
+      if (total <= store.state.left){
         this.wishes.forEach(p => {
           record = {
             id: p.id,
@@ -222,8 +185,8 @@ export default {
             paid: this.paid[this.wishes.indexOf(p)] ? 'Да' : 'Нет',
             status: 'Ожидание',
           }
-          this.left -= this.totalDays(record.start, record.end);
-          this.myPlans.push(record);
+          store.state.left -= this.totalDays(record.start, record.end);
+          store.state.myVacations.push(record);
         })
         this.selectedAttrs = [];
         this.wishes = [];

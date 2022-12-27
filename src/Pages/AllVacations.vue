@@ -1,18 +1,16 @@
 <template>
-  <sample-page
-      :choice="'allVacations'"
-      :admin="isAdmin">
+  <sample-page :choice="'allVacations'">
       <h2>Запросы на подпись отпуска</h2>
     <VueMultiselect
         class="chooseDep"
-        v-model="choice"
+        v-model="$store.state.selectedDep"
         :options="namesDeps"
         :show-no-results="false"
         @close="chartClick"
         placeholder="Выберите отдел"
         :show-labels="false"/>
     <signature-table
-            :requested="vacations"
+            :requested="$store.getters.vacations"
             :clickedName="clickedName"
             :clickedNumber="clickedNumber"
             :clicked="clickEvent"
@@ -27,7 +25,7 @@
       <my-button @click="expVis=false; this.explanation = ''">Отменить</my-button>
     </form>
     <h2>График отпусков</h2>
-    <div class="block" v-show="this.vacations.length === 0"></div>
+    <div class="block" v-show="$store.getters.vacations.length === 0"></div>
     <div class="chart">
       <canvas id="myChart"
               :style="{height: height + 'px'}"
@@ -44,6 +42,7 @@ import moment from "moment";
 import SignatureTable from "@/components/SignatureTable";
 import SamplePage from "@/components/Samples/SamplePage";
 import VueMultiselect from 'vue-multiselect';
+import store from "@/store";
 
 
 export default {
@@ -51,45 +50,9 @@ export default {
 
   data() {
     return{
-      departments: [
-        {id: 2, name: 'first', min: 7, total: 55, percent: 30, amounts: 15},
-        {id: 3, name: 'sdgsg', min: 7, total: 55, percent: 30, amounts: 15},
-      ],
-
-      all : [
-        {id: 1111, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '01.01.2022', end: '20.01.2022',
-          paid: 'Да', department: 'first', number: 1,
-          intersections: 'Нет', status: 'Ожидание',},
-        {id: 22, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '02.02.2022', end: '20.02.2022',
-          paid: 'Нет', department: 'first', number: 2,
-          intersections: 'Да', status: 'Ожидание',},
-         {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.03.2022', end: '20.03.2022',
-           paid: 'Да', department: 'first', number: 1,
-           intersections: 'Нет', status: 'Принято',},
-        {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.07.2022', end: '20.08.2022',
-          paid: 'Да', department: 'first', number: 2,
-          intersections: 'Нет', status: 'Принято',},
-        {id: 220, surname: 'Ивановa', name: 'Владислав', lastname: 'Андреевич', start: '01.04.2022', end: '20.04.2022',
-          paid: 'Нет', department: 'first', number: 1,
-          intersections: 'Да', status: 'Ожидание',},
-        {id: 120, surname: 'Алиевa', name: 'Иван', lastname: 'Михайлович', start: '01.05.2022', end: '20.05.2022',
-          paid: 'Да', department: 'first', number: 1,
-          intersections: 'Нет', status: 'Ожидание',},
-         {id: 222, surname: 'Семеренко', name: 'Владислав', lastname: 'Андреевич', start: '01.06.2022', end: '20.06.2022',
-           paid: 'Нет', department: 'first', number: 1,
-           intersections: 'Да', status: 'Принято',},
-        {id: 122, surname: 'Шарипов', name: 'Иван', lastname: 'Михайлович', start: '05.05.2022', end: '11.11.2022',
-          paid: 'Да', type: '', dateRequest: '', department: 'sdgsg', number: 1,
-          intersections: 'Нет', explanation: '', status: 'Ожидание', comment: '', countries: '',},
-        {id: 2222, surname: 'Михайлов', name: 'Владислав', lastname: 'Андреевич', start: '01.01.2022', end: '02.02.2022',
-          paid: 'Нет', department: 'sdgsg', number: 1,
-          intersections: 'Нет', status: 'Ожидание',},
-  ],
-
       colors:  ['lightblue', 'deepskyblue' , 'royalblue ', 'blue', 'darkblue', 'purple'],
       intersections:  [],
       amount:  0,
-      choice: '',
       indent: 0,
       expVis: false,
       explanation: '',
@@ -106,33 +69,22 @@ export default {
     SignatureTable,
   },
 
-  props: {
-    isAdmin:{
-      type: Number,
-      requested: true,
-    },
-  },
-
   computed: {
-    vacations: function (){
-      return this.all.filter(p => p.department === this.choice && p.status !== 'Отказ');
-    },
-
     height: function (){
-      return this.vacations.filter(p => p.department === this.choice).length * 50 + 125;
+      return store.getters.vacations.filter(p => p.department === store.state.selectedDep).length * 50 + 125;
     },
 
     percent: function (){
-      return this.departments.find(p => p.name === this.choice).percent / 100;
+      return store.state.departments.find(p => p.name === store.state.selectedDep).percent / 100;
     },
 
     top: function(){
-      return this.vacations.length === 0? '-250px': 0;
+      return store.getters.vacations.length === 0? '-250px': 0;
     },
 
     namesDeps: function (){
       let arr = [];
-      this.departments.forEach(p => arr.push(p.name));
+      store.state.departments.forEach(p => arr.push(p.name));
       return arr;
     }
   },
@@ -140,8 +92,8 @@ export default {
   methods:{
     getDates(number){ // get vacation range
       let dates = [];
-      dates.push(moment(this.vacations[number].start, 'DD.MM.YYYY').format('YYYY-MM-DD'));
-      dates.push(moment(this.vacations[number].end, 'DD.MM.YYYY').format('YYYY-MM-DD'));
+      dates.push(moment(store.getters.vacations[number].start, 'DD.MM.YYYY').format('YYYY-MM-DD'));
+      dates.push(moment(store.getters.vacations[number].end, 'DD.MM.YYYY').format('YYYY-MM-DD'));
       return dates;
     },
 
@@ -151,7 +103,7 @@ export default {
 
     getLabels(){  // get unique names
       let labels = [];
-      this.vacations.forEach(p => labels.push(p.surname + ' ' + p.name + ' ' + p.lastname));
+      store.getters.vacations.forEach(p => labels.push(p.surname + ' ' + p.name + ' ' + p.lastname));
       return [...new Set(labels)];
     },
 
@@ -180,18 +132,18 @@ export default {
     },
 
     findIntersection(i, j){
-      let iStart = moment(this.vacations[i].start, 'DD.MM.YYYY');
-      let jStart = moment(this.vacations[j].start, 'DD.MM.YYYY');
-      let iEnd = moment(this.vacations[i].end, 'DD.MM.YYYY');
-      let jEnd = moment(this.vacations[j].end, 'DD.MM.YYYY');
+      let iStart = moment(store.getters.vacations[i].start, 'DD.MM.YYYY');
+      let jStart = moment(store.getters.vacations[j].start, 'DD.MM.YYYY');
+      let iEnd = moment(store.getters.vacations[i].end, 'DD.MM.YYYY');
+      let jEnd = moment(store.getters.vacations[j].end, 'DD.MM.YYYY');
       return (iEnd.diff('01.01.2022', 'days') <= jStart.diff('01.01.2022', 'days')) ||
           iStart.diff('01.01.2022', 'days') >= jEnd.diff('01.01.2022', 'days');
     },
 
 
     getRange(i,j){
-      let iStart = moment(this.vacations[i].start, 'DD.MM.YYYY');
-      let jStart = moment(this.vacations[j].start, 'DD.MM.YYYY');
+      let iStart = moment(store.getters.vacations[i].start, 'DD.MM.YYYY');
+      let jStart = moment(store.getters.vacations[j].start, 'DD.MM.YYYY');
       if(iStart.diff('01.01.2022', 'days') > jStart.diff('01.01.2022', 'days'))
         return iStart.diff('01.01.2022', 'days');
       return jStart.diff('01.01.2022', 'days');
@@ -202,18 +154,18 @@ export default {
       let start;
       let end;
       for(let j = 0; j < i; j++){
-        start = moment(this.vacations[j].start, 'DD.MM.YYYY');
-        end = moment(this.vacations[j].end, 'DD.MM.YYYY');
+        start = moment(store.getters.vacations[j].start, 'DD.MM.YYYY');
+        end = moment(store.getters.vacations[j].end, 'DD.MM.YYYY');
         if(range <= end.diff('01.01.2022', 'days') &&
             range >= start.diff('01.01.2022', 'days'))
         {
-          inters.push(this.vacations[j].start);
+          inters.push(store.getters.vacations[j].start);
         }
       }
 
       if(inters.length !== 0 && inters.length >= quarter)
       {
-        inters.push(this.vacations[i].start);
+        inters.push(store.getters.vacations[i].start);
         let last = inters[this.getLastDate(inters)];
         if(this.intersections.indexOf(last) === -1)
         {
@@ -223,7 +175,7 @@ export default {
         else return;
 
         let line = [];
-        for(let q = 0; q < this.vacations.length; q++)  line.push(moment(last, 'DD.MM.YYYY').format('YYYY-MM-DD'));
+        for(let q = 0; q < store.getters.vacations.length; q++)  line.push(moment(last, 'DD.MM.YYYY').format('YYYY-MM-DD'));
         this.myChart.data.datasets.unshift({
           label: 'Пересечение ' + moment(last).format('DD.MM.YYYY'),
           type: 'line',
@@ -239,7 +191,7 @@ export default {
     },
 
     intersection(i){ // find intersection
-      let quarter = Math.floor(this.percent * this.departments.find(p => p.name === this.vacations[i].department).amounts);
+      let quarter = Math.floor(this.percent * store.state.departments.find(p => p.name === store.getters.vacations[i].department).amounts);
       let range;
       for (let j = 0; j < i; j++){
         if(!this.findIntersection(i,j)) {
@@ -254,12 +206,12 @@ export default {
       this.intersections = [];
       this.amount = 0;
       this.myChart.data.labels = this.getLabels();
-      for(let i = 0; i < this.vacations.length; i++){
-          let n = this.vacations[i].number;
+      for(let i = 0; i < store.getters.vacations.length; i++){
+          let n = store.getters.vacations[i].number;
           this.findSet(n);
           if(n === 1) this.myChart.data.datasets[this.amount].data.push(this.getDates(i));
           else {
-            let name = this.vacations[i].surname + ' ' + this.vacations[i].name + ' ' + this.vacations[i].lastname;
+            let name = store.getters.vacations[i].surname + ' ' + store.getters.vacations[i].name + ' ' + store.getters.vacations[i].lastname;
             this.myChart.data.datasets[n-1+this.amount].data[this.getId(name)] = (this.getDates(i));
           }
           this.intersection(i);
@@ -268,16 +220,16 @@ export default {
     },
 
     explain(){
-      let surname = this.all.find(p => p.id === this.id).surname;
-      let name = this.all.find(p => p.id === this.id).name;
-      let lastname = this.all.find(p => p.id === this.id).lastname;
+      let surname = store.state.all.find(p => p.id === this.id).surname;
+      let name = store.state.all.find(p => p.id === this.id).name;
+      let lastname = store.state.all.find(p => p.id === this.id).lastname;
       let arr = [surname, name, lastname];
       let count = [];
-      const num = this.all.find(p => p.id === this.id).number;
-      this.all.forEach(p => p.surname === arr[0] && p.name === arr[1] && p.lastname === arr[2] ? count.push(p) : false);
+      const num = store.state.all.find(p => p.id === this.id).number;
+      store.state.all.forEach(p => p.surname === arr[0] && p.name === arr[1] && p.lastname === arr[2] ? count.push(p) : false);
       const len = count.length;
       if (num < len) {
-        this.all.forEach(p => {
+        store.state.all.forEach(p => {
           if (p.surname === arr[0] && p.name === arr[1] && p.lastname === arr[2]) {
             if (p.number === num) {
               p.number = 0;
@@ -289,28 +241,27 @@ export default {
           }
         })
       }
-      console.log(arr);
       this.expVis = false;
       this.indent = 0;
-      this.all.find(p => p.id === this.id).explanation = this.explanation;
-      this.all.find(p => p.id === this.id).status = 'Отказ';
+      store.state.all.find(p => p.id === this.id).explanation = this.explanation;
+      store.state.all.find(p => p.id === this.id).status = 'Отказ';
       this.explanation = '';
       this.chartClick();
     },
 
     accept(id){
-      this.all.find(p => p.id === id).status = 'Утверждено';
+      store.state.all.find(p => p.id === id).status = 'Утверждено';
     },
 
     show(id){
       this.id = id;
       this.expVis = true;
-        if(this.vacations.filter(p => p.status === 'Ожидание').length === 1) this.indent = 100;
+        if(store.getters.vacations.filter(p => p.status === 'Ожидание').length === 1) this.indent = 100;
     },
 
     reject(id){
-      this.all.find(p => p.id === id).explanation = 'Пересечение';
-      this.all.find(p => p.id === id).status = 'Отказ';
+      store.state.all.find(p => p.id === id).explanation = 'Пересечение';
+      store.state.all.find(p => p.id === id).status = 'Отказ';
     },
 
     showRec(){
@@ -343,7 +294,7 @@ export default {
 }
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.css">
+<style src="../../node_modules/vue-multiselect/dist/vue-multiselect.css">
 
 
 </style>

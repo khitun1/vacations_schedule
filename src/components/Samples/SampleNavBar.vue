@@ -5,7 +5,7 @@
                 @mouseover="hover0=true"
                 @mouseleave="hover0=false"
                 :style="choice === 'takeVacation' || hover0 ? { backgroundColor: '#E2E2E2' } : { backgroundColor: '#f6f6f6' }">
-          <img src="@/components/images/Plus.png"/>
+          <img src="@/images/Plus.png"/>
           <p>Планировщик отпусков</p>
         </button>
       </router-link>
@@ -14,25 +14,25 @@
                 @mouseover="hover1=true"
                 @mouseleave="hover1=false"
                 :style="choice === 'myVacations' || hover1 ? { backgroundColor: '#E2E2E2' } : { backgroundColor: '#f6f6f6' }">
-          <img src="@/components/images/VacationIcon.png"/>
+          <img src="@/images/VacationIcon.png"/>
           <p>Мои отпуска</p>
         </button>
       </router-link>
-      <router-link to="allVacations" v-if="admin !== 0">
+      <router-link to="allVacations" v-if="$store.state.isAdmin === '1'">
         <button class="employees"
                 @mouseover="hover2=true"
                 @mouseleave="hover2=false"
                 :style="choice === 'allVacations' || hover2 ? { backgroundColor: '#E2E2E2' } : { backgroundColor: '#f6f6f6' }">
-        <img src="@/components/images/CalendarIcon.png"/>
+        <img src="@/images/CalendarIcon.png"/>
         <p>Отпуска сотрудников</p>
       </button>
         </router-link>
-      <router-link to="admin" v-if="admin !== 0">
+      <router-link to="admin" v-if="$store.state.isAdmin === '1'">
         <button class="admin"
                 @mouseover="hover3=true"
                 @mouseleave="hover3=false"
                 :style="choice === 'admin' || hover3 ? { backgroundColor: '#E2E2E2' } : { backgroundColor: '#f6f6f6' }">
-        <img src="@/components/images/LetterIcon.png"/>
+        <img src="@/images/LetterIcon.png"/>
         <p>Админ</p>
        </button>
       </router-link>
@@ -41,7 +41,7 @@
                 @mouseover="hover4=true"
                 @mouseleave="hover4=false"
                 :style="choice === 'settings' || hover4 ? { backgroundColor: '#E2E2E2' } : { backgroundColor: '#f6f6f6' }">
-        <img src="@/components/images/SettingsIcon.png"/>
+        <img src="@/images/SettingsIcon.png"/>
         <p>Настройки</p>
       </button>
         </router-link>
@@ -59,18 +59,12 @@ export default {
       hover2: false,
       hover3: false,
       hover4: false,
-      takeColor: this.choice === 'take' ? '#9492FF' : '#FCFF7C',
-      takeBack: this.choice === 'take' ? '#fffbfb' : '#9492FF',
     }
   },
 
   props: {
     choice: {
       type: String,
-      requested: true,
-    },
-    admin: {
-      type: Number,
       requested: true,
     },
   }

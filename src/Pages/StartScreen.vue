@@ -2,14 +2,14 @@
   <h1>Планирование отпусков</h1>
     <div class="main">
       <div class="gif">
-        <img src="@/components/images/Bear.gif">
+        <img src="@/images/Bear.gif">
       </div>
       <div class="login">
         <h3>Авторизация</h3>
-        <my-input placeholder="Логин"/>
+        <my-input placeholder="Логин" v-model="$store.state.isAdmin"/>
         <my-input placeholder="Пароль"/>
-        <router-link to="myVacations" :isAdmin="isAdmin">
-          <my-button class="test">Войти</my-button>
+        <router-link to="myVacations">
+          <my-button class="test" >Войти</my-button>
         </router-link>
       </div>
     </div>
@@ -22,7 +22,6 @@ export default {
 
   data() {
     return {
-      isAdmin: 0,
     }
   },
 }

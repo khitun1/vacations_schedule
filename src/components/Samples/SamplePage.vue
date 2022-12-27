@@ -2,9 +2,7 @@
   <sample-hat/>
     <div class="main">
       <div class="bar" :style="{height: 'this.$refs.info.clientHeight'}">
-        <sample-nav-bar
-            :choice="choice"
-            :admin="admin"/>
+        <sample-nav-bar :choice="choice"/>
       </div>
       <div class="info">
         <slot></slot>
@@ -27,10 +25,6 @@ export default {
   props: {
     choice: {
       type: String,
-      requested: true,
-    },
-    admin: {
-      type: Number,
       requested: true,
     },
   },

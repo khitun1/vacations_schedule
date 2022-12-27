@@ -9,7 +9,10 @@
              v-bind:style="{
           borderColor: setBorder(rec.status),
           color: setBorder(rec.status)
-        }">{{rec.status}}</div>
+        }"
+             @mouseover="visibleExplanation = rec.id" @mouseleave="visibleExplanation = false">
+          {{rec.status}}
+        </div>
       </div>
 <!--      <button-icon class="edit" v-if="checkEdit(rec.status, rec.id) ">-->
 <!--        <img src="@/components/images/EditIcon.png">-->
@@ -17,6 +20,11 @@
       <button-icon class="del" v-if="checkDel(rec.status, rec.id)" @click="Del(rec.id)">
         <img src="@/images/DeleteIcon.png">
       </button-icon>
+    <div class="exp"
+         v-if="rec.hasOwnProperty('explanation') && visibleExplanation === rec.id">
+      <h4>Причина отказа:</h4>
+      {{ rec.explanation }}
+    </div>
   </div>
 </template>
 
@@ -30,6 +38,7 @@ export default {
   data(){
     return{
       visible: false,
+      visibleExplanation: false,
     }
   },
   props: {
@@ -148,6 +157,26 @@ pre
   text-align: center;
   margin-top: 12px;
   margin-right: 10px;
+}
+
+.exp
+{
+  position: absolute;
+  width: 250px;
+  height: fit-content;
+  padding: 10px;
+  left: 700px;
+  top: 150px;
+  text-align: center;
+  background: #ffc4b9;
+  border-radius: 10px;
+  filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.25));
+  color: #595959;
+}
+
+.exp h4
+{
+  color: #d70000;
 }
 
 </style>

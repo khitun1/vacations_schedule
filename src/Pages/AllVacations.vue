@@ -275,8 +275,10 @@ export default {
       this.myChart.setActiveElements([
         {datasetIndex: index[1], index: this.myChart.data.labels.indexOf(index[0])},
       ]);
+      console.log(index)
       this.myChart.options.scales.x.min = index[2] + '-01-01';
       this.myChart.options.scales.x.max = index[2] + '-12-31';
+      store.state.year = index[2];
       this.myChart.update();
       document.getElementById('myChart') .focus();
     },

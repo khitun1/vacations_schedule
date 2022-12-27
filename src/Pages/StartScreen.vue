@@ -6,22 +6,30 @@
       </div>
       <div class="login">
         <h3>Авторизация</h3>
-        <my-input placeholder="Логин" v-model="$store.state.isAdmin"/>
+        <my-input placeholder="Логин" v-model="login"/>
         <my-input placeholder="Пароль"/>
         <router-link to="myVacations">
-          <my-button class="test" >Войти</my-button>
+          <my-button class="test" @click="check">Войти</my-button>
         </router-link>
       </div>
     </div>
 </template>
 
 <script>
+import store from "@/store";
 
 export default {
   name: "StartScreen",
 
   data() {
     return {
+      login: '',
+    }
+  },
+
+  methods: {
+    check() {
+      store.state.currentUser.isAdmin = this.login === '1';
     }
   },
 }

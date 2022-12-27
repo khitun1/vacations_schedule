@@ -5,7 +5,7 @@ export default createStore({
     state: {
         currentUser: {
             id: 1, surname: 'Adams', name: 'John', lastname: 'Jack', login: 'Flash', password: 'qwerty',
-            department: 'Developers', daysLeft: 10,
+            department: 'Developers', daysLeft: 10, isAdmin: false,
         },
         myVacations: [
             {id: 1, start: '02.01.2023', end: '09.01.2023', dateRequest: '01.06.2021', paid: 'Да', status: 'Утверждено',
@@ -79,12 +79,12 @@ export default createStore({
 
         selectedID: Number,
         selectedDep: '',
-        isAdmin: '',
         left: 20,
         total: 100,
         visibleAddUser: false,
         visibleAddDep: false,
         visibleChangeCon: false,
+        year: String(new Date().getFullYear()),
     },
     getters: {
         vacations(state) {

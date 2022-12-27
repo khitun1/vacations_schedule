@@ -1,4 +1,5 @@
 import moment from "moment";
+import store from "@/store";
 
 export function options() // config for chart
 {
@@ -22,29 +23,29 @@ export function options() // config for chart
                     stepSize: 1,
                     callback: function (value) {
                         switch (value) {
-                            case 'Jan ' + year:
+                            case 'Jan ' + store.state.year:
                                 return '  Январь'
-                            case 'Feb ' + year:
+                            case 'Feb ' + store.state.year:
                                 return ' Февраль'
-                            case 'Mar ' + year:
+                            case 'Mar ' + store.state.year:
                                 return '    Март'
-                            case 'Apr ' + year:
+                            case 'Apr ' + store.state.year:
                                 return '  Апрель'
-                            case 'May ' + year:
+                            case 'May ' + store.state.year:
                                 return '     Май'
-                            case 'Jun ' + year:
+                            case 'Jun ' + store.state.year:
                                 return '    Июнь'
-                            case 'Jul ' + year:
+                            case 'Jul ' + store.state.year:
                                 return '    Июль'
-                            case 'Aug ' + year:
+                            case 'Aug ' + store.state.year:
                                 return '   Август'
-                            case 'Sep ' + year:
+                            case 'Sep ' + store.state.year:
                                 return ' Сентябрь'
-                            case 'Oct ' + year:
+                            case 'Oct ' + store.state.year:
                                 return '  Октябрь'
-                            case 'Nov ' + year:
+                            case 'Nov ' + store.state.year:
                                 return '   Ноябрь'
-                            case 'Dec ' + year:
+                            case 'Dec ' + store.state.year:
                                 return '  Декабрь'
                             default:
                                 break
@@ -89,5 +90,3 @@ export function viewDate(date) // collect date in view 'dd.mm.yy'
     view = split[2] + '.' + split[1] + '.' + split[0][2] + split[0][3]
     return view
 }
-
-let year = String(new Date().getFullYear())

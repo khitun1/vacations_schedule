@@ -18,7 +18,7 @@
           <p>Мои отпуска</p>
         </button>
       </router-link>
-      <router-link to="allVacations" v-if="$store.state.isAdmin === '1'">
+      <router-link to="allVacations" v-if="$store.state.currentUser.isAdmin">
         <button class="employees"
                 @mouseover="hover2=true"
                 @mouseleave="hover2=false"
@@ -27,7 +27,7 @@
         <p>Отпуска сотрудников</p>
       </button>
         </router-link>
-      <router-link to="admin" v-if="$store.state.isAdmin === '1'">
+      <router-link to="admin" v-if="$store.state.currentUser.isAdmin">
         <button class="admin"
                 @mouseover="hover3=true"
                 @mouseleave="hover3=false"

@@ -80,8 +80,7 @@ export default {
     },
 
     Del(id){
-      store.state.selectedID = id;
-      store.commit('delVac');
+      store.commit('delVac', id);
     },
 
     checkDel(status, id){

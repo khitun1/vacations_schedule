@@ -1,4 +1,5 @@
 import {createStore} from "vuex";
+import moment from "moment";
 
 
 export default createStore({
@@ -20,9 +21,9 @@ export default createStore({
                 explanation: '',},
             {id: 7, start: '01.01.2022', end: '02.02.2022', dateRequest: '01.06.2021', paid: 'Нет', status: 'Ожидание',},
             {id: 10, start: '04.12.2022', end: '13.12.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
-            {id: 20, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
-            {id: 301, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
-            {id: 220, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
+            // {id: 20, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
+            // {id: 301, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
+            // {id: 220, start: '04.02.2022', end: '13.03.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
         ],
 
         all : [
@@ -73,13 +74,14 @@ export default createStore({
             {id: 3, name: 'third'},
         ],
         users: [],
+        wishes: [],
 
         selectedID: Number,
         selectedDep: '',
-        left: 20,
         total: 100,
         visibleAddUser: false,
         visibleAddDep: false,
+        visibleAddType: false,
         visibleChangeCon: false,
         year: String(new Date().getFullYear()),
     },
@@ -88,14 +90,86 @@ export default createStore({
             return state.all.filter(p => p.status !== 'Отказ' && p.department === state.selectedDep);
         },
         visibleAdminWindow(state) {
-            return state.visibleAddUser || state.visibleAddDep || state.visibleChangeCon;
-        }
+            return state.visibleAddUser || state.visibleAddDep || state.visibleChangeCon || state.visibleAddType;
+        },
+        left(state) {
+            let total = 0;
+            let val = state.myVacations.filter(p => p.status !== 'Отказ' && p.status !== 'Удалено');
+            val.forEach(p => {
+                total += moment(p.end, 'DD.MM.YYYY').diff(moment(p.start, 'DD.MM.YYYY'), 'days') + 1;
+                console.log(total)
+            });
+            return state.total - total;
+        },
     },
     mutations: {
-        delVac(state){
-            console.log(state.selectedID);
-            state.myVacations.find(p => p.id === state.selectedID).status = 'Удалено';
+        delVac(state, id){
+            state.myVacations.find(p => p.id === id).status = 'Удалено';
         },
+        changeDepName(state, change) {
+            console.log(change.name)
+            state.departments.find(p => p.id === change.id).name = change.name;
+        },
+        changeTypeName(state, change) {
+            state.types.find(p => p.id === change.id).name = change.name;
+        },
+        addUser(state, user) {
+            state.users.push(user);
+        },
+        changeLogin(state, login) {
+            state.currentUser.login = login;
+        },
+        changePassword(state, password) {
+            state.currentUser.password = password;
+        },
+        addDep(state, newDep) {
+            state.departments.push(newDep);
+        },
+        addType(state, newType) {
+            state.types.push(newType);
+        },
+        changeConditions(state, newCon) {
+            state.departments[state.departments.findIndex(p => p.id === newCon.id)] = newCon;
+        },
+        reject(state, rej) {
+            state.all.find(p => p.id === rej.id).explanation = rej.explanation;
+            state.all.find(p => p.id === rej.id).status = 'Отказ';
+        },
+        accept(state, id) {
+            state.all.find(p => p.id === id).status = 'Утверждено';
+        },
+        shift(state, con) {
+            state.all.forEach(p => {
+                if (p.surname === con.arr[0] && p.name === con.arr[1] && p.lastname === con.arr[2]) {
+                    if (p.number === con.num) {
+                        p.number = 0;
+                    } else {
+                        if (p.number > con.num) {
+                            p.number -= 1
+                        }
+                    }
+                }
+            })
+        },
+        changeYear(state, year) {
+            state.year = year;
+        },
+        getAdmin(state, login) {
+            state.currentUser.isAdmin = login === '1';
+        },
+        addVacation(state, record) {
+            state.myVacations.push(record);
+        },
+        addWish(state, date) {
+            state.wishes.push(date);
+        },
+        delWish(state, id) {
+            state.wishes.splice(state.wishes.findIndex(p => p.id === id), 1);
+        },
+        clearWishes(state) {
+            state.wishes = [];
+        },
+
     },
     actions: {
 

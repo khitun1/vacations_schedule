@@ -97,7 +97,7 @@ export default {
     changePas(){
       if(this.changePassword === true) this.textPasBtn = 'Подтвердить';
       else{
-        store.state.currentUser.password = this.newPassword;
+        store.commit('changePassword', this.newPassword);
         this.textPasBtn = 'Изменить пароль';
       }
       this.changePassword = !this.changePassword;
@@ -107,7 +107,7 @@ export default {
       if(this.changeLogin === true)  this.textLogBtn = 'Подтвердить';
       else
       {
-        store.state.currentUser.login = this.newLogin;
+        store.commit('changeLogin', this.newLogin);
         this.textLogBtn = 'Изменить логин';
       }
       this.changeLogin = !this.changeLogin;

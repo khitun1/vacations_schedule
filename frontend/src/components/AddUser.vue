@@ -132,7 +132,7 @@ export default {
 
       else {
         this.user.id = Date.now()
-        store.state.users.push(this.user);
+        store.commit('addUser', this.user);
         this.clear();
       }
     },

@@ -29,7 +29,7 @@ export default {
 
   methods: {
     check() {
-      store.state.currentUser.isAdmin = this.login === '1';
+      store.commit('getAdmin', this.login);
     }
   },
 }

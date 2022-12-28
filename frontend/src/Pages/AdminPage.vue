@@ -33,11 +33,6 @@ export default {
   },
 
   methods: {
-
-    setCon(con){
-      this.departments[this.departments.findIndex(p => p.id === con.id)] = con;
-    },
-
   },
 }
 </script>

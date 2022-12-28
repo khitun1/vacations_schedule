@@ -229,28 +229,25 @@ export default {
       store.state.all.forEach(p => p.surname === arr[0] && p.name === arr[1] && p.lastname === arr[2] ? count.push(p) : false);
       const len = count.length;
       if (num < len) {
-        store.state.all.forEach(p => {
-          if (p.surname === arr[0] && p.name === arr[1] && p.lastname === arr[2]) {
-            if (p.number === num) {
-              p.number = 0;
-            } else {
-              if (p.number > num) {
-                p.number -= 1
-              }
-            }
-          }
-        })
+        const con = {
+          arr: arr,
+          num: num,
+        }
+        store.commit('shift', con);
       }
       this.expVis = false;
       this.indent = 0;
-      store.state.all.find(p => p.id === this.id).explanation = this.explanation;
-      store.state.all.find(p => p.id === this.id).status = 'Отказ';
+      const rej = {
+        id: this.id,
+        exp: this.explanation,
+      }
+      store.commit('reject', rej);
       this.explanation = '';
       this.chartClick();
     },
 
     accept(id){
-      store.state.all.find(p => p.id === id).status = 'Утверждено';
+      store.commit('accept', id);
     },
 
     show(id){
@@ -258,12 +255,6 @@ export default {
       this.expVis = true;
         if(store.getters.vacations.filter(p => p.status === 'Ожидание').length === 1) this.indent = 100;
     },
-
-    reject(id){
-      store.state.all.find(p => p.id === id).explanation = 'Пересечение';
-      store.state.all.find(p => p.id === id).status = 'Отказ';
-    },
-
     showRec(){
       this.clickEvent++;
       let clickedIndex = this.myChart.getActiveElements()[0].index;
@@ -275,10 +266,9 @@ export default {
       this.myChart.setActiveElements([
         {datasetIndex: index[1], index: this.myChart.data.labels.indexOf(index[0])},
       ]);
-      console.log(index)
       this.myChart.options.scales.x.min = index[2] + '-01-01';
       this.myChart.options.scales.x.max = index[2] + '-12-31';
-      store.state.year = index[2];
+      store.commit('changeYear', index[2]);
       this.myChart.update();
       document.getElementById('myChart') .focus();
     },

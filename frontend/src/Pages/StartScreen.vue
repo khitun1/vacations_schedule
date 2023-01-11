@@ -40,7 +40,7 @@ export default {
 .login{
   position: absolute;
   top: 150px;
-  right: 350px;
+  right: 25%;
   height: 300px;
   display: flex;
   flex-direction: column;
@@ -61,8 +61,8 @@ h3
   position: absolute;
   width: 96%;
   top: 80px;
-  height: 89.1%;
-  left: 20px;
+  height: 89%;
+  left: 2%;
   background: white;
   border-radius: 10px;
 }
@@ -77,14 +77,16 @@ input
 
 .gif
 {
-  height: 500px;
-  overflow: hidden
+  height: 70%;
+  overflow: hidden;
 }
+
+
 
 .gif img
 {
   position: relative;
-  left: 100px;
+  left: 10%;
   width: fit-content;
   height: fit-content;
 }
@@ -99,5 +101,19 @@ input
   left: -5px;
   bottom: 10px;
 }
+
+@media screen and (max-width: 800px) { /* Для цветных экранов */
+  .gif {
+    display: none;
+  }
+
+  .login{
+    top: 10%;
+    left: 30%;
+    right: 30%;
+    height: 300px;
+  }
+}
+
 
 </style>

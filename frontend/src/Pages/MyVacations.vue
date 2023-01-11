@@ -18,15 +18,15 @@
             :records="$store.state.myVacations.filter(p => p.status === 'Использовано')"/>
       </div>
     </div>
-    <div v-show="!calendarShow">
+    <div v-show="!calendarShow"  class="Main">
       <button-back @click="calendarShow = true"
                   class="back"/>
       <div class="calendarShow">
-        <v-calendar is-range :rows="2" :columns="3"
+        <v-calendar :rows="2" :columns="3"
                        :attributes="attrs"
                        :disabled-dates="dis"
-                       style="filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25))"/>
-        <div style="margin: -20px 0 0 30px">
+                       class="vCalendar"/>
+        <div class="inside">
           <h2 style="margin-top: -20px">Осталось отпускных дней: {{$store.getters.left}}</h2>
           <div class="prog">
             <div class="progBar"/>
@@ -52,7 +52,7 @@
         </div>
         <div class="colour">
           <div style="background: #e2e8f0"/>
-          <p>Пожелания</p>
+          <p>Желаемые даты</p>
         </div>
       </div>
     </div>
@@ -96,7 +96,7 @@ export default {
       store.state.myVacations.forEach(p => dis.push(this.disDates(p)));
       store.state.wishes.forEach(p => dis.push(this.disDates(p)));
       return dis;
-    }
+    },
   },
 
 
@@ -126,6 +126,10 @@ export default {
 </script>
 
 <style scoped>
+.Main {
+  height: 600px;
+}
+
 .prog
 {
   width: 300px;
@@ -170,7 +174,6 @@ export default {
   background: white;
   border-radius: 40px;
   color: black;
-
 }
 
 .calendar img
@@ -219,6 +222,10 @@ export default {
   height: 30px;
 }
 
+.vCalendar {
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
+}
+
 .colour
 {
   display: flex;
@@ -230,6 +237,108 @@ export default {
   margin-left: 10px;
   font-size: 16px;
   top: -10px;
+}
+
+.inside {
+  margin: -20px 0 0 30px
+}
+
+@media screen and (max-width: 1460px) {
+  .inside{
+    position: absolute;
+    top: 50px;
+  }
+
+  .vCalendar {
+    top: 200px;
+  }
+  .colours
+  {
+    flex-flow: row wrap;
+    position: relative;
+    top: -360px;
+    left: 12px;
+  }
+
+  .colour div
+  {
+    width: 30px;
+    height: 30px;
+  }
+
+  .colour
+  {
+    display: flex;
+    margin-right: 10px;
+  }
+
+  .colour p
+  {
+    position: relative;
+    margin-left: 10px;
+    font-size: 16px;
+    top: -10px;
+  }
+  @media screen and (max-width: 1100px) {
+    .colours {
+      width: 700px;
+    }
+    .vCalendar {
+      top: 240px;
+    }
+    .Main {
+      height: 1300px;
+    }
+    @media screen and (max-width: 1000px) {
+      .colours {
+          width: fit-content;
+      }
+      .calendar {
+        margin-right: -90px;
+      }
+        @media screen and (max-width: 950px) {
+          .calendar {
+            margin-right: -80px;
+          }
+          @media screen and (max-width: 900px) {
+            .calendar {
+              margin-right: -80px;
+            }
+            @media screen and (max-width: 850px) {
+              .calendar {
+                margin-right: -60px;
+              }
+              @media screen and (max-width: 800px) {
+                .calendar {
+                  margin-right: -30px;
+                }
+                @media screen and (max-width: 715px) {
+                  .calendar p {
+                    display: none;
+                  }
+                  .calendar {
+                    top: -10px;
+                    width: fit-content;
+                    left: 105%;
+                    background: none;
+                  }
+                  @media screen and (max-width: 600px) {
+                    .calendar {
+                      left: 100%;
+                    }
+                    @media screen and (max-width: 510px) {
+                      .vCalendar {
+                        top: 290px;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+        }
+      }
+    }
+  }
 }
 
 </style>

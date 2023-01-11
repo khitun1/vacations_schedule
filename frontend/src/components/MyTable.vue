@@ -4,7 +4,8 @@
        :key="rec.id"
        @mouseover="visible = rec.id" @mouseleave="visible = false">
       <div class="info" v-bind:style="{background: setColor(rec.status)}">
-        <pre>{{rec.start}} - {{rec.end}}      кол-во дней: {{totalDays(rec.start, rec.end)}}          </pre>
+        <p class="dates">{{rec.start}} - {{rec.end}}</p>
+        <p class="amount">кол-во дней: {{totalDays(rec.start, rec.end)}}          </p>
         <div class="status"
              v-bind:style="{
           borderColor: setBorder(rec.status),
@@ -115,8 +116,7 @@ img
   justify-content: flex-start;
   margin-bottom: 10px;
   margin-right: 50px;
-  width: 600px;
-
+  width: 50%;
 }
 
 .del
@@ -132,18 +132,27 @@ pre
   margin-left: 10px;
 }
 
+.dates {
+  width: 200px;
+}
+
+.amount {
+  width: 130px;
+}
+
 
 .info
 {
   left: 0;
   display: flex;
   justify-content: space-between;
-  width: 500px;
+  width: 87%;
   padding: 5px;
   border-radius: 10px;
   cursor: default;
   color: #595959;
 }
+
 
 .status
 {
@@ -154,8 +163,9 @@ pre
   padding-left: 10px;
   padding-right: 10px;
   text-align: center;
-  margin-top: 12px;
+  margin-top: 14px;
   margin-right: 10px;
+  width: 100px;
 }
 
 .exp
@@ -176,6 +186,29 @@ pre
 .exp h4
 {
   color: #d70000;
+}
+
+@media screen and (max-width: 1400px) {
+  .rec {
+    width: 70%;
+  }
+  @media screen and (max-width: 1000px) {
+    .rec {
+      width: 80%;
+    }
+  }
+}
+
+
+
+@media screen and (max-width: 715px) {
+  .rec {
+    width: 100%;
+  }
+
+  .amount {
+    display: none;
+  }
 }
 
 </style>

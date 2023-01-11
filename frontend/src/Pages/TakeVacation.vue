@@ -53,7 +53,7 @@
       </div>
       <div class="colour">
         <div style="background: #e2e8f0"/>
-        <p>Пожелания</p>
+        <p>Желаемые даты</p>
       </div>
     </div>
   </sample-page>
@@ -170,10 +170,8 @@ export default {
             paid: this.paid[store.state.wishes.indexOf(p)] ? 'Да' : 'Нет',
             status: 'Ожидание',
           }
-          store.getters.left -= this.totalDays(record.start, record.end);
           store.commit('addVacation', record);
         })
-        this.selectedAttrs = [];
         store.commit('clearWishes');
       }
       else (alert('Выбрано больше дней, чем доступно!'));

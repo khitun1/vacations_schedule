@@ -1,51 +1,34 @@
 <template>
-    <div class="menu" >
-      <router-link to="requestVacation">
-        <button class="take"
-                @mouseover="hover0=true"
-                @mouseleave="hover0=false"
-                :style="choice === 'takeVacation' || hover0 ? { backgroundColor: '#E2E2E2' } : { backgroundColor: '#f6f6f6' }">
+      <router-link to="requestVacation" class="link">
+        <button class="pick take" title="Планировщик">
           <img src="@/images/Plus.png"/>
           <p>Планировщик отпусков</p>
         </button>
       </router-link>
-      <router-link to="myVacations">
-        <button class="mine"
-                @mouseover="hover1=true"
-                @mouseleave="hover1=false"
-                :style="choice === 'myVacations' || hover1 ? { backgroundColor: '#E2E2E2' } : { backgroundColor: '#f6f6f6' }">
+      <router-link to="myVacations" class="link">
+        <button class="pick mine" title="Мои отпуска">
           <img src="@/images/VacationIcon.png"/>
           <p>Мои отпуска</p>
         </button>
       </router-link>
-      <router-link to="allVacations" v-if="$store.state.currentUser.isAdmin">
-        <button class="employees"
-                @mouseover="hover2=true"
-                @mouseleave="hover2=false"
-                :style="choice === 'allVacations' || hover2 ? { backgroundColor: '#E2E2E2' } : { backgroundColor: '#f6f6f6' }">
-        <img src="@/images/CalendarIcon.png"/>
-        <p>Отпуска сотрудников</p>
-      </button>
-        </router-link>
-      <router-link to="admin" v-if="$store.state.currentUser.isAdmin">
-        <button class="admin"
-                @mouseover="hover3=true"
-                @mouseleave="hover3=false"
-                :style="choice === 'admin' || hover3 ? { backgroundColor: '#E2E2E2' } : { backgroundColor: '#f6f6f6' }">
-        <img src="@/images/LetterIcon.png"/>
-        <p>Админ</p>
-       </button>
+      <router-link to="allVacations" v-if="$store.state.currentUser.isAdmin" class="link">
+        <button class="pick all" title="Отпуска сотрудников">
+          <img src="@/images/CalendarIcon.png"/>
+          <p>Отпуска сотрудников</p>
+        </button>
       </router-link>
-      <router-link to="settings">
-        <button class="settings"
-                @mouseover="hover4=true"
-                @mouseleave="hover4=false"
-                :style="choice === 'settings' || hover4 ? { backgroundColor: '#E2E2E2' } : { backgroundColor: '#f6f6f6' }">
-        <img src="@/images/SettingsIcon.png"/>
-        <p>Настройки</p>
-      </button>
-        </router-link>
-    </div>
+      <router-link to="admin" v-if="$store.state.currentUser.isAdmin" class="link">
+        <button class="pick admin" title="Админ">
+          <img src="@/images/LetterIcon.png"/>
+          <p>Админ</p>
+        </button>
+      </router-link>
+      <router-link to="settings" class="link">
+        <button class="pick settings" title="Настройки">
+          <img src="@/images/SettingsIcon.png"/>
+          <p>Настройки</p>
+        </button>
+      </router-link>
 </template>
 
 <script>
@@ -54,11 +37,6 @@ export default {
 
   data(){
     return{
-      hover0: false,
-      hover1: false,
-      hover2: false,
-      hover3: false,
-      hover4: false,
     }
   },
 
@@ -67,24 +45,38 @@ export default {
       type: String,
       requested: true,
     },
-  }
+  },
+
+  computed: {
+    take(){
+      return this.choice === 'takeVacation' ? '#e2e2e2': 'none';
+    },
+    mine(){
+      return this.choice === 'myVacations' ? '#e2e2e2': 'none';
+    },
+    all(){
+      return this.choice === 'allVacations' ? '#e2e2e2': 'none';
+    },
+    admin(){
+      return this.choice === 'admin' ? '#e2e2e2': 'none';
+    },
+    settings(){
+      return this.choice === 'settings' ? '#e2e2e2': 'none';
+    },
+  },
 }
 </script>
 
 <style scoped>
-.menu
-{
-  position: absolute;
-  top: 120px;
-  width: 240px;
-  display: flex;
-  flex-direction: column;
-  height: fit-content;
-  border-radius: 15px;
+.link {
+  text-decoration: none;
 }
 
-.menu button
-{
+
+
+.pick {
+  display: flex;
+  justify-content: left;
   height: 60px;
   width: 260px;
   cursor: pointer;
@@ -92,24 +84,83 @@ export default {
   margin-bottom: 10px;
   font-size: 16px;
   border-radius: 25px;
+  background: none;
 }
 
-.menu img
-{
-  position: absolute;
-  left: 15px;
-  margin-top: 10px;
-  height: 30px;
-  width: 30px;
+.take {
+  background: v-bind(take);
 }
 
-p
-{
+.mine {
+  background: v-bind(mine);
+}
+
+.all {
+  background: v-bind(all);
+}
+
+.admin {
+  background: v-bind(admin);
+}
+
+.settings {
+  background: v-bind(settings);
+}
+
+.pick:hover {
+  background: #E2E2E2;
+}
+
+
+.pick img {
   position: relative;
-  left: 50px;
-  text-align: left;
+  top: 15px;
+  left: 5px;
+  margin-right: 20px;
 }
 
+.pick p {
+  margin-top: 18px;
+}
+
+
+
+@media screen and (max-width: 1000px) {
+
+  .pick {
+    height: 50px;
+    width: 50px;
+  }
+
+  .pick p {
+    display: none;
+  }
+
+  .pick img {
+    top: 11px;
+    left: 6px;
+  }
+
+  .take {
+    background: v-bind(take);
+  }
+
+  .mine {
+    background: v-bind(mine);
+  }
+
+  .all {
+    background: v-bind(all);
+  }
+
+  .admin {
+    background: v-bind(admin);
+  }
+
+  .settings {
+    background: v-bind(settings);
+  }
+}
 
 
 </style>

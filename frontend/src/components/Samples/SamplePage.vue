@@ -1,7 +1,7 @@
 <template>
   <sample-hat/>
     <div class="main">
-      <div class="bar" :style="{height: 'this.$refs.info.clientHeight'}">
+      <div class="bar">
         <sample-nav-bar :choice="choice"/>
       </div>
       <div class="info">
@@ -29,7 +29,6 @@ export default {
     },
   },
 
-
 }
 </script>
 
@@ -56,15 +55,59 @@ img
   position: relative;
   width: 80%;
   padding-left: 10px;
+  height: fit-content;
 }
 
-.bar
-{
-  width: 300px;
+.bar {
   background: #f6f6f6;
-  padding-left: 10px;
   border-radius: 10px 0 0 10px;
+  padding: 10px;
 }
 
+
+@media screen and (max-width: 715px) {
+  .bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    position: fixed;
+    height: 40px;
+    bottom: -2px;
+    background: #b6b6b6;
+    width: 93.9%;
+    border-radius: 0 0 10px 10px;
+    z-index: 1;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .bar {
+    width: 93.8%;
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .bar {
+    width: 93.6%;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .bar {
+    width: 93.4%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .bar {
+    width: 93%;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .bar {
+    width: 92.5%;
+  }
+}
 
 </style>

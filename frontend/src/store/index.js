@@ -97,7 +97,6 @@ export default createStore({
             let val = state.myVacations.filter(p => p.status !== 'Отказ' && p.status !== 'Удалено');
             val.forEach(p => {
                 total += moment(p.end, 'DD.MM.YYYY').diff(moment(p.start, 'DD.MM.YYYY'), 'days') + 1;
-                console.log(total)
             });
             return state.total - total;
         },

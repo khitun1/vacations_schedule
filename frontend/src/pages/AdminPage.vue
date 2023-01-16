@@ -6,8 +6,7 @@
           :deps="$store.state.departments.sort((a, b) => a.name > b.name ? 1 : -1)"/>
       <set-data
           :deps="$store.state.departments.sort((a, b) => a.name > b.name ? 1 : -1)"
-          :types="$store.state.types.sort((a, b) => a.name > b.name ? 1 : -1)"
-          @changeCon="setCon"/>
+          :types="$store.state.types.sort((a, b) => a.name > b.name ? 1 : -1)"/>
     </div>
   </sample-page>
 </template>
@@ -24,15 +23,6 @@ export default {
     SamplePage,
     AddUser,
     SetData,
-  },
-
-  data(){
-    return {
-
-    }
-  },
-
-  methods: {
   },
 }
 </script>

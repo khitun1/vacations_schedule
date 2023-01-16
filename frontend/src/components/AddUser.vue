@@ -34,22 +34,11 @@
                         :show-no-results="false"
                         placeholder="Выберите отдел"
                         :show-labels="false"/>
-<!--        <my-select class="selector" v-model="user.department"-->
-<!--                   v-bind:style="{boxShadow: user.department === '' && flag? color : ''}">-->
-<!--          <option selected value="" disabled>Выберите отдел</option>-->
-<!--          <option v-for="dep in deps"-->
-<!--                  :key="dep.id">-->
-<!--            <p>{{dep.name}}</p>-->
-<!--          </option>-->
-<!--        </my-select>-->
         <p class="error" v-show="error">{{ errorMsg }}</p>
         <div class="pair">
           <my-button class="create" @click="createUser">
             Добавить
           </my-button>
-<!--          <my-button class="cancel" @click="clear">-->
-<!--            Закрыть-->
-<!--          </my-button>-->
         </div>
       </div>
 

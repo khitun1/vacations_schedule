@@ -16,8 +16,8 @@ export function options() // config for chart
                 time: {
                     unit: 'month'
                 },
-                min: '2022-01-01',
-                max: '2022-12-31',
+                min: store.state.year + '-01-01',
+                max: store.state.year +'-12-31',
                 ticks: {
                     align: 'start',
                     stepSize: 1,

@@ -6,20 +6,21 @@
                      @click="showDate"
                      :attributes="attrs"
                      :disabled-dates="dis"
-                      style="filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25)); top: 60px; left: 10px"/>
-      <div style="margin: -20px 0 0 30px">
+                     class="calendar"/>
+      <div class="infoBar">
         <h2 style="margin-top: -20px">Осталось отпускных дней: {{$store.getters.left}}</h2>
         <div class="prog">
           <div class="progBar"/>
         </div>
       </div>
     </div>
-    <div style="margin-top: 100px">
+    <div class="wishesInfo">
       <h2>Выбранные даты</h2>
       <div class="wishes">
         <div class="wishesDates"
              v-for="wish in $store.state.wishes" :key="wish.id">
           <p>{{wish.start}} - {{wish.end}}</p>
+          <p class="pay">Оплачиваемость</p>
           <label class="checkbox">
             <input type="checkbox" class="check_input" v-model="paid[$store.state.wishes.indexOf(wish)]"/>
             <div class="check_div"/>
@@ -216,7 +217,7 @@ h2
 .wishes
 {
   position: relative;
-  width: 744px;
+  width: 80%;
   height: fit-content;
   min-height: 200px;
   background: white;
@@ -252,6 +253,7 @@ h2
 {
   position: relative;
   top: 7px;
+  left: 0%;
 }
 
 .check_div
@@ -305,6 +307,7 @@ h2
   background: #f3f3f3;
   height: 48px;
   justify-content: space-between;
+  flex-flow: row wrap;
   padding-left: 20px;
   padding-right: 20px;
   font-family: "Arial";
@@ -317,14 +320,16 @@ h2
   top: -10px;
   margin-bottom: 2px;
   padding: 0 15px 2px;
+  height: fit-content;
 }
 
 .colours
 {
   display: flex;
   flex-direction: row;
-  position: relative;
-  top: -640px;
+  flex-flow: row wrap;
+  position: absolute;
+  top: 100px;
   left: 30px;
   width: fit-content;
 }
@@ -347,6 +352,80 @@ h2
   margin-left: 10px;
   font-size: 16px;
   top: -10px;
+}
+
+.infoBar {
+  margin: -20px 0 0 30px;
+}
+
+.calendar {
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
+  top: 60px;
+  left: 10px;
+}
+
+.wishesInfo {
+  margin-top: 100px
+}
+
+@media screen and (max-width: 1470px) {
+  .infoBar {
+    position: absolute;
+    left: 0;
+    top: 120px;
+  }
+  .calendar {
+    top: 160px;
+    margin-bottom: 100px;
+  }
+  .colours {
+    top: 180px;
+  }
+  @media screen and (max-width: 1250px) {
+    .wishes {
+      width: 95%;
+    }
+    @media screen and (max-width: 1100px){
+      .calendar {
+        top: 200px;
+        margin-bottom: 120px;
+      }
+
+      .colours {
+        width: 700px;
+      }
+      @media screen and (max-width: 1080px) {
+        .wishesDates {
+          height: 100px;
+        }
+        .wishes {
+          width: 85%;
+        }
+        .colours {
+        }
+        @media screen and (max-width: 1000px) {
+          .wishes {
+            width: 100%;
+          }
+          .wishesDates {
+            height: fit-content;
+          }
+          @media screen and (max-width: 630px) {
+            .colours {
+              width: 500px;
+            }
+          }
+          @media screen and (max-width: 550px) {
+            .pay {
+              display: none;
+            }
+          }
+        }
+      }
+
+    }
+  }
+
 }
 
 </style>

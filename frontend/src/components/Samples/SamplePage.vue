@@ -42,6 +42,7 @@ export default {
   margin-left: 6px;
   width: 99%;
   min-height: 650px;
+  margin-bottom: 50px;
 }
 
 img
@@ -56,6 +57,7 @@ img
   width: 80%;
   padding-left: 10px;
   height: fit-content;
+
 }
 
 .bar {
@@ -76,7 +78,7 @@ img
     background: #b6b6b6;
     width: 93.9%;
     border-radius: 0 0 10px 10px;
-    z-index: 1;
+    z-index: 2;
   }
 }
 

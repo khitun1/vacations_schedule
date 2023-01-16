@@ -18,10 +18,10 @@
       <h2>Список отделов</h2>
       <div class="rec"
            v-for="dep in activeDeps" :key="dep.id">
-        <input id="nameDep" :readonly="readDep" :value="dep.name">
+        <input id="nameDep" class='classNameDep' name=dep.name :readonly="readDep" :value="dep.name">
         <button-icon class="edit"
                        v-if="changeDep !== dep.id"
-                       @click="changeDep = dep.id; readDep = false">
+                       @click="focus(dep.id, dep.name, 'dep')">
           <img src="@/images/EditIcon.png">
         </button-icon>
         <button class="accept"
@@ -51,10 +51,10 @@
       <h2>Типы отпусков</h2>
         <div class="rec"
              v-for="type in activeTypes" :key="type.id">
-          <input id="nameType" :readonly="readType" :value="type.name">
+          <input id="nameType" class="classNameType" :readonly="readType" :value="type.name">
           <button-icon class="edit"
                        v-if="changeType !== type.id"
-                       @click="changeType = type.id; readType = false">
+                       @click="focus(type.id, type.name, 'type')">
             <img src="@/images/EditIcon.png">
           </button-icon>
           <button class="accept"
@@ -190,6 +190,20 @@ export default {
   },
 
   methods: {
+    focus(id, name, type) {
+      if (type === 'dep') {
+        const index = this.activeDeps.findIndex(p => p.name === name);
+        document.getElementsByClassName('classNameDep')[index].focus();
+        this.changeDep = id;
+        this.readDep = false;
+      }
+      else {
+        const index = this.activeTypes.findIndex(p => p.name === name);
+        document.getElementsByClassName('classNameType')[index].focus();
+        this.changeType = id;
+        this.readType = false;
+      }
+    },
 
     create() {
       this.newOne.id = Date.now();
@@ -427,6 +441,7 @@ form
   justify-content: space-between;
   align-items: center;
   padding-left: 10px;
+  flex-flow: row wrap;
 }
 
 .conditions p

@@ -17,7 +17,7 @@
       <p>Логин:</p>
       <div class="text">
         <my-input :readonly="changeLogin"
-                  v-model="newLogin"/>
+                  v-model="newLogin" class="inputLogin"/>
       </div>
       <my-button class="change" @click="changeLog">
         {{ textLogBtn }}
@@ -27,7 +27,7 @@
       <p>Пароль:</p>
       <div class="text">
         <my-input :readonly="changePassword" :type="typePassword"
-                  v-model="newPassword"/>
+                  v-model="newPassword" class="inputPassword"/>
         <button-icon class="watch" @click="typePassword = typePassword === 'text'? 'password' : 'text'"  >
           <img src="@/images/WatchIcon.png">
         </button-icon>
@@ -72,6 +72,7 @@ export default {
   },
   methods: {
     changePas(){
+      document.getElementsByClassName('inputPassword')[0].focus();
       if(this.changePassword === true) this.textPasBtn = 'Подтвердить';
       else{
         store.commit('changePassword', this.newPassword);
@@ -81,6 +82,7 @@ export default {
     },
 
     changeLog(){
+      document.getElementsByClassName('inputLogin')[0].focus();
       if(this.changeLogin === true)  this.textLogBtn = 'Подтвердить';
       else
       {

@@ -25,7 +25,8 @@
       <my-button @click="expVis=false; this.explanation = ''">Отменить</my-button>
     </form>
     <h2>График отпусков</h2>
-    <div class="block" v-show="$store.getters.vacations.length === 0"></div>
+    <h3 v-show="$store.getters.vacations.length > 0" class="year">{{$store.state.year}} г.</h3>
+    <div class="block" v-if="$store.getters.vacations.length === 0"></div>
     <div class="chart">
       <canvas id="myChart"
               :style="{height: height + 'px'}"
@@ -300,28 +301,29 @@ export default {
   margin-bottom: 20px;
   filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
   outline: none;
+
 }
 
 .chart
 {
-  width: fit-content;
+  width: 95%;
   margin-top: v-bind(indent + 'px');
   height: fit-content;
   position: relative;
   top: v-bind(top);
   z-index: 0;
+
 }
 
 #myChart
 {
-  width: 1100px;
   height: v-bind(height);
 }
 
 .block
 {
   position: relative;
-  width: 1110px;
+  width: 100%;
   background: white;
   height: 300px;
   z-index: 1;
@@ -362,6 +364,19 @@ textarea
   background: #8482FF;
   color: #FCFF7C;
   font-size: 16px;
+}
+
+.year {
+  position: relative;
+  left: 5%;
+  margin-bottom: -25px;
+  width: fit-content;
+}
+
+@media screen and (max-width: 800px) {
+  .year {
+    margin-bottom: 0;
+  }
 }
 
 </style>

@@ -9,9 +9,6 @@
           tabindex="-1">
       <div class="info" v-bind:style="{background: vac.intersections === 'Нет'? '#d9ccff': '#ffd8d1'}">
         <button class="withOutInter" @click="showData(vac)">
-<!--          <p class="name">-->
-<!--            {{vac.surname}} {{vac.name}} {{vac.lastname}}-->
-<!--          </p>-->
           <p style="width: 150px">
             {{ vac.start }} - {{ vac.end }}
           </p>
@@ -145,8 +142,9 @@ export default {
 .rec
 {
   display: flex;
+  align-items: center;
   margin: 10px 0 10px 10px;
-  width: 100%;
+  width: 95%;
   background: none;
   border-width: 0;
 }
@@ -190,13 +188,6 @@ p
   margin-right: 5px;
 }
 
-.name
-{
-  width: 250px;
-  margin-left: 10px;
-  text-align: left;
-}
-
 .dec
 {
   margin-left: 20px;
@@ -204,7 +195,6 @@ p
   font-weight: bold;
   font-size: 22px;
   border-width: 0;
-  background: gray;
   cursor: pointer;
   border-radius: 5px;
 }
@@ -231,7 +221,7 @@ textarea
   border-radius: 10px;
   margin-bottom: 10px;
   margin-left: 15px;
-  width: 63%;
+  width: 65%;
 }
 
 .rec:focus
@@ -241,8 +231,30 @@ textarea
 
 .btns
 {
-  width: 180px;
+  position: absolute;
+  right: 10px;
   text-align: right;
+}
+
+@media screen and (max-width: 1400px) {
+  .inters {
+    display: none;
+  }
+  @media screen and (max-width: 1000px) {
+    .person {
+      width: 100%;
+    }
+    @media screen and (max-width: 580px) {
+      .person {
+        width: 108%;
+      }
+      @media screen and (max-width: 540px) {
+        .info {
+          height: 65px;
+        }
+      }
+    }
+  }
 }
 
 </style>

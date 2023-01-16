@@ -6,7 +6,7 @@ export default createStore({
     state: {
         currentUser: {
             id: 1, surname: 'Adams', name: 'John', lastname: 'Jack', login: 'Flash', password: 'qwerty',
-            department: 'Developers', daysLeft: 10, isAdmin: false,
+            department: 'Developers', daysLeft: 10, isAdmin: true,
         },
         myVacations: [
             {id: 1, start: '02.01.2023', end: '09.01.2023', dateRequest: '01.06.2021', paid: 'Да', status: 'Утверждено',},
@@ -46,7 +46,7 @@ export default createStore({
             {id: 1111, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '01.01.2023', end: '20.01.2023',
                 paid: 'Да', department: 'first', number: 1,
                 intersections: 'Нет', status: 'Ожидание',},
-            {id: 22, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '02.02.2022', end: '20.02.2022',
+            {id: 22, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '02.02.2024', end: '20.02.2024',
                 paid: 'Нет', department: 'first', number: 2,
                 intersections: 'Да', status: 'Ожидание',},
             {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.03.2022', end: '20.03.2022',
@@ -170,7 +170,7 @@ export default createStore({
             state.year = year;
         },
         getAdmin(state, login) {
-            state.currentUser.isAdmin = login === '1';
+            state.currentUser.isAdmin = login !== '1';
         },
         addVacation(state, record) {
             state.myVacations.push(record);

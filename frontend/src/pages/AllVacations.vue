@@ -24,8 +24,12 @@
       <my-button @click="explain(id)">Отправить</my-button>
       <my-button @click="expVis=false; this.explanation = ''">Отменить</my-button>
     </form>
-    <h2>График отпусков</h2>
-    <h3 v-show="$store.getters.vacations.length > 0" class="year">{{$store.state.year}} г.</h3>
+    <h2 v-show="$store.getters.vacations.length > 0">График отпусков</h2>
+    <div class="changeYear" v-show="$store.getters.vacations.length > 0">
+      <button @click="prevYear ">&#60;</button>
+      <h3 class="year">{{$store.state.year}} г.</h3>
+      <button @click="nextYear">&#62;</button>
+    </div>
     <div class="block" v-if="$store.getters.vacations.length === 0"></div>
     <div class="chart">
       <canvas id="myChart"
@@ -91,6 +95,18 @@ export default {
   },
 
   methods:{
+    prevYear() {
+      store.commit('prevYear');
+      this.myChart.options.scales.x.min = store.state.year + '-01-01';
+      this.myChart.options.scales.x.max = store.state.year + '-12-31';
+      this.myChart.update();
+    },
+    nextYear() {
+      store.commit('nextYear');
+      this.myChart.options.scales.x.min = store.state.year + '-01-01';
+      this.myChart.options.scales.x.max = store.state.year + '-12-31';
+      this.myChart.update();
+    },
     getDates(number){ // get vacation range
       let dates = [];
       dates.push(moment(store.getters.vacations[number].start, 'DD.MM.YYYY').format('YYYY-MM-DD'));
@@ -192,7 +208,7 @@ export default {
     },
 
     intersection(i){ // find intersection
-      let quarter = Math.floor(this.percent * store.state.departments.find(p => p.name === store.getters.vacations[i].department).amounts);
+      let quarter = Math.floor(this.percent * store.state.users.filter(p => p.department === store.state.selectedDep).length);
       let range;
       for (let j = 0; j < i; j++){
         if(!this.findIntersection(i,j)) {
@@ -366,15 +382,24 @@ textarea
   font-size: 16px;
 }
 
-.year {
-  position: relative;
-  left: 5%;
-  margin-bottom: -25px;
-  width: fit-content;
+.changeYear {
+  display: flex;
+  flex-direction: row;
+  cursor: default;
 }
 
+.changeYear button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+
+
+
 @media screen and (max-width: 800px) {
-  .year {
+  .changeYear {
     margin-bottom: 0;
   }
 }

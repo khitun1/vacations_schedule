@@ -83,22 +83,22 @@
       <div class="conditions">
         <div>
           <p>Минимальное кол-во дней отпуска:</p>
-          <my-input v-model="condition.min" :readonly="changeMin"/>
+          <my-input v-model="condition.min" :readonly="changeMin" class="minDays"/>
           <my-button @click="selectedDep !== ''? setCon(1): 0">{{minText}}</my-button>
         </div>
         <div>
           <p>Максимальное кол-во дней отпуска:</p>
-          <my-input v-model="condition.max" :readonly="changeMax"/>
+          <my-input v-model="condition.max" :readonly="changeMax" class="maxDays"/>
           <my-button @click="selectedDep !== ''? setCon(2): 0">{{maxText}}</my-button>
         </div>
         <div>
           <p>Всего дней для отпуска:</p>
-          <my-input v-model="condition.total" :readonly="changeTotal"/>
+          <my-input v-model="condition.total" :readonly="changeTotal" class="totalDays"/>
           <my-button @click="selectedDep !== ''? setCon(3): 0">{{totalText}}</my-button>
         </div>
         <div>
           <p>% максимально допустимых одновременных отпусков:</p>
-          <my-input v-model="condition.percent" :readonly="changePercent"/>
+          <my-input v-model="condition.percent" :readonly="changePercent" class="percentsDays"/>
           <my-button @click="selectedDep !== ''? setCon(4): 0">{{percentText}}</my-button>
         </div>
       </div>
@@ -255,6 +255,7 @@ export default {
           else
           {
             this.changeMin = false;
+            document.getElementsByClassName('minDays')[0].focus();
             this.minText =  'Подтвердить';
           }
           break;
@@ -279,6 +280,7 @@ export default {
           else
           {
             this.changeMax = false;
+            document.getElementsByClassName('maxDays')[0].focus();
             this.maxText =  'Подтвердить';
           }
           break;
@@ -296,6 +298,7 @@ export default {
           else
           {
             this.changeTotal = false;
+            document.getElementsByClassName('totalDays')[0].focus();
             this.totalText =  'Подтвердить';
           }
           break;
@@ -313,6 +316,7 @@ export default {
           else
           {
             this.changePercent = false;
+            document.getElementsByClassName('percentsDaysDays')[0].focus();
             this.percentText =  'Подтвердить';
           }
           break;

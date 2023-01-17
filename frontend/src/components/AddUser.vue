@@ -25,7 +25,8 @@
                     v-model="user.password"
                     v-bind:style="{boxShadow: user.password === '' && flag? color : ''}"/>
           <button-icon style="top: 8px; left: 15px" @click="typePassword = typePassword === 'text'? 'password': 'text'">
-            <img src="@/images/WatchIcon.png" />
+            <img src="@/images/WatchIcon.png" v-show="typePassword === 'text'"/>
+            <img src="@/images/closePassword.webp" v-show="typePassword !== 'text'">
           </button-icon>
         </div>
         <VueMultiselect class="selectDep"

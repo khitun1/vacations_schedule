@@ -49,22 +49,22 @@ export default createStore({
             {id: 22, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '02.02.2024', end: '20.02.2024',
                 paid: 'Нет', department: 'first', number: 2,
                 intersections: 'Да', status: 'Ожидание',},
-            {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.03.2022', end: '20.03.2022',
+            {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.03.2023', end: '20.03.2023',
                 paid: 'Да', department: 'first', number: 1,
                 intersections: 'Нет', status: 'Принято',},
-            {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.07.2022', end: '20.08.2022',
+            {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.07.2023', end: '20.08.2023',
                 paid: 'Да', department: 'first', number: 2,
                 intersections: 'Нет', status: 'Принято',},
-            {id: 220, surname: 'Ивановa', name: 'Владислав', lastname: 'Андреевич', start: '01.04.2022', end: '20.04.2022',
+            {id: 220, surname: 'Ивановa', name: 'Владислав', lastname: 'Андреевич', start: '01.04.2023', end: '20.04.2023',
                 paid: 'Нет', department: 'first', number: 1,
                 intersections: 'Да', status: 'Ожидание',},
-            {id: 120, surname: 'Алиевa', name: 'Иван', lastname: 'Михайлович', start: '01.05.2022', end: '20.05.2022',
+            {id: 120, surname: 'Алиевa', name: 'Иван', lastname: 'Михайлович', start: '01.05.2023', end: '20.05.2023',
                 paid: 'Да', department: 'first', number: 1,
                 intersections: 'Нет', status: 'Ожидание',},
-            {id: 222, surname: 'Семеренко', name: 'Владислав', lastname: 'Андреевич', start: '01.06.2022', end: '20.06.2022',
+            {id: 222, surname: 'Семеренко', name: 'Владислав', lastname: 'Андреевич', start: '01.06.2023', end: '20.06.2023',
                 paid: 'Нет', department: 'first', number: 1,
                 intersections: 'Да', status: 'Принято',},
-            {id: 122, surname: 'Шарипов', name: 'Иван', lastname: 'Михайлович', start: '05.05.2022', end: '11.11.2022',
+            {id: 122, surname: 'Шарипов', name: 'Иван', lastname: 'Михайлович', start: '05.05.2023', end: '11.11.2023',
                 paid: 'Да', type: '', dateRequest: '', department: 'sdgsg', number: 1,
                 intersections: 'Нет', explanation: '', status: 'Ожидание', comment: '', countries: '',},
             {id: 2222, surname: 'Михайлов', name: 'Владислав', lastname: 'Андреевич', start: '01.01.2022', end: '02.02.2022',
@@ -89,7 +89,13 @@ export default createStore({
             {id: 2, name: 'second'},
             {id: 3, name: 'third'},
         ],
-        users: [],
+        users: [
+            {id: 1, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', department: 'first',},
+            {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', department: 'first',},
+            {id: 13, surname: 'Ивановa', name: 'Владислав', lastname: 'Андреевич', department: 'first',},
+            {id: 14, surname: 'Алиевa', name: 'Иван', lastname: 'Михайлович', department: 'first',},
+            {id: 15, surname: 'Семеренко', name: 'Владислав', lastname: 'Андреевич', department: 'first',},
+        ],
         wishes: [],
 
         selectedID: Number,
@@ -183,6 +189,12 @@ export default createStore({
         },
         clearWishes(state) {
             state.wishes = [];
+        },
+        prevYear(state) {
+          state.year--;
+        },
+        nextYear(state) {
+            state.year++;
         },
 
     },

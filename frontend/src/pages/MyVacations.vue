@@ -22,7 +22,7 @@
       <button-back @click="calendarShow = true"
                   class="back"/>
       <div class="calendarShow">
-        <v-calendar :rows="2" :columns="3"
+        <v-calendar :rows="rows" :columns="columns"
                        :attributes="attrs"
                        :disabled-dates="dis"
                        class="vCalendar"/>
@@ -81,6 +81,8 @@ export default {
     return {
       width: (100 - store.getters.left / store.state.total * 100) + '%',
       calendarShow: true,
+      rows: 2,
+      columns: 3,
     }
   },
 
@@ -99,8 +101,13 @@ export default {
     },
   },
 
-
-    methods: {
+    created() {
+      window.addEventListener('resize', this.updateColumns);
+    },
+  methods: {
+      updateColumns() {
+        this.columns = window.innerWidth > 1100? 3 : window.innerWidth > 600 ? 2 : 1;
+      },
       chooseColor(rec){
         return {
           id: new Date(),
@@ -249,6 +256,10 @@ export default {
     top: 50px;
   }
 
+  .Main {
+    height: 900px;
+  }
+
   .vCalendar {
     top: 200px;
   }
@@ -281,13 +292,13 @@ export default {
   }
   @media screen and (max-width: 1100px) {
     .colours {
-      width: 700px;
+      width: 570px;
     }
     .vCalendar {
       top: 240px;
     }
     .Main {
-      height: 1300px;
+      height: 1000px;
     }
     @media screen and (max-width: 1000px) {
       .colours {

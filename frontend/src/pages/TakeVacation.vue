@@ -2,7 +2,7 @@
   <sample-page :choice="'takeVacation'">
     <h2 style="margin-top: 40px">Календарь отпусков</h2>
     <div style="display: flex">
-      <v-date-picker is-range :rows="1" :columns="3" v-model="date"
+      <v-date-picker is-range :rows="rows" :columns="columns" v-model="date"
                      @click="showDate"
                      :attributes="attrs"
                      :disabled-dates="dis"
@@ -94,14 +94,13 @@ export default {
     return {
 
       visibleTake: false,
-
       value: '',
       context: null,
-
       choice: {},
       date: null,
-
       paid: [],
+      rows: 2,
+      columns: 3,
     }
   },
 
@@ -110,8 +109,14 @@ export default {
     SamplePage,
   },
 
-  methods: {
+  created() {
+    window.addEventListener('resize', this.updateColumns);
+  },
 
+  methods: {
+    updateColumns() {
+      this.columns = window.innerWidth > 1100? 3 : window.innerWidth > 600 ? 2 : 1;
+    },
     showDate(){
       const cur_id = new Date();
       if (this.date !== null){
@@ -392,7 +397,7 @@ h2
       }
 
       .colours {
-        width: 700px;
+        width: 570px;
       }
       @media screen and (max-width: 1080px) {
         .wishesDates {
@@ -412,7 +417,7 @@ h2
           }
           @media screen and (max-width: 630px) {
             .colours {
-              width: 500px;
+              width: 400px;
             }
           }
           @media screen and (max-width: 550px) {

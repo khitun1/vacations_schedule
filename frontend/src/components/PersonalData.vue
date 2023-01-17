@@ -29,7 +29,8 @@
         <my-input :readonly="changePassword" :type="typePassword"
                   v-model="newPassword" class="inputPassword"/>
         <button-icon class="watch" @click="typePassword = typePassword === 'text'? 'password' : 'text'"  >
-          <img src="@/images/WatchIcon.png">
+          <img src="@/images/WatchIcon.png" v-show="typePassword === 'text'">
+          <img src="@/images/closePassword.webp" v-show="typePassword !== 'text'">
         </button-icon>
       </div>
       <my-button class="change" @click="changePas">

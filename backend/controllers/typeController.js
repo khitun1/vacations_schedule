@@ -1,21 +1,53 @@
 const {Type} = require('../models/models');
 const apiError = require('../error/apiError');
 class typeController {
-    async create(req, res) {
-        const {name} = req.body;
-        await Type.create({name});
-        return res.send('Ok!');
-    }
-    async getList(req, res) {
-        const types = await Type.findAll();
-        return res.send(types);
-    }
-
-    async change(req, res) {
+    async create(req, res, next) {
+        try {
+            const {name} = req.body;
+            await Type.create({name});
+            return res.send('Ok!');
+        } catch (e)
+        {
+            next(apiError.badRequest(e.message));
+        }
 
     }
+    async getList(req, res, next) {
+        try {
+            const types = await Type.findAll();
+            return res.send(types);
+        } catch (e)
+        {
+            next(apiError.badRequest(e.message));
+        }
 
-    async del(req,res) {
+    }
+
+    async change(req, res, next) {
+        try {
+            const {id, name} = req.body;
+            await Type.update({name: name}, {
+                where: {id}
+            });
+            return res.send("change is ok!");
+        } catch (e)
+        {
+            next(apiError.badRequest(e.message));
+        }
+
+    }
+
+    async del(req,res, next) {
+        try {
+            const {id} = req.body;
+            await Type.destroy({
+                where: {id}
+            })
+            return res.send("Del type");
+        } catch (e)
+        {
+            next(apiError.badRequest(e.message));
+        }
 
     }
 }

@@ -18,12 +18,14 @@
             @showWindow="show"
             @showRec="showData">
     </signature-table>
-    <form @submit.prevent class="failure" v-show="expVis">
-      <h3>Укажите причину отказа</h3>
-      <textarea v-model="explanation"></textarea>
-      <my-button @click="explain(id)">Отправить</my-button>
-      <my-button @click="expVis=false; this.explanation = ''">Отменить</my-button>
-    </form>
+    <dialog class="failure">
+      <form @submit.prevent>
+        <h2>Укажите причину отказа</h2>
+        <textarea v-model="explanation"></textarea>
+        <my-button @click="explain(id)">Отправить</my-button>
+        <my-button @click="cancelExplain">Отменить</my-button>
+      </form>
+    </dialog>
     <h2 v-show="$store.getters.vacations.length > 0">График отпусков</h2>
     <div class="changeYear" v-show="$store.getters.vacations.length > 0">
       <button @click="prevYear ">&#60;</button>
@@ -59,7 +61,6 @@ export default {
       intersections:  [],
       amount:  0,
       indent: 0,
-      expVis: false,
       explanation: '',
       id: 0,
       clickedName: '',
@@ -95,6 +96,10 @@ export default {
   },
 
   methods:{
+    cancelExplain() {
+      this.explanation = '';
+      document.querySelector('dialog').close();
+    },
     prevYear() {
       store.commit('prevYear');
       this.myChart.options.scales.x.min = store.state.year + '-01-01';
@@ -252,7 +257,7 @@ export default {
         }
         store.commit('shift', con);
       }
-      this.expVis = false;
+      document.querySelector('dialog').close();
       this.indent = 0;
       const rej = {
         id: this.id,
@@ -268,8 +273,8 @@ export default {
     },
 
     show(id){
+      document.querySelector('dialog').showModal();
       this.id = id;
-      this.expVis = true;
         if(store.getters.vacations.filter(p => p.status === 'Ожидание').length === 1) this.indent = 100;
     },
     showRec(){
@@ -348,16 +353,19 @@ export default {
 .failure
 {
   position: absolute;
-  top: 80px;
-  left: 300px;
   width: 400px;
-  height: 300px;
-  background: #be9cff;
-  color: #FCFF7C;
+  height: fit-content;
+  background: #ceb4ff;
+  color: #ffffff;
   border-width: 0;
   filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
   border-radius: 40px;
   text-align: center;
+  font-weight: lighter;
+}
+
+dialog::backdrop{
+  background: rgba(0, 0, 0, 0.6);
 }
 
 textarea
@@ -377,8 +385,6 @@ textarea
 {
   height: 30px;
   width: 120px;
-  background: #8482FF;
-  color: #FCFF7C;
   font-size: 16px;
 }
 

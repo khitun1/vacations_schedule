@@ -135,6 +135,7 @@ export default createStore({
             state.types.find(p => p.id === change.id).name = change.name;
         },
         addUser(state, user) {
+            user.isAdmin = user.isAdmin !== 'Обычный сотрудник';
             state.users.push(user);
         },
         changeLogin(state, login) {

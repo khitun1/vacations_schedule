@@ -35,6 +35,12 @@
                         :show-no-results="false"
                         placeholder="Выберите отдел"
                         :show-labels="false"/>
+        <VueMultiselect class="selectDep"
+                        v-model="user.isAdmin"
+                        :options="rights"
+                        :show-no-results="false"
+                        placeholder="Укажите права"
+                        :show-labels="false"/>
         <p class="error" v-show="error">{{ errorMsg }}</p>
         <div class="pair">
           <my-button class="create" @click="createUser">
@@ -74,6 +80,7 @@ export default {
 
   data() {
     return {
+      rights: ['Обычный сотрудник', 'Админ'],
       color: 'inset 0px 0px 5px red',
       user: {
         surname: '',
@@ -100,26 +107,20 @@ export default {
   methods: {
     createUser(){
       if(!this.user.surname && !this.user.name && !this.user.lastname
-      && !this.user.login && !this.user.password && !this.user.department)  return;
+      && !this.user.login && !this.user.password && !this.user.department && !this.user.isAdmin)  return;
       this.flag = true;
       if(!this.user.surname)  this.surname = 'Введите фамилию!';
       if(!this.user.name)  this.name = 'Введите имя!';
       if(!this.user.lastname)  this.lastname = 'Введите отчество!';
       if(!this.user.login)  this.log = 'Введите логин!';
       if(!this.user.password)  this.pas = 'Введите пароль!';
-      if(!this.user.department)  this.dep = 'Введите отдел!';
+      if(!this.user.department)  this.dep = 'Выберите отдел!';
+      if(!this.user.isAdmin)  this.dep = 'Укажите права!';
       else if(store.state.users.find(p => p.login === this.user.login))
       {
         this.errorMsg = 'Пользователь с таким логином уже есть!';
         this.error = true;
       }
-
-      else if (!this.deps.find(p => p.name === this.user.department))
-      {
-        this.errorMsg = 'Отдел с таким названием отсутствует!';
-        this.error = true;
-      }
-
       else {
         this.user.id = Date.now()
         store.commit('addUser', this.user);
@@ -128,14 +129,14 @@ export default {
     },
 
     clear(){
-      // this.user = {
-      //   surname: '',
-      //   name: '',
-      //   lastname: '',
-      //   login: '',
-      //   password: '',
-      //   department: '',
-      // };
+      this.user = {
+        surname: '',
+        name: '',
+        lastname: '',
+        login: '',
+        password: '',
+        department: '',
+      };
       // this.surname = 'Фамилия';
       // this.name = 'Имя';
       // this.lastname = 'Отчество';

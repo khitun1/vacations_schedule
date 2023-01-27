@@ -1,4 +1,5 @@
 const {User, Department, Vacations} = require('../models/models');
+const bcrypt = require('bcrypt');
 
 class UsersController {
     async getList(req, res, next) {
@@ -37,14 +38,20 @@ class UsersController {
     }
 
     async create(req, res, next) {
-        const {first_name, last_name, surname, left_days, login, md5password, is_admin, department} = req.body;
-        const departmentId = Department.findOne({
-            where: {
-                name: department
-            }
-        }).id;
-        await User.create({first_name, last_name, surname, left_days,
-            login, md5password, is_admin, departmentId});
+        try {
+            const {first_name, last_name, surname, left_days, login, password, is_admin, department} = req.body;
+            const departmentId = Department.findOne({
+                where: {
+                    name: department
+                }
+            }).id;
+            const md5password = await bcrypt.hash(password, 5);
+            await User.create({first_name, last_name, surname, left_days,
+                login, md5password, is_admin, departmentId});
+            res.send("Created!");
+        } catch (e) {
+            res.send("No");
+        }
     }
 
     async del(req, res, next) {

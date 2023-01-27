@@ -1,6 +1,7 @@
 const apiError = require('../error/apiError');
 const {User} = require('../models/models');
 const jwt = require('jsonwebtoken');
+const bcrypt = require("bcrypt");
 
 const generateJwt = (id, is_admin) => {
     return jwt.sign(
@@ -25,7 +26,7 @@ class UserController {
             if (!user) {
                 return next(apiError.internal('Неверный логин'));
             }
-            let comparePassword = password === user.md5password;
+            let comparePassword =  bcrypt.compareSync(password, user.md5password);
             if (!comparePassword) {
                 return next(apiError.internal('Неверный пароль'));
             }

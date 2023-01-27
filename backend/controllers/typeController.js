@@ -8,7 +8,7 @@ class typeController {
             return res.send('Ok!');
         } catch (e)
         {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }
@@ -18,7 +18,7 @@ class typeController {
             return res.send(types);
         } catch (e)
         {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }
@@ -32,7 +32,7 @@ class typeController {
             return res.send("change is ok!");
         } catch (e)
         {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }
@@ -46,7 +46,7 @@ class typeController {
             return res.send("Del type");
         } catch (e)
         {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }

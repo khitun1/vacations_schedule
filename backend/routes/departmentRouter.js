@@ -1,14 +1,15 @@
 const Router = require('express');
 const router = new Router();
 const departmentController = require('../controllers/departmentController');
+const checkRoleMiddleware = require('../middleware/checkRoleMiddleware');
 
-router.get('/getList', departmentController.getList);
-router.post('/create', departmentController.create);
-router.put('/changeName', departmentController.changeName);
-router.put('/changeMin', departmentController.changeMin);
-router.put('/changeMax', departmentController.changeMax);
-router.put('/changeTotal', departmentController.changeTotal);
-router.put('/changePercents', departmentController.changePercents);
-router.delete('/del', departmentController.del);
+router.get('/getList', checkRoleMiddleware(),  departmentController.getList);
+router.post('/create', checkRoleMiddleware(),  departmentController.create);
+router.put('/changeName', checkRoleMiddleware(),  departmentController.changeName);
+router.put('/changeMin', checkRoleMiddleware(),  departmentController.changeMin);
+router.put('/changeMax', checkRoleMiddleware(),  departmentController.changeMax);
+router.put('/changeTotal', checkRoleMiddleware(),  departmentController.changeTotal);
+router.put('/changePercents', checkRoleMiddleware(),  departmentController.changePercents);
+router.delete('/del', checkRoleMiddleware(),  departmentController.del);
 
 module.exports = router;

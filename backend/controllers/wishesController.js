@@ -8,7 +8,7 @@ class wishesController {
             await Wishes.create({start, end, userId});
             return res.send('Wish Ok!');
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }
@@ -18,7 +18,7 @@ class wishesController {
             const wishes = await Wishes.findAll();
             return res.send(wishes);
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }
@@ -31,7 +31,7 @@ class wishesController {
             })
             return res.send("Del wishes");
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }

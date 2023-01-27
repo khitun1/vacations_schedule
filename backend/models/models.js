@@ -19,6 +19,7 @@ const Department = sequelize.define('department', {
     max: {type: DataTypes.INTEGER},
     total: {type: DataTypes.INTEGER},
     percents: {type: DataTypes.INTEGER},
+    id_manager: {type: DataTypes.INTEGER},
 })
 
 const Vacations = sequelize.define('vacations', {

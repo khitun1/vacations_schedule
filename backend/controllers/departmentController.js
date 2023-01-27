@@ -4,20 +4,19 @@ class departmentController {
     async create(req, res, next) {
         try {
             const {name, min, max, total, percents} = req.body;
-            await Department.create({name, min, max, total, percents});
+            await Department.create({name, min, max, total, percents, id_manager: req.user.id});
             return res.send('Dep Ok!');
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
     }
-    async getList(req, res, next) {
+    async getList(req, res) {
         try {
             const deps = await Department.findAll();
             return res.send(deps);
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return res.send(apiError.badRequest(e.message).message);
         }
-
     }
 
     async changeName(req, res, next) {
@@ -28,7 +27,7 @@ class departmentController {
             });
             return res.send("change is ok!");
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }
@@ -41,7 +40,7 @@ class departmentController {
             });
             return res.send("change is ok!");
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
     }
     async changeMax(req, res, next) {
@@ -52,7 +51,7 @@ class departmentController {
             });
             return res.send("change is ok!");
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }
@@ -64,7 +63,7 @@ class departmentController {
             });
             return res.send("change is ok!");
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }
@@ -76,7 +75,7 @@ class departmentController {
             });
             return res.send("change is ok!");
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
     }
 
@@ -88,7 +87,7 @@ class departmentController {
             })
             return res.send("Del dep");
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
     }
 }

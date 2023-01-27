@@ -1,10 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const sequelize = require('./db');
-const models = require('./models/models');
 const cors = require('cors');
 const router = require('./routes/index');
-const errorHandle = require('./middleware/errorHandleMiddleware');
+const errorHandler = require('./middleware/errorHandleMiddleware');
 
 const port = process.env.PORT;
 
@@ -12,7 +11,7 @@ const app = express();
 app.use(cors())
     .use(express.json())
     .use('/api', router)
-    .use(errorHandle)
+    .use(errorHandler)
 
 
 

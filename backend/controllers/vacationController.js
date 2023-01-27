@@ -8,7 +8,7 @@ class vacationController {
             await Vacations.create({number, start, end, requested_date, status, paid, explanation, userId, typeId});
             return res.send('Vac Ok!');
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }
@@ -18,7 +18,7 @@ class vacationController {
             const vacations = await Vacations.findAll();
             return res.send(vacations);
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }
@@ -31,7 +31,7 @@ class vacationController {
             });
             return res.send("change is ok!");
         } catch (e) {
-            next(apiError.badRequest(e.message));
+            return next(apiError.badRequest(e.message));
         }
 
     }

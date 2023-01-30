@@ -4,6 +4,8 @@
     <div class="buttons">
       <add-user
           :deps="$store.state.departments.sort((a, b) => a.name > b.name ? 1 : -1)"/>
+      <delete-user
+          :deps="$store.state.departments.sort((a, b) => a.name > b.name ? 1 : -1)"/>
       <set-data
           :deps="$store.state.departments.sort((a, b) => a.name > b.name ? 1 : -1)"
           :types="$store.state.types.sort((a, b) => a.name > b.name ? 1 : -1)"/>
@@ -15,11 +17,13 @@
 import SamplePage from "@/components/Samples/SamplePage";
 import AddUser from "@/components/AddUser";
 import SetData from "@/components/SetData";
+import DeleteUser from "@/components/deleteUser.vue";
 
 export default {
   name: "SetSignature",
 
   components:{
+    DeleteUser,
     SamplePage,
     AddUser,
     SetData,

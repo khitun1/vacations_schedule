@@ -48,7 +48,7 @@
         </div>
         <div class="colour">
           <div style="background:#feb2b2"/>
-          <p>Пересекаемые даты</p>
+          <p>Отказ</p>
         </div>
         <div class="colour">
           <div style="background: #e2e8f0"/>
@@ -104,6 +104,7 @@ export default {
     created() {
       window.addEventListener('resize', this.updateColumns);
     },
+
   methods: {
       updateColumns() {
         this.columns = window.innerWidth > 1100? 3 : window.innerWidth > 600 ? 2 : 1;

@@ -44,6 +44,10 @@ const Wishes = sequelize.define('wishes', {
     end: {type: DataTypes.DATE},
 })
 
+const Year = sequelize.define('currentYear', {
+    year: {type: DataTypes.INTEGER},
+})
+
 User.hasMany(Vacations);
 Vacations.belongsTo(User);
 
@@ -57,5 +61,5 @@ User.hasMany(Wishes);
 Wishes.belongsTo(User);
 
 module.exports = {
-    User, Department, Type, Vacations, Wishes,
+    User, Department, Type, Vacations, Wishes, Year
 }

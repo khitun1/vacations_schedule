@@ -113,6 +113,9 @@ export default {
       this.myChart.update();
     },
     getDates(number){ // get vacation range
+      if (number === -1) {
+        return ['0001-01-01', '0000-01-01'];
+      }
       let dates = [];
       dates.push(moment(store.getters.vacations[number].start, 'DD.MM.YYYY').format('YYYY-MM-DD'));
       dates.push(moment(store.getters.vacations[number].end, 'DD.MM.YYYY').format('YYYY-MM-DD'));
@@ -228,15 +231,21 @@ export default {
       this.intersections = [];
       this.amount = 0;
       this.myChart.data.labels = this.getLabels();
-      for(let i = 0; i < store.getters.vacations.length; i++){
-          let n = store.getters.vacations[i].number;
-          this.findSet(n);
-          if(n === 1) this.myChart.data.datasets[this.amount].data.push(this.getDates(i));
-          else {
-            let name = store.getters.vacations[i].surname + ' ' + store.getters.vacations[i].name + ' ' + store.getters.vacations[i].lastname;
-            this.myChart.data.datasets[n-1+this.amount].data[this.getId(name)] = (this.getDates(i));
+      for(let i = 0; i < store.getters.vacations.length; i++) {
+        let n = store.getters.vacations[i].number;
+          if (store.getters.vacations[i].status !== 'Отказ' &&
+              store.getters.vacations[i].status !== 'none') {
+            this.findSet(n);
+            if(n === 1) this.myChart.data.datasets[this.amount].data.push(this.getDates(i));
+            else {
+              let name = store.getters.vacations[i].surname + ' ' + store.getters.vacations[i].name + ' ' + store.getters.vacations[i].lastname;
+              this.myChart.data.datasets[n-1+this.amount].data[this.getId(name)] = this.getDates(i);
+            }
+            this.intersection(i);
           }
-          this.intersection(i);
+          else {
+            if (n === 1) this.myChart.data.datasets[this.amount].data.push(this.getDates(-1))
+          }
       }
       this.myChart.update();
     },

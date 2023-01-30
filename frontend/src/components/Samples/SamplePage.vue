@@ -57,7 +57,7 @@ img
   width: 80%;
   padding-left: 10px;
   height: fit-content;
-
+  padding-bottom: 20px;
 }
 
 .bar {

@@ -6,7 +6,7 @@ export default createStore({
     state: {
         currentUser: {
             id: 1, surname: 'Adams', name: 'John', lastname: 'Jack', login: 'Flash', password: 'qwerty',
-            department: 'Developers', daysLeft: 10, isAdmin: true,
+            department: 'first', daysLeft: 10, isAdmin: true,
         },
         myVacations: [
             {id: 1, start: '02.01.2023', end: '09.01.2023', dateRequest: '01.06.2021', paid: 'Да', status: 'Утверждено',},
@@ -17,12 +17,12 @@ export default createStore({
                 explanation: '',},
             {id: 5, start: '01.01.2022', end: '03.05.2022', dateRequest: '01.06.2021', paid: 'Да', status: 'Отказ',
                 explanation: 'Необходимость в сотруднике в указанный период',},
-            // {id: 6, start: '01.01.2022', end: '02.02.2022', dateRequest: '01.06.2021', paid: 'Нет', status: 'Удалено',
-            //     explanation: '',},
-            // {id: 7, start: '01.01.2022', end: '02.02.2022', dateRequest: '01.06.2021', paid: 'Нет', status: 'Ожидание',},
-            // {id: 10, start: '04.12.2022', end: '13.12.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
-            // {id: 31, start: '25.01.2023', end: '29.01.2023', dateRequest: '01.06.2021', paid: 'Да', status: 'Отказ',
-            //     explanation: 'Имеется пересечение',},
+            {id: 6, start: '01.01.2022', end: '02.02.2022', dateRequest: '01.06.2021', paid: 'Нет', status: 'Удалено',
+                explanation: '',},
+            {id: 7, start: '01.01.2022', end: '02.02.2022', dateRequest: '01.06.2021', paid: 'Нет', status: 'Ожидание',},
+            {id: 10, start: '04.12.2022', end: '13.12.2022', dateRequest: '01.07.2021', paid: 'Да', status: 'Использовано',},
+            {id: 31, start: '25.01.2023', end: '29.01.2023', dateRequest: '01.06.2021', paid: 'Да', status: 'Отказ',
+                explanation: 'Имеется пересечение',},
             // {id: 32, start: '25.01.2023', end: '29.01.2023', dateRequest: '01.06.2021', paid: 'Да', status: 'Отказ',
             //     explanation: 'Имеется пересечение',},
             // {id: 33, start: '25.01.2023', end: '29.01.2023', dateRequest: '01.06.2021', paid: 'Да', status: 'Отказ',
@@ -43,27 +43,27 @@ export default createStore({
         ],
 
         all : [
-            {id: 1111, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '01.01.2023', end: '20.01.2023',
+            {id: 1111, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '01.01.2023', end: '15.01.2023',
                 paid: 'Да', department: 'first', number: 1,
                 intersections: 'Нет', status: 'Ожидание',},
             {id: 22, surname: 'Хитун', name: 'Иван', lastname: 'Михайлович', start: '02.02.2024', end: '20.02.2024',
                 paid: 'Нет', department: 'first', number: 2,
                 intersections: 'Да', status: 'Ожидание',},
-            {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.03.2023', end: '20.03.2023',
-                paid: 'Да', department: 'first', number: 1,
-                intersections: 'Нет', status: 'Принято',},
-            {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.07.2023', end: '20.08.2023',
-                paid: 'Да', department: 'first', number: 2,
-                intersections: 'Нет', status: 'Принято',},
-            {id: 220, surname: 'Ивановa', name: 'Владислав', lastname: 'Андреевич', start: '01.04.2023', end: '20.04.2023',
+            // {id: 12, surname: 'Алиев', name: 'Иван', lastname: 'Михайлович', start: '01.03.2023', end: '20.03.2023',
+            //     paid: 'Да', department: 'first', number: 1,
+            //     intersections: 'Нет', status: 'Принято',},
+            {id: 220, surname: 'Ивановa', name: 'Владислав', lastname: 'Андреевич', start: '10.01.2023', end: '20.04.2023',
                 paid: 'Нет', department: 'first', number: 1,
                 intersections: 'Да', status: 'Ожидание',},
             {id: 120, surname: 'Алиевa', name: 'Иван', lastname: 'Михайлович', start: '01.05.2023', end: '20.05.2023',
                 paid: 'Да', department: 'first', number: 1,
                 intersections: 'Нет', status: 'Ожидание',},
-            {id: 222, surname: 'Семеренко', name: 'Владислав', lastname: 'Андреевич', start: '01.06.2023', end: '20.06.2023',
+            {id: 222, surname: 'Семеренко', name: 'Владислав', lastname: 'Андреевич', start: '13.05.2023', end: '19.05.2023',
                 paid: 'Нет', department: 'first', number: 1,
                 intersections: 'Да', status: 'Принято',},
+            {id: 12, surname: 'Семеренко', name: 'Владислав', lastname: 'Андреевич', start: '01.07.2023', end: '20.08.2023',
+                paid: 'Да', department: 'first', number: 2,
+                intersections: 'Нет', status: 'Принято',},
             {id: 122, surname: 'Шарипов', name: 'Иван', lastname: 'Михайлович', start: '05.05.2023', end: '11.11.2023',
                 paid: 'Да', type: '', dateRequest: '', department: 'sdgsg', number: 1,
                 intersections: 'Нет', explanation: '', status: 'Ожидание', comment: '', countries: '',},
@@ -102,17 +102,41 @@ export default createStore({
         selectedDep: '',
         total: 100,
         visibleAddUser: false,
+        visibleDeleteUser: false,
         visibleAddDep: false,
         visibleAddType: false,
         visibleChangeCon: false,
         year: String(new Date().getFullYear()),
     },
     getters: {
+        intersInUsersDep(state) {
+            return state.all.filter(p => p.department === state.currentUser.department);
+        },
         vacations(state) {
-            return state.all.filter(p => p.status !== 'Отказ' && p.department === state.selectedDep);
+            let vacs = state.all.filter(p => p.department === state.selectedDep);
+            state.users.forEach(p => {
+                const userName = p.surname + ' ' + p.name + ' ' + p.lastname;
+                vacs.forEach((q, index, arr) => {
+                    const nameInVacs = q.surname + ' ' + q.name + ' ' + q.lastname;
+                    if (userName === nameInVacs) {
+                        return true
+                    }
+                    const newRec = {
+                        id: new Date(),
+                        surname: p.surname,
+                        name: p.name,
+                        lastname: p.lastname,
+                        status: 'none',
+                        number: 1,
+                    }
+                    arr.push(newRec);
+                })
+            })
+            return vacs;
         },
         visibleAdminWindow(state) {
-            return state.visibleAddUser || state.visibleAddDep || state.visibleChangeCon || state.visibleAddType;
+            return state.visibleAddUser || state.visibleDeleteUser
+                || state.visibleAddDep || state.visibleChangeCon || state.visibleAddType;
         },
         left(state) {
             let total = 0;

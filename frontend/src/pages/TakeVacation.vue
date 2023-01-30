@@ -70,6 +70,10 @@ export default {
   name: "TakeVacation",
 
   computed: {
+    percent: function (){
+      return store.state.departments.find(p => p.name === store.state.currentUser.department).percent / 100;
+    },
+
     width: function(){
       return 100 - store.getters.left / store.state.total * 100 + '%';
     },
@@ -78,6 +82,7 @@ export default {
       let attrs =  [];
       store.state.myVacations.forEach(p => attrs.push(this.chooseColor(p)));
       store.state.wishes.forEach(p => attrs.push(this.chooseColor(p)));
+      this.inters.forEach(p => attrs.push(this.chooseColor(p)));
       return attrs;
     },
 
@@ -85,6 +90,7 @@ export default {
       let dis =  [];
       store.state.myVacations.forEach(p => dis.push(this.disDates(p)));
       store.state.wishes.forEach(p => dis.push(this.disDates(p)));
+      this.inters.forEach(p => dis.push(this.disDates(p)));
       return dis;
     }
   },
@@ -101,6 +107,7 @@ export default {
       paid: [],
       rows: 2,
       columns: 3,
+      inters: [],
     }
   },
 
@@ -114,6 +121,68 @@ export default {
   },
 
   methods: {
+    intersections() {
+      let quarter = Math.floor(this.percent * store.state.users.filter(p => p.department === store.state.currentUser.department).length);
+      let lastStart;
+      for (let i = 0; i < store.getters.intersInUsersDep.length; i++) {
+        for (let j = 0; j < i; j++){
+          if(!this.findIntersection(i,j)) {
+            lastStart = this.getLastStart(i,j);
+            this.draw(i, lastStart, quarter);
+          }
+        }
+      }
+    },
+
+    getLastStart(i,j){
+      let iStart = moment(store.getters.intersInUsersDep[i].start, 'DD.MM.YYYY');
+      let jStart = moment(store.getters.intersInUsersDep[j].start, 'DD.MM.YYYY');
+      if(iStart.diff('01.01.2022', 'days') > jStart.diff('01.01.2022', 'days'))
+        return iStart.diff('01.01.2022', 'days');
+      return jStart.diff('01.01.2022', 'days');
+    },
+
+    draw(i, lastStart, quarter){
+      let start;
+      let end;
+      for(let j = 0; j < i; j++){
+        start = moment(store.getters.intersInUsersDep[j].start, 'DD.MM.YYYY')
+            .diff('01.01.2022', 'days');
+        end = moment(store.getters.intersInUsersDep[j].end, 'DD.MM.YYYY')
+            .diff('01.01.2022', 'days');
+        if(lastStart <= end &&
+            lastStart >= start)
+        {
+          let range = {};
+          range.start = store.getters.intersInUsersDep[i].start;
+          const earlierEnd = moment(store.getters.intersInUsersDep[i].end, 'DD.MM.YYYY')
+              .diff('01.01.2022', 'days');
+          range.end = earlierEnd < end ? store.getters.intersInUsersDep[i].end
+              : store.getters.intersInUsersDep[j].end;
+          range.status = 'inters';
+          this.inters.push(range);
+        }
+      }
+
+      console.log(this.inters);
+
+
+
+      if (this.inters.length < quarter) {
+        this.inters = [];
+      }
+    },
+
+
+    findIntersection(i, j){
+      let iStart = moment(store.getters.intersInUsersDep[i].start, 'DD.MM.YYYY');
+      let jStart = moment(store.getters.intersInUsersDep[j].start, 'DD.MM.YYYY');
+      let iEnd = moment(store.getters.intersInUsersDep[i].end, 'DD.MM.YYYY');
+      let jEnd = moment(store.getters.intersInUsersDep[j].end, 'DD.MM.YYYY');
+      return (iEnd.diff('01.01.2022', 'days') <= jStart.diff('01.01.2022', 'days')) ||
+          iStart.diff('01.01.2022', 'days') >= jEnd.diff('01.01.2022', 'days');
+    },
+
     updateColumns() {
       this.columns = window.innerWidth > 1100? 3 : window.innerWidth > 600 ? 2 : 1;
     },
@@ -194,7 +263,8 @@ export default {
             start: { fillMode: 'transparent' },
             base: { fillMode: 'light', color: rec.status === undefined ? 'gray' :
                   rec.status === 'Утверждено'? 'green':
-                  rec.status === 'Ожидание'? 'orange': rec.status === 'Использовано' ? 'purple': rec.status === 'Отказ' ? 'red':'none'},
+                  rec.status === 'Ожидание'? 'orange': rec.status === 'Использовано' ? 'purple'
+                      : rec.status === 'inters' ? 'red':'none'},
             end: { fillMode: 'transparent' },
           },
           dates: { start: moment(rec.start, 'DD.MM.YYYY')._d, end: moment(rec.end, 'DD.MM.YYYY')._d },
@@ -202,13 +272,17 @@ export default {
     },
 
     disDates(rec){
-      return{
+      return {
         id: new Date(),
         start: moment(rec.start, 'DD.MM.YYYY')._d,
         end: moment(rec.end, 'DD.MM.YYYY')._d,
       }
     },
   },
+
+  mounted() {
+    this.intersections();
+  }
 }
 </script>
 
@@ -370,7 +444,7 @@ h2
 }
 
 .wishesInfo {
-  margin-top: 100px
+  margin-top: 100px;
 }
 
 @media screen and (max-width: 1470px) {

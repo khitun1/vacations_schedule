@@ -12,7 +12,11 @@ class departmentController {
     }
     async getList(req, res) {
         try {
-            const deps = await Department.findAll();
+            const deps = await Department.findAll({
+                where: {
+                    id_manager: req.user.id,
+                }
+            });
             return res.send(deps);
         } catch (e) {
             return res.send(apiError.badRequest(e.message).message);

@@ -2,10 +2,11 @@ const {User, Department, Vacations} = require('../models/models');
 const bcrypt = require('bcrypt');
 
 class UsersController {
-    async getList(req, res, next) {
+
+    async getUsers(id) {
         const departments = await Department.findAll({
             where: {
-                id_manager: req.user.id,
+                id_manager: id,
             }
         })
         let users = [];
@@ -17,6 +18,10 @@ class UsersController {
             })
             users.push(...partUsers);
         }
+        return users;
+    }
+    async getVacations(req, res, next) {
+        const users = this.getUsers(req.user.id);
         let vacations = [];
         for (let i = 0; i < users.length; i++) {
             const partVacs = await Vacations.findAll({
@@ -53,9 +58,16 @@ class UsersController {
             res.send("No");
         }
     }
+    async getList(req, res, next) {
+        const users = this.getUsers(req.user.id);
+        res.send(users);
+    }
 
     async del(req, res, next) {
         const {id} = req.body;
+        await Vacations.destroy({
+            where: {UserId: id}
+        })
         await User.destroy({
             where: {id}
         })

@@ -92,6 +92,7 @@ export default {
 
 .inputs {
   display: flex;
+  flex-flow: row wrap;
 }
 
 
@@ -134,6 +135,23 @@ export default {
   height: 50px;
   background: #e3e3e3;
   cursor: default;
+}
+
+@media screen and (max-width: 800px) {
+  .main {
+    width: 90%;
+  }
+  .inputs {
+    background: red;
+  }
+
+  .delete {
+    margin-left: 10px;
+  }
+
+  .rec {
+    width: 90%;
+  }
 }
 
 </style>

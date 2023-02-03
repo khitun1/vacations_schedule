@@ -17,7 +17,7 @@
 import SamplePage from "@/components/Samples/SamplePage";
 import AddUser from "@/components/AddUser";
 import SetData from "@/components/SetData";
-import DeleteUser from "@/components/deleteUser.vue";
+import DeleteUser from "@/components/DeleteUser.vue";
 
 export default {
   name: "SetSignature",

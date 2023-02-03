@@ -1,76 +1,128 @@
 const {User, Department, Vacations} = require('../models/models');
 const bcrypt = require('bcrypt');
+const apiError = require("../error/apiError");
+const winston = require('../winston');
 
 class UsersController {
 
     async getUsers(id) {
-        const departments = await Department.findAll({
+        const depId = await User.findOne({
             where: {
-                id_manager: id,
+                id: id,
             }
-        })
-        let users = [];
-        for (let i = 0; i < departments.length; i++) {
-            const partUsers = await User.findAll({
-                where: {
-                    departmentId: departments[i].id
-                }
-            })
-            users.push(...partUsers);
-        }
-        return users;
+        });
+        return User.findAll({
+            where: {
+                departmentId: depId.dataValues.departmentId,
+            }
+        });
     }
     async getVacations(req, res, next) {
-        const users = this.getUsers(req.user.id);
-        let vacations = [];
-        for (let i = 0; i < users.length; i++) {
-            const partVacs = await Vacations.findAll({
-                where: {
-                    UserId: users[i].id
-                }
-            })
-            vacations.push(...partVacs);
+        try {
+            const users = this.getUsers(req.user.id);
+            let vacations = [];
+            for (let i = 0; i < users.length; i++) {
+                const partVacs = await Vacations.findAll({
+                    where: {
+                        UserId: users[i].id
+                    }
+                })
+                vacations.push(...partVacs);
+            }
+            for (let i = 0; i < vacations.length; i++) {
+                const user = await User.findOne({
+                    where: {
+                        id: vacations[i].userId,
+                    }
+                })
+                vacations[i].userId = user.first_name + ' ' + user.last_name + ' ' + user.surname;
+            }
+            return res.send(vacations);
+        } catch (e) {
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Get employee's vacations"
+                + "   User: " + JSON.stringify(req.user));
         }
-        for (let i = 0; i < vacations.length; i++) {
-            const user = await User.findOne({
-                where: {
-                    id: vacations[i].userId,
-                }
-            })
-            vacations[i].userId = user.first_name + ' ' + user.last_name + ' ' + user.surname;
-        }
-        res.send(vacations);
     }
 
     async create(req, res, next) {
         try {
-            const {first_name, last_name, surname, left_days, login, password, is_admin, department} = req.body;
-            const departmentId = Department.findOne({
+            const {first_name, last_name, surname, login, password, is_admin} = req.body;
+            const dep = await Department.findOne({
                 where: {
-                    name: department
+                    id: req.user.departmentId,
                 }
-            }).id;
+            });
+            const user = await User.findOne({
+                where: {login}
+            });
+            if (user) {
+                return next(apiError.badRequest('Пользователь с таким логином уже есть!'));
+            }
+            const departmentId = dep.dataValues.id;
+            const left_days = dep.dataValues.total;
             const md5password = await bcrypt.hash(password, 5);
             await User.create({first_name, last_name, surname, left_days,
                 login, md5password, is_admin, departmentId});
-            res.send("Created!");
+            res.send("User have created!");
         } catch (e) {
-            res.send("No");
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Create user"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
     }
     async getList(req, res, next) {
-        const users = this.getUsers(req.user.id);
-        res.send(users);
+        try {
+            const users = this.getUsers(req.user.id);
+            res.send(users);
+        } catch (e) {
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Get list of users"
+                + "   User: " + JSON.stringify(req.user));
+        }
     }
 
     async del(req, res, next) {
-        const {id} = req.body;
-        await Vacations.destroy({
-            where: {UserId: id}
-        })
-        await User.destroy({
-            where: {id}
-        })
+        try {
+            const {id} = req.body;
+            await Vacations.destroy({
+                where: {UserId: id}
+            })
+            await User.destroy({
+                where: {id}
+            })
+            return res.send("User have deleted!");
+        } catch (e) {
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Delete user"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
+        }
+    }
+
+    async decisionVacation(req, res, next) {
+        try {
+            const status = req.body.status;
+            await Vacations.update({status: status}, {
+                where: {
+                    id: req.body.id,
+                }
+            })
+            return res.send("Vacation have decided!");
+        } catch (e) {
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Decide vacation"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
+        }
     }
 }
 

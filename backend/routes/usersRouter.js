@@ -6,6 +6,7 @@ const checkRoleMiddleware = require('../middleware/checkRoleMiddleware');
 router.get('/getVacations', checkRoleMiddleware(),  usersController.getVacations);
 router.get('/getList', checkRoleMiddleware(),  usersController.getList);
 router.post('/create', checkRoleMiddleware(),  usersController.create);
+router.put('/decision', checkRoleMiddleware(),  usersController.decisionVacation);
 router.delete('/del', checkRoleMiddleware(), usersController.del);
 
 module.exports = router;

@@ -22,20 +22,20 @@ const update = async () => {
         await Year.update({year: currentYear}, {
             where: {id}
         })
-    }
-    const users = await User.findAll();
-    for (let i = 0; i < users.length; i++) {
-        const update_days = (await Department.findOne({
-            where: {
-                id: users[i].dataValues.departmentId,
-            }
-        })).dataValues.total;
-        const total_days = users[i].dataValues.left_days + update_days;
-        await User.update({left_days: total_days}, {
-            where: {
-                id: users[i].dataValues.id,
-            }
-        })
+        const users = await User.findAll();
+        for (let i = 0; i < users.length; i++) {
+            const update_days = (await Department.findOne({
+                where: {
+                    id: users[i].dataValues.departmentId,
+                }
+            })).dataValues.total;
+            const total_days = users[i].dataValues.left_days + update_days;
+            await User.update({left_days: total_days}, {
+                where: {
+                    id: users[i].dataValues.id,
+                }
+            })
+        }
     }
 }
 

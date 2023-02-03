@@ -5,6 +5,7 @@ backend/node_modules
 .idea/
 /dist
 
+backend/logger.log
 
 # local env files
 .env.local

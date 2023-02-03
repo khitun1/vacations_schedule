@@ -1,14 +1,19 @@
 const {Type} = require('../models/models');
 const apiError = require('../error/apiError');
+const winston = require('../winston');
 class typeController {
     async create(req, res, next) {
         try {
             const {name} = req.body;
             await Type.create({name});
-            return res.send('Ok!');
+            return res.send('Type have created!');
         } catch (e)
         {
-            return next(apiError.badRequest(e.message));
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Create type"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
 
     }
@@ -18,7 +23,11 @@ class typeController {
             return res.send(types);
         } catch (e)
         {
-            return next(apiError.badRequest(e.message));
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Get list of types"
+                + "   User: " + JSON.stringify(req.user));
         }
 
     }
@@ -29,10 +38,14 @@ class typeController {
             await Type.update({name: name}, {
                 where: {id}
             });
-            return res.send("change is ok!");
+            return res.send("Name have changed!");
         } catch (e)
         {
-            return next(apiError.badRequest(e.message));
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Change type's name"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
 
     }
@@ -43,12 +56,15 @@ class typeController {
             await Type.destroy({
                 where: {id}
             })
-            return res.send("Del type");
+            return res.send("Type have deleted!");
         } catch (e)
         {
-            return next(apiError.badRequest(e.message));
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Delete type"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
-
     }
 }
 

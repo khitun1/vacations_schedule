@@ -1,69 +1,69 @@
 <template>
-    <my-button @click="$store.state.visibleAddDep = true"
-                v-show="!$store.getters.visibleAdminWindow">
-      Отделы
-    </my-button>
-    <form @submit.prevent v-show="$store.state.visibleAddDep">
-      <button-back @click="$store.state.visibleAddDep = false"/>
-      <h2>Отделы</h2>
-      <div>
-        <my-input class="new" placeholder="Найти или добавить отдел"
-                  v-model="dep"/>
-        <my-button class="add"
-                   @click="cursor ? create() : false"
-                   :style="{cursor: (cursor && this.dep !== '') ? 'pointer' : 'default'}">
-          Добавить отдел
-        </my-button>
-      </div>
-      <h2>Список отделов</h2>
-      <div class="rec"
-           v-for="dep in activeDeps" :key="dep.id">
-        <input id="nameDep" class='classNameDep' name=dep.name :readonly="readDep" :value="dep.name">
-        <button-icon class="edit"
-                       v-if="changeDep !== dep.id"
-                       @click="focus(dep.id, dep.name, 'dep')">
-          <img src="@/images/EditIcon.png">
-        </button-icon>
-        <button class="accept"
-                  v-if="changeDep === dep.id" @click="changeNameDep(dep.id)"
-                  :style="{cursor: (cursorChange) ? 'pointer' : 'default'}">
-            &#10004;
-        </button>
-        </div>
-    </form>
+<!--    <my-button @click="$store.state.visibleAddDep = true"-->
+<!--                v-show="!$store.getters.visibleAdminWindow">-->
+<!--      Отделы-->
+<!--    </my-button>-->
+<!--    <form @submit.prevent v-show="$store.state.visibleAddDep">-->
+<!--      <button-back @click="$store.state.visibleAddDep = false"/>-->
+<!--      <h2>Отделы</h2>-->
+<!--      <div>-->
+<!--        <my-input class="new" placeholder="Найти или добавить отдел"-->
+<!--                  v-model="dep"/>-->
+<!--        <my-button class="add"-->
+<!--                   @click="cursor ? create() : false"-->
+<!--                   :style="{cursor: (cursor && this.dep !== '') ? 'pointer' : 'default'}">-->
+<!--          Добавить отдел-->
+<!--        </my-button>-->
+<!--      </div>-->
+<!--      <h2>Список отделов</h2>-->
+<!--      <div class="rec"-->
+<!--           v-for="dep in activeDeps" :key="dep.id">-->
+<!--        <input id="nameDep" class='classNameDep' name=dep.name :readonly="readDep" :value="dep.name">-->
+<!--        <button-icon class="edit"-->
+<!--                       v-if="changeDep !== dep.id"-->
+<!--                       @click="focus(dep.id, dep.name, 'dep')">-->
+<!--          <img src="@/images/EditIcon.png">-->
+<!--        </button-icon>-->
+<!--        <button class="accept"-->
+<!--                  v-if="changeDep === dep.id" @click="changeNameDep(dep.id)"-->
+<!--                  :style="{cursor: (cursorChange) ? 'pointer' : 'default'}">-->
+<!--            &#10004;-->
+<!--        </button>-->
+<!--        </div>-->
+<!--    </form>-->
 
-    <my-button @click="$store.state.visibleAddType = true"
-               v-show="!$store.getters.visibleAdminWindow">
-      Типы отпусков
-    </my-button>
+<!--    <my-button @click="$store.state.visibleAddType = true"-->
+<!--               v-show="!$store.getters.visibleAdminWindow">-->
+<!--      Типы отпусков-->
+<!--    </my-button>-->
 
-    <form @submit.prevent v-show="$store.state.visibleAddType">
-      <button-back @click="$store.state.visibleAddType = false"/>
-      <h2>Добавить тип отпуска</h2>
-      <div>
-        <my-input class="new" placeholder="Найти или добавить тип отпуска"
-                  v-model="type"/>
-        <my-button class="add" @click="cursor ? create() : false"
-                   :style="{cursor: (cursor && this.type !=='') ? 'pointer' : 'default'}">
-          Добавить
-        </my-button>
-      </div>
-      <h2>Типы отпусков</h2>
-        <div class="rec"
-             v-for="type in activeTypes" :key="type.id">
-          <input id="nameType" class="classNameType" :readonly="readType" :value="type.name">
-          <button-icon class="edit"
-                       v-if="changeType !== type.id"
-                       @click="focus(type.id, type.name, 'type')">
-            <img src="@/images/EditIcon.png">
-          </button-icon>
-          <button class="accept"
-                  v-if="changeType === type.id" @click="changeNameType(type.id)"
-                  :style="{cursor: (cursorChange) ? 'pointer' : 'default'}">
-            &#10004;
-          </button>
-        </div>
-    </form>
+<!--    <form @submit.prevent v-show="$store.state.visibleAddType">-->
+<!--      <button-back @click="$store.state.visibleAddType = false"/>-->
+<!--      <h2>Добавить тип отпуска</h2>-->
+<!--      <div>-->
+<!--        <my-input class="new" placeholder="Найти или добавить тип отпуска"-->
+<!--                  v-model="type"/>-->
+<!--        <my-button class="add" @click="cursor ? create() : false"-->
+<!--                   :style="{cursor: (cursor && this.type !=='') ? 'pointer' : 'default'}">-->
+<!--          Добавить-->
+<!--        </my-button>-->
+<!--      </div>-->
+<!--      <h2>Типы отпусков</h2>-->
+<!--        <div class="rec"-->
+<!--             v-for="type in activeTypes" :key="type.id">-->
+<!--          <input id="nameType" class="classNameType" :readonly="readType" :value="type.name">-->
+<!--          <button-icon class="edit"-->
+<!--                       v-if="changeType !== type.id"-->
+<!--                       @click="focus(type.id, type.name, 'type')">-->
+<!--            <img src="@/images/EditIcon.png">-->
+<!--          </button-icon>-->
+<!--          <button class="accept"-->
+<!--                  v-if="changeType === type.id" @click="changeNameType(type.id)"-->
+<!--                  :style="{cursor: (cursorChange) ? 'pointer' : 'default'}">-->
+<!--            &#10004;-->
+<!--          </button>-->
+<!--        </div>-->
+<!--    </form>-->
 
     <my-button @click="$store.state.visibleChangeCon = true"
                v-show="!$store.getters.visibleAdminWindow">

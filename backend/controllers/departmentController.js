@@ -1,25 +1,40 @@
-const {Department} = require('../models/models');
+const {Department, User} = require('../models/models');
 const apiError = require('../error/apiError');
+const winston = require('../winston');
+
 class departmentController {
     async create(req, res, next) {
         try {
             const {name, min, max, total, percents} = req.body;
-            await Department.create({name, min, max, total, percents, id_manager: req.user.id});
-            return res.send('Dep Ok!');
+            await Department.create({name, min, max, total, percents});
+            return res.send("Department have created!");
         } catch (e) {
-            return next(apiError.badRequest(e.message));
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Create department"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
     }
-    async getList(req, res) {
+    async getList(req, res, next) {
         try {
-            const deps = await Department.findAll({
+            const currentUser = await User.findOne({
                 where: {
-                    id_manager: req.user.id,
+                    id: req.user.id,
+                }
+            });
+            const deps = await Department.findOne({
+                where: {
+                    id: currentUser.dataValues.departmentId,
                 }
             });
             return res.send(deps);
         } catch (e) {
-            return res.send(apiError.badRequest(e.message).message);
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Get list of departments"
+                + "   User: " + JSON.stringify(req.user));
         }
     }
 
@@ -29,11 +44,14 @@ class departmentController {
             await Department.update({name: name}, {
                 where: {id}
             });
-            return res.send("change is ok!");
+            return res.send("Name have changed!");
         } catch (e) {
-            return next(apiError.badRequest(e.message));
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Change department's name"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
-
     }
 
     async changeMin(req, res, next) {
@@ -42,9 +60,13 @@ class departmentController {
             await Department.update({min}, {
                 where: {id}
             });
-            return res.send("change is ok!");
+            return res.send("Min have changed!");
         } catch (e) {
-            return next(apiError.badRequest(e.message));
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Change department's min"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
     }
     async changeMax(req, res, next) {
@@ -53,9 +75,13 @@ class departmentController {
             await Department.update({max}, {
                 where: {id}
             });
-            return res.send("change is ok!");
+            return res.send("Max have changed!");
         } catch (e) {
-            return next(apiError.badRequest(e.message));
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Change department's max"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
 
     }
@@ -65,9 +91,13 @@ class departmentController {
             await Department.update({total}, {
                 where: {id}
             });
-            return res.send("change is ok!");
+            return res.send("Total have changed!");
         } catch (e) {
-            return next(apiError.badRequest(e.message));
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Change department's total"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
 
     }
@@ -77,9 +107,13 @@ class departmentController {
             await Department.update({percents}, {
                 where: {id}
             });
-            return res.send("change is ok!");
+            return res.send("Percents have changed!");
         } catch (e) {
-            return next(apiError.badRequest(e.message));
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Change department's percents"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
     }
 
@@ -89,9 +123,13 @@ class departmentController {
             await Department.destroy({
                 where: {id}
             })
-            return res.send("Del dep");
+            return res.send("Department have deleted!");
         } catch (e) {
-            return next(apiError.badRequest(e.message));
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Delete department"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
     }
 }

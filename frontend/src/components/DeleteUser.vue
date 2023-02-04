@@ -1,11 +1,11 @@
 <template>
-  <my-button @click="$store.state.visibleDeleteUser = true"
-             v-show="!$store.getters.visibleAdminWindow"
+  <my-button @click="changeVisibleDeleteUser"
+             v-show="!visibleAdminWindow"
              class="open">
     Удалить пользователя
   </my-button>
-  <div v-show="$store.state.visibleDeleteUser" class="main">
-    <button-back @click="$store.state.visibleDeleteUser = false"/>
+  <div v-show="visibleDeleteUser" class="main">
+    <button-back @click="changeVisibleDeleteUser"/>
     <h2>Удаление пользователя</h2>
     <div class="inputs">
       <VueMultiselect class="selectDep"
@@ -31,7 +31,8 @@
 <script>
 import VueMultiselect from "vue-multiselect";
 import ButtonBack from "@/components/UI/ButtonBack.vue";
-import store from "@/store";
+import {mapGetters, mapMutations, mapState} from "vuex";
+
 export default {
   name: "deleteUser",
 
@@ -48,15 +49,29 @@ export default {
   },
 
   methods: {
+    ...mapMutations ({
+      changeVisibleDeleteUser: 'changeVisibleDeleteUser',
+    }),
+
     deleteUser(id) {
       return id;
     }
   },
 
   computed: {
+    ...mapState ({
+      visibleDeleteUser: state => state.admin.visibleDeleteUser,
+      departments: state => state.admin.departments,
+      users: state => state.admin.users,
+    }),
+
+    ...mapGetters ({
+      visibleAdminWindow: 'visibleAdminWindow',
+    }),
+
     namesDeps: function (){
       let arr = [];
-      this.deps.forEach(p => arr.push(p.name));
+      this.departments.forEach(p => arr.push(p.name));
       return arr;
     },
 
@@ -66,17 +81,11 @@ export default {
 
     users: function () {
       if (this.user === '')  return [];
-      return store.state.users.filter(p => (this.searchUser.test(p.name) || p.name === this.user)
+      return this.users.filter(p => (this.searchUser.test(p.name) || p.name === this.user)
           && p.department === this.selectedDep);
     },
   },
 
-  props: {
-    deps: {
-      type: Array,
-      required: false,
-    },
-  },
 }
 </script>
 

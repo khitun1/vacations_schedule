@@ -4,22 +4,13 @@ const apiError = require("../error/apiError");
 const winston = require('../winston');
 
 class UsersController {
-
-    async getUsers(id) {
-        const depId = await User.findOne({
-            where: {
-                id: id,
-            }
-        });
-        return User.findAll({
-            where: {
-                departmentId: depId.dataValues.departmentId,
-            }
-        });
-    }
     async getVacations(req, res, next) {
         try {
-            const users = this.getUsers(req.user.id);
+            const users = await User.findAll({
+                where: {
+                    departmentId: req.user.departmentId,
+                }
+            });
             let vacations = [];
             for (let i = 0; i < users.length; i++) {
                 const partVacs = await Vacations.findAll({
@@ -77,8 +68,12 @@ class UsersController {
     }
     async getList(req, res, next) {
         try {
-            const users = this.getUsers(req.user.id);
-            res.send(users);
+            const users =  await User.findAll({
+                where: {
+                    departmentId: req.user.departmentId,
+                }
+            });
+            return res.send(users);
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));
@@ -124,6 +119,7 @@ class UsersController {
                 + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
     }
+
 }
 
 module.exports = new UsersController();

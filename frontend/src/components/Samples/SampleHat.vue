@@ -2,12 +2,13 @@
   <div class="hat">
     <h1>Планирование отпусков</h1>
     <div class="panel">
-      <p>Хитун Иван Михайлович</p>
+      <p>{{currentUser.surname + ' ' + currentUser.first_name + ' '
+      + currentUser.last_name}}</p>
       <button-icon class="btn">
         <img src="@/images/NoticeIcon.png">
       </button-icon>
       <router-link to="/">
-        <button-icon class="btn">
+        <button-icon class="btn" @click="clearJwt">
           <img src="@/images/ExitIcon.png">
         </button-icon>
       </router-link>
@@ -16,7 +17,21 @@
 </template>
 
 <script>
+import {mapMutations, mapState} from "vuex";
 
+export default {
+  computed: {
+    ...mapState ({
+      currentUser: state => state.my.currentUser,
+    }),
+
+    methods: {
+      ...mapMutations ({
+        clearJwt: 'clearJWT'
+      })
+    },
+  }
+}
 </script>
 
 <style scoped>

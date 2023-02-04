@@ -1,10 +1,10 @@
 <template>
-  <my-button @click="$store.state.visibleAddUser = true"
-             v-show="!$store.getters.visibleAdminWindow"
+  <my-button @click="changeVisibleAddUser"
+             v-show="!visibleAdminWindow"
              class="open">
     Добавить нового пользователя
   </my-button>
-    <form @submit.prevent  class="form" v-show="$store.state.visibleAddUser">
+    <form @submit.prevent  class="form" v-show="visibleAddUser">
       <button-back @click="clear"/>
       <h2>Новый пользователь</h2>
       <div>
@@ -12,31 +12,31 @@
                   v-model="user.surname"
                   v-bind:style="{boxShadow: user.surname === '' && flag? color : ''}"/>
         <my-input class="in" :placeholder="name"
-                  v-model="user.name"
-                  v-bind:style="{boxShadow: user.name === '' && flag? color : ''}"/>
+                  v-model="user.first_name"
+                  v-bind:style="{boxShadow: user.first_name === '' && flag? color : ''}"/>
         <my-input class="in" :placeholder="lastname"
                   v-model="user.lastname"
-                  v-bind:style="{boxShadow: user.lastname === '' && flag? color : ''}"/>
+                  v-bind:style="{boxShadow: user.last_name === '' && flag? color : ''}"/>
         <my-input class="in" :placeholder="log"
                   v-model="user.login"
                   v-bind:style="{boxShadow: user.login === '' && flag? color : ''}"/>
         <div>
           <my-input class="in" :placeholder="pas" :type="typePassword" style="left: 20px"
-                    v-model="user.password"
-                    v-bind:style="{boxShadow: user.password === '' && flag? color : ''}"/>
+                    v-model="user.md5password"
+                    v-bind:style="{boxShadow: user.md5password === '' && flag? color : ''}"/>
           <button-icon style="top: 8px; left: 15px" @click="typePassword = typePassword === 'text'? 'password': 'text'">
             <img src="@/images/WatchIcon.png" v-show="typePassword === 'text'"/>
             <img src="@/images/closePassword.webp" v-show="typePassword !== 'text'">
           </button-icon>
         </div>
         <VueMultiselect class="selectDep"
-                        v-model="user.department"
+                        v-model="user.departmentId"
                         :options="namesDeps"
                         :show-no-results="false"
                         placeholder="Выберите отдел"
                         :show-labels="false"/>
         <VueMultiselect class="selectDep"
-                        v-model="user.isAdmin"
+                        v-model="user.is_admin"
                         :options="rights"
                         :show-no-results="false"
                         placeholder="Укажите права"
@@ -54,7 +54,7 @@
 
 <script>
 import VueMultiselect from "vue-multiselect";
-import store from "@/store";
+import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
   name: "AddUser",
@@ -64,18 +64,20 @@ export default {
   },
 
   computed: {
+    ...mapState ({
+      visibleAddUser: state => state.admin.visibleAddUser,
+      departments: state => state.admin.departments,
+      users: state => state.admin.users,
+    }),
+
+    ...mapGetters ({
+      visibleAdminWindow: "visibleAdminWindow",
+    }),
     namesDeps: function (){
       let arr = [];
-      this.deps.forEach(p => arr.push(p.name));
+      this.departments.forEach(p => arr.push(p.name));
       return arr;
     }
-  },
-
-  props: {
-    deps: {
-      type: Array,
-      required: false,
-    },
   },
 
   data() {
@@ -84,11 +86,12 @@ export default {
       color: 'inset 0px 0px 5px red',
       user: {
         surname: '',
-        name: '',
-        lastname: '',
+        first_name: '',
+        last_name: '',
         login: '',
-        password: '',
-        department: '',
+        md5password: '',
+        departmentId: '',
+        is_admin: '',
       },
       surname: 'Фамилия',
       name: 'Имя',
@@ -105,6 +108,15 @@ export default {
    }
   },
   methods: {
+    ...mapActions({
+      addUser: 'addUser',
+    }),
+
+    ...mapMutations({
+      changeVisibleAddUser: 'changeVisibleAddUser',
+
+    }),
+
     createUser(){
       if(!this.user.surname && !this.user.name && !this.user.lastname
       && !this.user.login && !this.user.password && !this.user.department && !this.user.isAdmin)  return;
@@ -114,16 +126,17 @@ export default {
       if(!this.user.lastname)  this.lastname = 'Введите отчество!';
       if(!this.user.login)  this.log = 'Введите логин!';
       if(!this.user.password)  this.pas = 'Введите пароль!';
-      if(!this.user.department)  this.dep = 'Выберите отдел!';
-      if(!this.user.isAdmin)  this.dep = 'Укажите права!';
-      else if(store.state.users.find(p => p.login === this.user.login))
+      if(!this.user.departmentId)  this.dep = 'Выберите отдел!';
+      if(!this.user.is_admin)  this.dep = 'Укажите права!';
+      else if(this.users.find(p => p.login === this.user.login))
       {
         this.errorMsg = 'Пользователь с таким логином уже есть!';
         this.error = true;
       }
       else {
-        this.user.id = Date.now()
-        store.commit('addUser', this.user);
+        const id = this.departments.find(p => p.name === this.user.departmentId).id;
+        this.user.departmentId = id;
+        this.addUser(this.user)
         this.clear();
       }
     },
@@ -145,7 +158,7 @@ export default {
       // this.dep = 'Отдел';
       this.error = false;
       this.flag = false;
-      store.state.visibleAddUser = false;
+      this.changeVisibleAddUser();
     }
   }
 }

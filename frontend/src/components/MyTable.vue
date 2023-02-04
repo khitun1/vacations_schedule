@@ -33,7 +33,7 @@
 
 <script>
 import moment from "moment";
-import store from "@/store";
+import {mapActions, mapMutations} from "vuex";
 
 export default {
   name: "MyTable",
@@ -53,6 +53,13 @@ export default {
   },
 
   methods: {
+    ...mapActions ({
+      deleteVacation: 'deleteVacation',
+    }),
+
+    ...mapMutations ({
+    }),
+
     setColor(status){
       switch (status){
         case 'Утверждено':
@@ -84,7 +91,7 @@ export default {
     },
 
     Del(id){
-      store.commit('delVac', id);
+      this.deleteVacation(id);
     },
 
     checkDel(status, id){

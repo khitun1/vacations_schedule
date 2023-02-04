@@ -8,7 +8,7 @@
                      :disabled-dates="dis"
                      class="calendar"/>
       <div class="infoBar">
-        <h2 style="margin-top: -20px">Осталось отпускных дней: {{$store.getters.left}}</h2>
+        <h2 style="margin-top: -20px">Осталось отпускных дней: {{left}}</h2>
         <div class="prog">
           <div class="progBar"/>
         </div>
@@ -18,17 +18,17 @@
       <h2>Выбранные даты</h2>
       <div class="wishes">
         <div class="wishesDates"
-             v-for="wish in $store.state.wishes" :key="wish.id">
+             v-for="wish in wishes" :key="wish.id">
           <p>{{wish.start}} - {{wish.end}}</p>
           <p class="pay">Оплачиваемость</p>
           <label class="checkbox">
-            <input type="checkbox" class="check_input" v-model="paid[$store.state.wishes.indexOf(wish)]"/>
+            <input type="checkbox" class="check_input" v-model="paid[wishes.indexOf(wish)]"/>
             <div class="check_div"/>
           </label>
           <my-button @click="send(wish)">Отправить заявку</my-button>
           <my-button @click="del(wish.id)">Удалить</my-button>
         </div>
-        <my-button v-if="$store.state.wishes.length > 1"
+        <my-button v-if="wishes.length > 1"
                    style="padding: 5px 15px"
                    @click="sendAll">
           Отправить все
@@ -64,32 +64,44 @@
 import SamplePage from "@/components/Samples/SamplePage";
 import moment from "moment";
 import MyButton from "@/components/UI/MyButton";
-import store from "@/store";
+import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
   name: "TakeVacation",
 
   computed: {
-    percent: function (){
-      return store.state.departments.find(p => p.name === store.state.currentUser.department).percent / 100;
-    },
+    ...mapState ({
+      myVacations: state => state.my.myVacations,
+      wishes: state => state.my.wishes,
+      departments: state => state.admin.departments,
+      currentUser: state => state.my.currentUser,
+      total: state => state.my.total,
+      users: state => state.admin.users,
+      percent: state => state.my.currentUser.percent,
+    }),
+    ...mapGetters ({
+      left: 'left',
+      intersInUsersDep: 'intersInUsersDep',
+      last: 'last',
+    }),
+
 
     width: function(){
-      return 100 - store.getters.left / store.state.total * 100 + '%';
+      return 100 - this.left / this.total * 100 + '%';
     },
 
     attrs: function (){
       let attrs =  [];
-      store.state.myVacations.forEach(p => attrs.push(this.chooseColor(p)));
-      store.state.wishes.forEach(p => attrs.push(this.chooseColor(p)));
+      this.myVacations.forEach(p => attrs.push(this.chooseColor(p)));
+      this.wishes.forEach(p => attrs.push(this.chooseColor(p)));
       this.inters.forEach(p => attrs.push(this.chooseColor(p)));
       return attrs;
     },
 
     dis: function(){
       let dis =  [];
-      store.state.myVacations.forEach(p => dis.push(this.disDates(p)));
-      store.state.wishes.forEach(p => dis.push(this.disDates(p)));
+      this.myVacations.forEach(p => dis.push(this.disDates(p)));
+      this.wishes.forEach(p => dis.push(this.disDates(p)));
       this.inters.forEach(p => dis.push(this.disDates(p)));
       return dis;
     }
@@ -121,10 +133,22 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      addWish: 'addWish',
+      getWishes: 'getWishes',
+      delWish: 'deleteWish',
+      addVacation: 'addVacation',
+      getVacations: 'getVacations',
+    }),
+
+    ...mapMutations ({
+
+    }),
+
     intersections() {
-      let quarter = Math.floor(this.percent * store.state.users.filter(p => p.department === store.state.currentUser.department).length);
+      let quarter = Math.floor(this.percent * this.users.filter(p => p.department === this.currentUser.department).length);
       let lastStart;
-      for (let i = 0; i < store.getters.intersInUsersDep.length; i++) {
+      for (let i = 0; i < this.intersInUsersDep.length; i++) {
         for (let j = 0; j < i; j++){
           if(!this.findIntersection(i,j)) {
             lastStart = this.getLastStart(i,j);
@@ -135,8 +159,8 @@ export default {
     },
 
     getLastStart(i,j){
-      let iStart = moment(store.getters.intersInUsersDep[i].start, 'DD.MM.YYYY');
-      let jStart = moment(store.getters.intersInUsersDep[j].start, 'DD.MM.YYYY');
+      let iStart = moment(this.intersInUsersDep[i].start, 'DD.MM.YYYY');
+      let jStart = moment(this.intersInUsersDep[j].start, 'DD.MM.YYYY');
       if(iStart.diff('01.01.2022', 'days') > jStart.diff('01.01.2022', 'days'))
         return iStart.diff('01.01.2022', 'days');
       return jStart.diff('01.01.2022', 'days');
@@ -146,27 +170,23 @@ export default {
       let start;
       let end;
       for(let j = 0; j < i; j++){
-        start = moment(store.getters.intersInUsersDep[j].start, 'DD.MM.YYYY')
+        start = moment(this.intersInUsersDep[j].start, 'DD.MM.YYYY')
             .diff('01.01.2022', 'days');
-        end = moment(store.getters.intersInUsersDep[j].end, 'DD.MM.YYYY')
+        end = moment(this.intersInUsersDep[j].end, 'DD.MM.YYYY')
             .diff('01.01.2022', 'days');
         if(lastStart <= end &&
             lastStart >= start)
         {
           let range = {};
-          range.start = store.getters.intersInUsersDep[i].start;
-          const earlierEnd = moment(store.getters.intersInUsersDep[i].end, 'DD.MM.YYYY')
+          range.start = this.intersInUsersDep[i].start;
+          const earlierEnd = moment(this.intersInUsersDep[i].end, 'DD.MM.YYYY')
               .diff('01.01.2022', 'days');
-          range.end = earlierEnd < end ? store.getters.intersInUsersDep[i].end
-              : store.getters.intersInUsersDep[j].end;
+          range.end = earlierEnd < end ? this.intersInUsersDep[i].end
+              : this.intersInUsersDep[j].end;
           range.status = 'inters';
           this.inters.push(range);
         }
       }
-
-      console.log(this.inters);
-
-
 
       if (this.inters.length < quarter) {
         this.inters = [];
@@ -175,10 +195,10 @@ export default {
 
 
     findIntersection(i, j){
-      let iStart = moment(store.getters.intersInUsersDep[i].start, 'DD.MM.YYYY');
-      let jStart = moment(store.getters.intersInUsersDep[j].start, 'DD.MM.YYYY');
-      let iEnd = moment(store.getters.intersInUsersDep[i].end, 'DD.MM.YYYY');
-      let jEnd = moment(store.getters.intersInUsersDep[j].end, 'DD.MM.YYYY');
+      let iStart = moment(this.intersInUsersDep[i].start, 'DD.MM.YYYY');
+      let jStart = moment(this.intersInUsersDep[j].start, 'DD.MM.YYYY');
+      let iEnd = moment(this.intersInUsersDep[i].end, 'DD.MM.YYYY');
+      let jEnd = moment(this.intersInUsersDep[j].end, 'DD.MM.YYYY');
       return (iEnd.diff('01.01.2022', 'days') <= jStart.diff('01.01.2022', 'days')) ||
           iStart.diff('01.01.2022', 'days') >= jEnd.diff('01.01.2022', 'days');
     },
@@ -186,44 +206,36 @@ export default {
     updateColumns() {
       this.columns = window.innerWidth > 1100? 3 : window.innerWidth > 600 ? 2 : 1;
     },
+
     showDate(){
-      const cur_id = new Date();
       if (this.date !== null){
         this.date =
             {
-              start: moment(this.date.start).format('DD.MM.YYYY'),
-              end: moment(this.date.end).format('DD.MM.YYYY'),
-              id: new Date(),
-              bindId: cur_id,
+              start: moment(this.date.start).format('YYYY-MM-DD'),
+              end: moment(this.date.end).format('YYYY-MM-DD'),
+              userId: this.currentUser.id,
             }
-        store.commit('addWish', this.date);
+            this.addWish(this.date);
         this.date = null;
       }
     },
 
     del(id){
-      store.commit('delWish', id);
+      this.delWish(id);
     },
 
     send(wish){
-      let last = 0;
-      store.state.myVacations.forEach(p => {
-        if (p.number > last) {
-          last = p.number
-        }
-      })
-      last += 1;
       let record = {
-        id: wish.id,
-        start: wish.start,
-        end: wish.end,
-        number: last,
-        dateRequest: moment().format('DD.MM.YYYY'),
-        paid: this.paid[store.state.wishes.indexOf(wish)] ? 'Да' : 'Нет',
+        start: moment(wish.start, 'DD.MM.YYYY').format('YYYY-MM-DD'),
+        end: moment(wish.end, 'DD.MM.YYYY').format('YYYY-MM-DD'),
+        number: this.last,
+        requested_date: moment(),
+        paid: this.paid[this.wishes.indexOf(wish)] ? 1 : 0,
         status: 'Ожидание',
+        userId: this.currentUser.id,
       }
-      if (this.totalDays(record.start, record.end) <= store.getters.left){
-        store.commit('addVacation', record);
+      if (this.totalDays(record.start, record.end) <= this.left){
+        this.addVacation(record);
         this.del(wish.id);
       }
       else (alert('Выбрано больше дней, чем доступно!'));
@@ -232,28 +244,32 @@ export default {
     sendAll(){
       let record = {};
       let total = 0;
-      store.state.wishes.forEach(p => {
-        total += this.totalDays(p.start, p.end);
+      this.wishes.forEach(p => {
+        const start = moment(p.start, 'DD.MM.YYYY').format('YYYY-MM-DD');
+        const end = moment(p.end, 'DD.MM.YYYY').format('YYYY-MM-DD');
+        total += this.totalDays(start, end);
       });
-      if (total <= store.getters.left){
-        store.state.wishes.forEach(p => {
+      if (total <= this.left){
+        this.wishes.forEach((p, index) => {
           record = {
-            id: p.id,
-            start: p.start,
-            end: p.end,
-            dateRequest: moment().format('DD.MM.YYYY'),
-            paid: this.paid[store.state.wishes.indexOf(p)] ? 'Да' : 'Нет',
+            start: moment(p.start, 'DD.MM.YYYY').format('YYYY-MM-DD'),
+            end: moment(p.end, 'DD.MM.YYYY').format('YYYY-MM-DD'),
+            requested_date: moment(),
+            paid: this.paid[this.wishes.indexOf(p)] ? 1 : 0,
             status: 'Ожидание',
+            userId: this.currentUser.id,
+            number: this.last + index,
           }
-          store.commit('addVacation', record);
+          this.addVacation(record);
+          this.getVacations();
+          this.del(p.id);
         })
-        store.commit('clearWishes');
       }
       else (alert('Выбрано больше дней, чем доступно!'));
     },
 
     totalDays(start,end){
-      return moment(end, 'DD.MM.YYYY').diff(moment(start, 'DD.MM.YYYY'), 'days') + 1;
+      return moment(end, 'YYYY-MM-DD').diff(moment(start, 'YYYY-MM-DD'), 'days') + 1;
     },
 
     chooseColor(rec){
@@ -282,6 +298,7 @@ export default {
 
   mounted() {
     this.intersections();
+    this.getWishes();
   }
 }
 </script>

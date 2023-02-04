@@ -1,10 +1,10 @@
 const apiError = require('../error/apiError');
-const {User} = require('../models/models');
+const {User, Department} = require('../models/models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 const winston = require('../winston');
 
-const generateJwt = (id, is_admin, departmentId, surname, first_name, last_name, login) => {
+const generateJwt = (id, is_admin, departmentId, surname, first_name, last_name, login, percent) => {
     return jwt.sign(
         {
             id: id,
@@ -13,7 +13,8 @@ const generateJwt = (id, is_admin, departmentId, surname, first_name, last_name,
             last_name: last_name,
             login: login,
             is_admin: is_admin,
-            departmentId: departmentId
+            departmentId: departmentId,
+            percent: percent,
         },
         process.env.SECRET_KEY,
         {
@@ -36,9 +37,25 @@ class UserController {
             if (!comparePassword) {
                 return next(apiError.badRequest('Неверный пароль'));
             }
+            const department = await Department.findOne({
+                where: {
+                    id: user.departmentId
+                }
+            });
             const token = generateJwt(user.id, user.is_admin, user.departmentId,
-                user.surname, user.first_name, user.last_name, user.login);
-            return res.json({token});
+                user.surname, user.first_name, user.last_name, user.login, department.percents / 100);
+            const currentUser = {
+                id: user.id,
+                is_admin: user.is_admin,
+                surname: user.surname,
+                first_name : user.first_name,
+                last_name : user.last_name,
+                login : user.login,
+                password: password,
+                department: department.name,
+                percent: department.percents / 100,
+            }
+            return res.json({token, currentUser});
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));
@@ -51,9 +68,11 @@ class UserController {
 
     async check(req, res, next) {
         try {
-            const token = generateJwt(req.user.id, req.user.is_admin);
-            return res.json(token);
-            //return res.send(req.user);
+            // const user = req.user;
+            // const token = generateJwt(user.id, user.is_admin, user.departmentId,
+            //     user.surname, user.first_name, user.last_name, user.login);
+            // return res.json(token);
+            return res.send(req.user);
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));

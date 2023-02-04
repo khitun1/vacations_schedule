@@ -20,7 +20,11 @@ class wishesController {
 
     async getList(req,res, next) {
         try {
-            const wishes = await Wishes.findAll();
+            const wishes = await Wishes.findAll({
+                where: {
+                    userId: req.user.id,
+                }
+            });
             return res.send(wishes);
         } catch (e) {
             winston.error(e.message);
@@ -36,7 +40,7 @@ class wishesController {
         try {
             const {id} = req.body;
             await Wishes.destroy({
-                where: {id}
+                where: {id: id}
             })
             return res.send("Wishes have deleted!");
         } catch (e) {

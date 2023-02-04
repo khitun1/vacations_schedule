@@ -16,36 +16,37 @@ export function options() // config for chart
                 time: {
                     unit: 'month'
                 },
-                min: store.state.year + '-01-01',
-                max: store.state.year +'-12-31',
+                min: store.state.admin.year + '-01-01',
+                max: store.state.admin.year +'-12-31',
                 ticks: {
                     align: 'start',
                     stepSize: 1,
                     callback: function (value) {
+                        const year = store.state.admin.year;
                         switch (value) {
-                            case 'Jan ' + store.state.year:
+                            case 'Jan ' + year:
                                 return '  Январь'
-                            case 'Feb ' + store.state.year:
+                            case 'Feb ' + year:
                                 return ' Февраль'
-                            case 'Mar ' + store.state.year:
+                            case 'Mar ' + year:
                                 return '    Март'
-                            case 'Apr ' + store.state.year:
+                            case 'Apr ' + year:
                                 return '  Апрель'
-                            case 'May ' + store.state.year:
+                            case 'May ' + year:
                                 return '     Май'
-                            case 'Jun ' + store.state.year:
+                            case 'Jun ' + year:
                                 return '    Июнь'
-                            case 'Jul ' + store.state.year:
+                            case 'Jul ' + year:
                                 return '    Июль'
-                            case 'Aug ' + store.state.year:
+                            case 'Aug ' + year:
                                 return '   Август'
-                            case 'Sep ' + store.state.year:
+                            case 'Sep ' + year:
                                 return ' Сентябрь'
-                            case 'Oct ' + store.state.year:
+                            case 'Oct ' + year:
                                 return '  Октябрь'
-                            case 'Nov ' + store.state.year:
+                            case 'Nov ' + year:
                                 return '   Ноябрь'
-                            case 'Dec ' + store.state.year:
+                            case 'Dec ' + year:
                                 return '  Декабрь'
                             default:
                                 break

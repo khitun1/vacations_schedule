@@ -77,7 +77,6 @@ export default {
           person = document.getElementsByClassName('person')[this.prevPerson];
           person.getElementsByClassName('rec')[this.prevRec].style.filter = 'none';
         }
-        console.log(person);
         this.prevPerson = this.uniq.indexOf(this.clickedName);
         this.prevRec = this.clickedNumber;
         person = (document.getElementsByClassName('person')[this.prevPerson]);

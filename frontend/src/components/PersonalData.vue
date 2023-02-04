@@ -7,11 +7,11 @@
     </div>
     <div class="info name">
       <p>Имя:</p>
-      <div class="text"><my-input readonly :value="user.name"/></div>
+      <div class="text"><my-input readonly :value="user.first_name"/></div>
     </div>
     <div class="info lastname">
       <p>Отчество:</p>
-      <div class="text"><my-input readonly :value="user.lastname"/></div>
+      <div class="text"><my-input readonly :value="user.last_name"/></div>
     </div>
     <div class="info login">
       <p>Логин:</p>
@@ -49,7 +49,8 @@
 </template>
 
 <script>
-import store from "@/store";
+
+import {mapActions, mapMutations} from "vuex";
 
 export default {
   name: "PersonalData",
@@ -72,11 +73,19 @@ export default {
     }
   },
   methods: {
+    ...mapActions ({
+      change_login: 'changeLogin',
+      change_password: 'changePassword',
+    }),
+
+    ...mapMutations ({
+    }),
+
     changePas(){
       document.getElementsByClassName('inputPassword')[0].focus();
       if(this.changePassword === true) this.textPasBtn = 'Подтвердить';
       else{
-        store.commit('changePassword', this.newPassword);
+        this.change_password(this.newPassword);
         this.textPasBtn = 'Изменить пароль';
       }
       this.changePassword = !this.changePassword;
@@ -87,7 +96,7 @@ export default {
       if(this.changeLogin === true)  this.textLogBtn = 'Подтвердить';
       else
       {
-        store.commit('changeLogin', this.newLogin);
+        this.change_login(this.newLogin);
         this.textLogBtn = 'Изменить логин';
       }
       this.changeLogin = !this.changeLogin;

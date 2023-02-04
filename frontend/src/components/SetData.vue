@@ -1,77 +1,77 @@
 <template>
-<!--    <my-button @click="$store.state.visibleAddDep = true"-->
-<!--                v-show="!$store.getters.visibleAdminWindow">-->
-<!--      Отделы-->
-<!--    </my-button>-->
-<!--    <form @submit.prevent v-show="$store.state.visibleAddDep">-->
-<!--      <button-back @click="$store.state.visibleAddDep = false"/>-->
-<!--      <h2>Отделы</h2>-->
-<!--      <div>-->
-<!--        <my-input class="new" placeholder="Найти или добавить отдел"-->
-<!--                  v-model="dep"/>-->
-<!--        <my-button class="add"-->
-<!--                   @click="cursor ? create() : false"-->
-<!--                   :style="{cursor: (cursor && this.dep !== '') ? 'pointer' : 'default'}">-->
-<!--          Добавить отдел-->
-<!--        </my-button>-->
-<!--      </div>-->
-<!--      <h2>Список отделов</h2>-->
-<!--      <div class="rec"-->
-<!--           v-for="dep in activeDeps" :key="dep.id">-->
-<!--        <input id="nameDep" class='classNameDep' name=dep.name :readonly="readDep" :value="dep.name">-->
-<!--        <button-icon class="edit"-->
-<!--                       v-if="changeDep !== dep.id"-->
-<!--                       @click="focus(dep.id, dep.name, 'dep')">-->
-<!--          <img src="@/images/EditIcon.png">-->
-<!--        </button-icon>-->
-<!--        <button class="accept"-->
-<!--                  v-if="changeDep === dep.id" @click="changeNameDep(dep.id)"-->
-<!--                  :style="{cursor: (cursorChange) ? 'pointer' : 'default'}">-->
-<!--            &#10004;-->
-<!--        </button>-->
-<!--        </div>-->
-<!--    </form>-->
+    <my-button @click="changeVisibleAddDep"
+                v-show="!visibleAdminWindow">
+      Отделы
+    </my-button>
+    <form @submit.prevent v-show="visibleAddDep">
+      <button-back @click="changeVisibleAddDep"/>
+      <h2>Отделы</h2>
+      <div>
+        <my-input class="new" placeholder="Найти или добавить отдел"
+                  v-model="dep"/>
+        <my-button class="add"
+                   @click="cursor ? create() : false"
+                   :style="{cursor: (cursor && this.dep !== '') ? 'pointer' : 'default'}">
+          Добавить отдел
+        </my-button>
+      </div>
+      <h2>Список отделов</h2>
+      <div class="rec"
+           v-for="dep in activeDeps" :key="dep.id">
+        <input id="nameDep" class='classNameDep' name=dep.name :readonly="readDep" :value="dep.name">
+        <button-icon class="edit"
+                       v-if="changeDep !== dep.id"
+                       @click="focus(dep.id, dep.name, 'dep')">
+          <img src="@/images/EditIcon.png">
+        </button-icon>
+        <button class="accept"
+                  v-if="changeDep === dep.id" @click="changeNameDep(dep.id)"
+                  :style="{cursor: (cursorChange) ? 'pointer' : 'default'}">
+            &#10004;
+        </button>
+        </div>
+    </form>
 
-<!--    <my-button @click="$store.state.visibleAddType = true"-->
-<!--               v-show="!$store.getters.visibleAdminWindow">-->
-<!--      Типы отпусков-->
-<!--    </my-button>-->
+    <my-button @click="changeVisibleAddType"
+               v-show="!visibleAdminWindow">
+      Типы отпусков
+    </my-button>
 
-<!--    <form @submit.prevent v-show="$store.state.visibleAddType">-->
-<!--      <button-back @click="$store.state.visibleAddType = false"/>-->
-<!--      <h2>Добавить тип отпуска</h2>-->
-<!--      <div>-->
-<!--        <my-input class="new" placeholder="Найти или добавить тип отпуска"-->
-<!--                  v-model="type"/>-->
-<!--        <my-button class="add" @click="cursor ? create() : false"-->
-<!--                   :style="{cursor: (cursor && this.type !=='') ? 'pointer' : 'default'}">-->
-<!--          Добавить-->
-<!--        </my-button>-->
-<!--      </div>-->
-<!--      <h2>Типы отпусков</h2>-->
-<!--        <div class="rec"-->
-<!--             v-for="type in activeTypes" :key="type.id">-->
-<!--          <input id="nameType" class="classNameType" :readonly="readType" :value="type.name">-->
-<!--          <button-icon class="edit"-->
-<!--                       v-if="changeType !== type.id"-->
-<!--                       @click="focus(type.id, type.name, 'type')">-->
-<!--            <img src="@/images/EditIcon.png">-->
-<!--          </button-icon>-->
-<!--          <button class="accept"-->
-<!--                  v-if="changeType === type.id" @click="changeNameType(type.id)"-->
-<!--                  :style="{cursor: (cursorChange) ? 'pointer' : 'default'}">-->
-<!--            &#10004;-->
-<!--          </button>-->
-<!--        </div>-->
-<!--    </form>-->
+    <form @submit.prevent v-show="visibleAddType">
+      <button-back @click="changeVisibleAddType"/>
+      <h2>Добавить тип отпуска</h2>
+      <div>
+        <my-input class="new" placeholder="Найти или добавить тип отпуска"
+                  v-model="type"/>
+        <my-button class="add" @click="cursor ? create() : false"
+                   :style="{cursor: (cursor && this.type !=='') ? 'pointer' : 'default'}">
+          Добавить
+        </my-button>
+      </div>
+      <h2>Типы отпусков</h2>
+        <div class="rec"
+             v-for="type in activeTypes" :key="type.id">
+          <input id="nameType" class="classNameType" :readonly="readType" :value="type.name">
+          <button-icon class="edit"
+                       v-if="changeType !== type.id"
+                       @click="focus(type.id, type.name, 'type')">
+            <img src="@/images/EditIcon.png">
+          </button-icon>
+          <button class="accept"
+                  v-if="changeType === type.id" @click="changeNameType(type.id)"
+                  :style="{cursor: (cursorChange) ? 'pointer' : 'default'}">
+            &#10004;
+          </button>
+        </div>
+    </form>
 
-    <my-button @click="$store.state.visibleChangeCon = true"
-               v-show="!$store.getters.visibleAdminWindow">
+    <my-button @click="changeVisibleChangeCon"
+               v-show="!visibleAdminWindow">
       Изменить условия
     </my-button>
 
-    <div v-show="$store.state.visibleChangeCon" class="con">
-      <button-back @click="$store.state.visibleChangeCon = false"/>
+    <div v-show="visibleChangeCon" class="con">
+      <button-back @click="changeVisibleChangeCon"/>
       <h2>Назначить условия</h2>
       <VueMultiselect class="selectDep"
                       v-model="selectedDep"
@@ -108,7 +108,7 @@
 
 <script>
 import VueMultiselect from "vue-multiselect";
-import store from "@/store";
+import {mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
   name: "SetData",
@@ -118,13 +118,25 @@ export default {
   },
 
   computed:{
+    ...mapState ({
+      visibleAddDep: state => state.admin.visibleAddDep,
+      visibleAddType: state => state.admin.visibleAddType,
+      visibleChangeCon: state => state.admin.visibleChangeCon,
+      departments: state => state.admin.departments,
+      types: state => state.admin.types,
+    }),
+
+    ...mapGetters ({
+      visibleAdminWindow: 'visibleAdminWindow',
+    }),
+
     searchDep: function(){
       return new RegExp('^' + this.dep + '.+');
     },
 
     activeDeps: function (){
       if (this.dep === '')  return [];
-      return this.deps.filter(p => this.searchDep.test(p.name) || p.name === this.dep);
+      return this.departments.filter(p => this.searchDep.test(p.name) || p.name === this.dep);
     },
 
     searchType: function(){
@@ -137,25 +149,13 @@ export default {
     },
 
     cursor: function(){
-      return !(this.deps.find(p => p.name === this.dep) || this.types.find(p => p.name === this.type));
+      return !(this.departments.find(p => p.name === this.dep) || this.types.find(p => p.name === this.type));
     },
 
     namesDeps: function (){
       let arr = [];
-      this.deps.forEach(p => arr.push(p.name));
+      this.departments.forEach(p => arr.push(p.name));
       return arr;
-    },
-  },
-
-  props: {
-    deps: {
-      type: Array,
-      required: false,
-    },
-
-    types: {
-      type: Array,
-      required: false,
     },
   },
 
@@ -190,6 +190,17 @@ export default {
   },
 
   methods: {
+    ...mapMutations ({
+      addDep: 'addDep',
+      addType: 'addType',
+      changeConditions: 'changeConditions',
+      changeDepName: 'changeDepName',
+      changeTypeName: 'changeTypeName',
+      changeVisibleAddDep: 'changeVisibleAddDep',
+      changeVisibleAddType: 'changeVisibleAddType',
+      changeVisibleChangeCon: 'changeVisibleChangeCon',
+    }),
+
     focus(id, name, type) {
       if (type === 'dep') {
         const index = this.activeDeps.findIndex(p => p.name === name);
@@ -213,14 +224,14 @@ export default {
         this.newOne.min = 7;
         this.newOne.total = 30;
         this.newOne.percent = 30;
-        store.commit('addDep', this.newOne);
+        this.addDep(this.newOne);
         this.dep = '';
 
       }
       if(this.type !== '')
       {
         this.newOne.name = this.type;
-        store.commit('addType', this.newOne);
+        this.addType(this.newOne);
         this.type = '';
       }
       this.newOne = {name: ''};
@@ -228,7 +239,7 @@ export default {
     },
 
     changeConditions(){
-      this.condition = this.deps.find(p => p.name === this.selectedDep);
+      this.condition = this.departments.find(p => p.name === this.selectedDep);
     },
 
     setCon(flag){
@@ -323,7 +334,7 @@ export default {
       }
 
       if (accept){
-        store.commit('changeConditions', this.condition);
+        this.changeConditions(this.condition);
         this.errorNum = false;
         this.errorMsg = '';
       }
@@ -340,9 +351,9 @@ export default {
         id: id,
         name: name,
       }
-      if (store.state.departments.find(p => p.id === id).name !== name &&
-              store.state.departments.find(p => p.name === name) === undefined) {
-        store.commit('changeDepName', change);
+      if (this.departments.find(p => p.id === id).name !== name &&
+              this.departments.find(p => p.name === name) === undefined) {
+        this.changeDepName(change);
       }
       this.readDep = true;
       this.changeDep = true;
@@ -354,9 +365,9 @@ export default {
         id: id,
         name: name,
       }
-      if (store.state.types.find(p => p.id === id).name !== name &&
-          store.state.types.find(p => p.name === name) === undefined) {
-        store.commit('changeTypeName', change);
+      if (this.types.find(p => p.id === id).name !== name &&
+          this.types.find(p => p.name === name) === undefined) {
+        this.changeTypeName(change);
       }
       this.readType = true;
       this.changeType = true;

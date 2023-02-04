@@ -10,7 +10,6 @@ module.exports = (req, res, next) => {
             return res.status(401).send("Пользователь не авторизован");
         }
         req.user = jwt.verify(token, process.env.SECRET_KEY);
-        console.log(req.user)
         next();
     } catch (e) {
         return res.status(401).send("Пользователь не авторизован");

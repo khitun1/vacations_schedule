@@ -7,16 +7,16 @@
       <div class="login">
         <h3>Авторизация</h3>
         <my-input placeholder="Логин" v-model="login"/>
-        <my-input placeholder="Пароль"/>
-        <router-link to="myVacations">
+        <my-input placeholder="Пароль" v-model="password"/>
           <my-button class="test" @click="check">Войти</my-button>
-        </router-link>
       </div>
     </div>
 </template>
 
 <script>
-import store from "@/store";
+
+import {mapActions, mapState} from "vuex";
+import router from "@/router/router";
 
 export default {
   name: "StartScreen",
@@ -24,12 +24,25 @@ export default {
   data() {
     return {
       login: '',
+      password: '',
     }
   },
 
+  computed: {
+    ...mapState ({
+      jwt: state => state.my.jwt,
+    }),
+  },
+
   methods: {
-    check() {
-      store.commit('getAdmin', this.login);
+    ...mapActions({
+      log_in: 'login'
+    }),
+
+    async check() {
+      await this.log_in({login: this.login, password: this.password});
+      const url = this.jwt !== '' ? '/myVacations' : '/';
+      await router.push(url);
     }
   },
 }

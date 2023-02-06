@@ -153,6 +153,7 @@ export default {
     },
 
   mounted() {
+    this.auth();
     this.getVacations();
   },
 }

@@ -49,7 +49,7 @@ import moment from "moment";
 import SignatureTable from "@/components/SignatureTable";
 import SamplePage from "@/components/Samples/SamplePage";
 import VueMultiselect from 'vue-multiselect';
-import {mapGetters, mapMutations, mapState} from "vuex";
+import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 
 
 export default {
@@ -115,6 +115,10 @@ export default {
       vuex_reject: 'reject',
       vuex_accept: 'accept',
       changeYear: 'changeYear',
+    }),
+
+    ...mapActions ({
+      auth: 'auth',
     }),
 
     cancelExplain() {
@@ -327,6 +331,7 @@ export default {
   },
 
   mounted() {
+    this.auth();
     const ctx = document.getElementById('myChart')
     this.myChart = new Chart(ctx, {
       type: 'bar',

@@ -8,7 +8,7 @@
 <script>
 import SamplePage from "@/components/Samples/SamplePage";
 import PersonalData from "@/components/PersonalData";
-import {mapState} from "vuex";
+import {mapActions, mapState} from "vuex";
 
 
 export default {
@@ -23,6 +23,16 @@ export default {
     ...mapState ({
       currentUser: state => state.my.currentUser,
     }),
+  },
+
+  methods: {
+    ...mapActions ({
+      auth: 'auth',
+    }),
+  },
+
+  mounted() {
+    this.auth();
   }
 
 }

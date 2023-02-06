@@ -7,7 +7,7 @@
       <div class="login">
         <h3>Авторизация</h3>
         <my-input placeholder="Логин" v-model="login"/>
-        <my-input placeholder="Пароль" v-model="password"/>
+        <my-input placeholder="Пароль" v-model="password" :type="'password'"/>
           <my-button class="test" @click="check">Войти</my-button>
       </div>
     </div>

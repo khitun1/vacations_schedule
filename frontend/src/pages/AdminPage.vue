@@ -29,11 +29,12 @@ export default {
   methods: {
     ...mapActions ({
       getDepartments: 'getDepartments',
+      auth: 'auth'
     }),
   },
 
   mounted() {
-    //this.getDepartments();
+    this.auth();
   }
 }
 </script>

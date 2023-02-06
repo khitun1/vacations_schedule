@@ -139,6 +139,7 @@ export default {
       delWish: 'deleteWish',
       addVacation: 'addVacation',
       getVacations: 'getVacations',
+      auth: 'auth',
     }),
 
     ...mapMutations ({
@@ -261,7 +262,6 @@ export default {
             number: this.last + index,
           }
           this.addVacation(record);
-          this.getVacations();
           this.del(p.id);
         })
       }
@@ -297,8 +297,10 @@ export default {
   },
 
   mounted() {
-    this.intersections();
+    this.auth();
     this.getWishes();
+    this.getVacations();
+    this.intersections();
   }
 }
 </script>

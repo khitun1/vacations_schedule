@@ -1,5 +1,6 @@
-import axios from "axios";
+import {host} from "../http/index";
 import moment from "moment/moment";
+import jwt_decode from "jwt-decode";
 
 export const MyModule = {
     state: () => ({
@@ -7,7 +8,6 @@ export const MyModule = {
         myVacations: [],
         wishes: [],
         total: 100,
-        jwt: '',
     }),
 
     getters: {
@@ -26,9 +26,8 @@ export const MyModule = {
     },
 
     mutations: {
-        setCurrentUser(state, res) {
-            state.jwt = 'Bearer ' + res.token;
-            state.currentUser = res.currentUser;
+            setCurrentUser(state, currentUser) {
+            state.currentUser = currentUser;
         },
 
 
@@ -38,9 +37,7 @@ export const MyModule = {
 
         setVacations(state, vacations) {
             vacations.forEach(p => {
-                p.start = p.start.split('T')[0];
                 p.start = moment(p.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
-                p.end = p.end.split('T')[0];
                 p.end = moment(p.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
             })
             state.myVacations = vacations
@@ -48,106 +45,103 @@ export const MyModule = {
 
         setWishes(state, wishes) {
             wishes.forEach(p => {
-                p.start = p.start.split('T')[0];
                 p.start = moment(p.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
                 p.end = p.end.split('T')[0];
                 p.end = moment(p.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
             })
             state.wishes = wishes
-        }
+        },
+
+        addWish(state, {wish, data}) {
+            wish.start = moment(wish.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
+            wish.end = moment(wish.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
+            wish.id = data.id;
+            state.wishes.push(wish);
+        },
+
+        delWish(state, id) {
+            let delIndex = state.wishes.indexOf(state.wishes.find(p => p.id === id));
+            state.wishes.splice(delIndex, 1);
+        },
+
+        addVacation(state, {record, data}) {
+            record.start = moment(record.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
+            record.end = moment(record.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
+            record.id = data.id;
+            state.myVacations.push(record);
+        },
+
+        delVac(state, id) {
+            let delIndex = state.myVacations.indexOf(state.myVacations.find(p => p.id === id));
+            state.myVacations.splice(delIndex, 1);
+        },
     },
 
     actions: {
         async login({commit}, {login, password}) {
-            const response = await axios.post('http://localhost:7000/api/user/login', {
+            const {data} = await host.post('user/login', {
                 login: login,
                 password: password,
             });
-            commit('setCurrentUser', response.data)
+            localStorage.setItem('token', data.token);
+            commit('setCurrentUser', jwt_decode(data.token));
         },
 
-        async auth({state, commit}) {
-            const response = await axios('http://localhost:7000/api/user/auth', {
-                headers: {
-                    Authorization: state.jwt,
-                }
-            });
-            commit('setCurrentUser', response.data);
+        async auth({commit}) {
+            const {data} = await host('user/auth');
+            commit('setCurrentUser', jwt_decode(data.token));
         },
 
-        async getVacations({state, commit}) {
-            let response = await axios('http://localhost:7000/api/vacation/getList', {
-                headers: {
-                    Authorization: state.jwt,
-                }
-            });
-            commit('setVacations', response.data)
+        async getVacations({commit}) {
+            let {data} = await host('vacation/getList');
+            commit('setVacations', data);
         },
 
-        async addWish({state}, wish) {
-            await axios.post('http://localhost:7000/api/wishes/create', wish,{
-                headers: {
-                    Authorization: state.jwt,
-                }
-            })
+        async addWish({commit},wish) {
+            const {data} = await host.post('wishes/create', wish);
+            commit('addWish', {wish, data});
         },
 
-        async getWishes({state, commit}) {
-            const response = await axios('http://localhost:7000/api/wishes/getList', {
-                headers: {
-                    Authorization: state.jwt,
-                }
-            })
+        async getWishes({commit}) {
+            const response = await host('wishes/getList')
             response.data.forEach(p => console.log(p.start.split('T')))
             commit('setWishes', response.data)
         },
 
-        async deleteWish({state}, id) {
-            await axios.post('http://localhost:7000/api/wishes/del', {
+        async deleteWish({commit},id) {
+            await host.post('wishes/del', {
                 id: id,
-            }, {
-                headers: {
-                    Authorization: state.jwt,
-                }
             })
+            console.log(id)
+            commit('delWish', id);
         },
 
-        async addVacation({state}, record) {
-            await axios.post('http://localhost:7000/api/vacation/create', record, {
-                headers: {
-                    Authorization: state.jwt,
-                }
-            })
+        async addVacation({commit}, record) {
+            const {data} = await host.post('vacation/create', record);
+            commit('addVacation', {record, data});
         },
 
-        async deleteVacation({state}, id) {
-            await axios.post('http://localhost:7000/api/vacation/del', {
+        async deleteVacation({commit}, id) {
+            await host.post('vacation/del', {
                 id: id,
-            }, {
-                headers: {
-                    Authorization: state.jwt,
-                }
             })
+            commit('delVac', id);
         },
 
-        async changeLogin({state}, login) {
-            await axios.post('http://localhost:7000/api/user/changeLogin', {
+        async changeLogin({commit}, login) {
+            const {data} = await host.post('user/changeLogin', {
                 login: login,
-            }, {
-                headers: {
-                    Authorization: state.jwt,
-                }
             })
+            localStorage.setItem('token', data.token);
+            commit('setCurrentUser', jwt_decode(data.token));
         },
 
-        async changePassword({state}, password) {
-            await axios.post('http://localhost:7000/api/user/changePassword', {
+        async changePassword({commit}, password) {
+            const {data} = await host.post('user/changePassword', {
                 password: password,
-            }, {
-                headers: {
-                    Authorization: state.jwt,
-                }
             })
+            localStorage.setItem('token', data.token);
+            commit('setCurrentUser', jwt_decode(data.token));
         },
     }
 }

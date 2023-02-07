@@ -6,8 +6,8 @@ class wishesController {
     async create(req, res, next) {
         try {
             const {start, end, userId} = req.body;
-            await Wishes.create({start, end, userId});
-            return res.send("Wishes have created!");
+            const wish = await Wishes.create({start, end, userId});
+            return res.json({id: wish.id});
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));

@@ -10,10 +10,10 @@
         <p>В режиме календаря</p>
       </my-button>
       <div class="plan">
-        <h1>Запланированные отпуска</h1>
+        <h1 v-show="myVacations.length > 0">Запланированные отпуска</h1>
         <my-table
             :records="myVacations.filter(p => p.status !== 'Использовано')"/>
-        <h1 style="margin-top: 20px">История отпусков</h1>
+        <h1 style="margin-top: 20px" v-show="myVacations.length > 0">История отпусков</h1>
         <my-table
             :records="myVacations.filter(p => p.status === 'Использовано')"/>
       </div>

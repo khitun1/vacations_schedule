@@ -2,33 +2,37 @@ const {User, Department, Vacations} = require('../models/models');
 const bcrypt = require('bcrypt');
 const apiError = require("../error/apiError");
 const winston = require('../winston');
+const { Op } = require("sequelize");
 
 class UsersController {
     async getVacations(req, res, next) {
         try {
+            const dep = await Department.findOne({
+                where: {
+                    name: req.user.department,
+                }
+            })
             const users = await User.findAll({
                 where: {
-                    departmentId: req.user.departmentId,
+                    departmentId: dep.id,
                 }
             });
-            let vacations = [];
+
+            let vacationsEmployees = [];
             for (let i = 0; i < users.length; i++) {
                 const partVacs = await Vacations.findAll({
                     where: {
-                        UserId: users[i].id
+                        UserId: users[i].id,
+                        status: {
+                            [Op.ne]: 'Отказ',
+                        }
                     }
                 })
-                vacations.push(...partVacs);
+                vacationsEmployees.push(...partVacs);
             }
-            for (let i = 0; i < vacations.length; i++) {
-                const user = await User.findOne({
-                    where: {
-                        id: vacations[i].userId,
-                    }
-                })
-                vacations[i].userId = user.first_name + ' ' + user.last_name + ' ' + user.surname;
-            }
-            return res.send(vacations);
+            vacationsEmployees.sort((a, b) => a.surname > b.surname ? -1 : 1);
+            vacationsEmployees.sort((a, b) => a.number > b.number ? 1 : -1);
+            return res.json({vacationsEmployees});
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));
@@ -43,7 +47,7 @@ class UsersController {
             const {first_name, last_name, surname, login, password, is_admin} = req.body;
             const dep = await Department.findOne({
                 where: {
-                    id: req.user.departmentId,
+                    name: req.user.department,
                 }
             });
             const user = await User.findOne({
@@ -52,8 +56,8 @@ class UsersController {
             if (user) {
                 return next(apiError.badRequest('Пользователь с таким логином уже есть!'));
             }
-            const departmentId = dep.dataValues.id;
-            const left_days = dep.dataValues.total;
+            const departmentId = dep.id;
+            const left_days = dep.total;
             const md5password = await bcrypt.hash(password, 5);
             await User.create({first_name, last_name, surname, left_days,
                 login, md5password, is_admin, departmentId});
@@ -68,11 +72,19 @@ class UsersController {
     }
     async getList(req, res, next) {
         try {
-            const users =  await User.findAll({
+            const dep = await Department.findOne({
                 where: {
-                    departmentId: req.user.departmentId,
+                    name: req.user.department,
                 }
             });
+            let users =  await User.findAll({
+                where: {
+                    departmentId: dep.id,
+                }
+            });
+            users.forEach(p => {
+                p.departmentId = dep.name
+            })
             return res.send(users);
         } catch (e) {
             winston.error(e.message);
@@ -85,6 +97,7 @@ class UsersController {
 
     async del(req, res, next) {
         try {
+            console.log('here')
             const {id} = req.body;
             await Vacations.destroy({
                 where: {UserId: id}
@@ -104,12 +117,36 @@ class UsersController {
 
     async decisionVacation(req, res, next) {
         try {
-            const status = req.body.status;
-            await Vacations.update({status: status}, {
+            const {id, status, explanation} = req.body;
+            const userId = await Vacations.findOne({
                 where: {
-                    id: req.body.id,
+                    id: id,
+                }
+            });
+            await Vacations.update({
+                status: status,
+                explanation: explanation,
+            }, {
+                where: {
+                    id: id,
                 }
             })
+            const vacations = await Vacations.findAll({
+                where: {
+                    userId: userId.userId,
+                    status: {
+                        [Op.ne] : 'Отказ',
+                    }
+                }
+            })
+            let num = 1;
+            for (let i = 0; i < vacations.length; i++) {
+                Vacations.update({number: num++}, {
+                    where: {
+                        id: vacations[i].id,
+                    }
+                })
+            }
             return res.send("Vacation have decided!");
         } catch (e) {
             winston.error(e.message);

@@ -8,19 +8,13 @@
     <button-back @click="changeVisibleDeleteUser"/>
     <h2>Удаление пользователя</h2>
     <div class="inputs">
-      <VueMultiselect class="selectDep"
-                      v-model="selectedDep"
-                      :options="namesDeps"
-                      placeholder="Выберите отдел"
-                      :show-no-results="false"
-                      :show-labels="false"/>
       <my-input class="delete" placeholder="Найти пользователя"
                 v-model="user"/>
     </div>
     <h2>Список пользователей</h2>
     <div class="rec"
-         v-for="user in users" :key="user.id">
-      <p>{{user.surname + ' ' + user.name + ' ' + user.lastname}}</p>
+         v-for="user in usersList" :key="user.id">
+      <p>{{user.surname + ' ' + user.first_name + ' ' + user.last_name}}</p>
       <button-icon @click="deleteUser(user.id)">
         <img src="@/images/DeleteIcon.png">
       </button-icon>
@@ -29,16 +23,14 @@
 </template>
 
 <script>
-import VueMultiselect from "vue-multiselect";
 import ButtonBack from "@/components/UI/ButtonBack.vue";
-import {mapGetters, mapMutations, mapState} from "vuex";
+import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
   name: "deleteUser",
 
   components: {
     ButtonBack,
-    VueMultiselect,
   },
 
   data() {
@@ -53,36 +45,37 @@ export default {
       changeVisibleDeleteUser: 'changeVisibleDeleteUser',
     }),
 
+    ...mapActions ({
+      deleteUserVuex: 'deleteUser',
+    }),
+
     deleteUser(id) {
-      return id;
+      this.deleteUserVuex(id);
     }
   },
 
   computed: {
     ...mapState ({
+      currentUser: state => state.my.currentUser,
       visibleDeleteUser: state => state.admin.visibleDeleteUser,
-      departments: state => state.admin.departments,
       users: state => state.admin.users,
+      department: state => state.admin.department
     }),
 
     ...mapGetters ({
       visibleAdminWindow: 'visibleAdminWindow',
     }),
 
-    namesDeps: function (){
-      let arr = [];
-      this.departments.forEach(p => arr.push(p.name));
-      return arr;
-    },
-
     searchUser: function(){
       return new RegExp('^' + this.user + '.+');
     },
 
-    users: function () {
+    usersList: function () {
       if (this.user === '')  return [];
-      return this.users.filter(p => (this.searchUser.test(p.name) || p.name === this.user)
-          && p.department === this.selectedDep);
+      let list = this.users.filter(p => (this.searchUser.test(p.name) || p.name === this.user)
+          && p.departmentId === this.department.name);
+      list.splice(list.indexOf(list.find(p => p.id === this.currentUser.id)), 1);
+      return list;
     },
   },
 
@@ -109,16 +102,6 @@ export default {
 {
   height: 40px;
   width: 250px;
-}
-
-.selectDep
-{
-  height: 30px;
-  width: 260px;
-  margin-left: 10px;
-  margin-top: 15px;
-  margin-bottom: 20px;
-  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
 }
 
 .delete

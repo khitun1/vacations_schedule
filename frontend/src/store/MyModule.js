@@ -1,4 +1,4 @@
-import {host} from "../http/index";
+import {host, firstHost} from "../http/index";
 import moment from "moment/moment";
 import jwt_decode from "jwt-decode";
 
@@ -8,6 +8,10 @@ export const MyModule = {
         myVacations: [],
         wishes: [],
         total: 100,
+        dates: [],
+        len: 0,
+        percent: 0,
+        error: '',
     }),
 
     getters: {
@@ -22,17 +26,18 @@ export const MyModule = {
 
         last(state) {
             return state.myVacations.length + 1;
-        }
+        },
+
+        intersInUsersDep(state) {
+            return state.dates;
+        },
     },
 
     mutations: {
-            setCurrentUser(state, currentUser) {
+        setCurrentUser(state, currentUser) {
+            state.error = '';
+            state.percent = currentUser.percent;
             state.currentUser = currentUser;
-        },
-
-
-        clearJWT(state) {
-            state.jwt = '';
         },
 
         setVacations(state, vacations) {
@@ -46,7 +51,6 @@ export const MyModule = {
         setWishes(state, wishes) {
             wishes.forEach(p => {
                 p.start = moment(p.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
-                p.end = p.end.split('T')[0];
                 p.end = moment(p.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
             })
             state.wishes = wishes
@@ -75,14 +79,28 @@ export const MyModule = {
             let delIndex = state.myVacations.indexOf(state.myVacations.find(p => p.id === id));
             state.myVacations.splice(delIndex, 1);
         },
+
+        setDates(state, data) {
+            data.dates.forEach(p => {
+                p.start = moment(p.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
+                p.end = moment(p.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
+            })
+            state.dates = data.dates;
+            state.len = data.len;
+        },
+
+        setError(state, data) {
+                state.error = data;
+        }
     },
 
     actions: {
         async login({commit}, {login, password}) {
-            const {data} = await host.post('user/login', {
+            const {data} = await firstHost.post('user/login', {
                 login: login,
                 password: password,
             });
+            if (!data.token) commit('setError', data);
             localStorage.setItem('token', data.token);
             commit('setCurrentUser', jwt_decode(data.token));
         },
@@ -104,7 +122,6 @@ export const MyModule = {
 
         async getWishes({commit}) {
             const response = await host('wishes/getList')
-            response.data.forEach(p => console.log(p.start.split('T')))
             commit('setWishes', response.data)
         },
 
@@ -112,7 +129,6 @@ export const MyModule = {
             await host.post('wishes/del', {
                 id: id,
             })
-            console.log(id)
             commit('delWish', id);
         },
 
@@ -121,11 +137,16 @@ export const MyModule = {
             commit('addVacation', {record, data});
         },
 
-        async deleteVacation({commit}, id) {
+        async deleteVacation({state, commit}, id) {
+            commit('delVac', id);
+            let num = 1;
+            state.myVacations.forEach(p => {
+                p.number = num++;
+            })
             await host.post('vacation/del', {
                 id: id,
             })
-            commit('delVac', id);
+
         },
 
         async changeLogin({commit}, login) {
@@ -143,5 +164,10 @@ export const MyModule = {
             localStorage.setItem('token', data.token);
             commit('setCurrentUser', jwt_decode(data.token));
         },
+
+        async getDates({commit}) {
+            const {data} = await host('user/getDates');
+            commit('setDates', data)
+        }
     }
 }

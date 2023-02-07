@@ -3,15 +3,15 @@
     <h1>Личные данные</h1>
     <div class="info surname">
       <p>Фамилия:</p>
-      <div class="text"><my-input readonly :value="user.surname"/></div>
+      <div class="text"><my-input readonly :value="currentUser.surname"/></div>
     </div>
     <div class="info name">
       <p>Имя:</p>
-      <div class="text"><my-input readonly :value="user.first_name"/></div>
+      <div class="text"><my-input readonly :value="currentUser.first_name"/></div>
     </div>
     <div class="info lastname">
       <p>Отчество:</p>
-      <div class="text"><my-input readonly :value="user.last_name"/></div>
+      <div class="text"><my-input readonly :value="currentUser.last_name"/></div>
     </div>
     <div class="info login">
       <p>Логин:</p>
@@ -40,7 +40,7 @@
     <div class="info department">
       <p>Отдел:</p>
       <div class="text">
-        <my-input readonly :value="user.department"/>
+        <my-input readonly :value="currentUser.department"/>
       </div>
 
     </div>
@@ -50,24 +50,30 @@
 
 <script>
 
-import {mapActions, mapMutations} from "vuex";
+import {mapActions, mapMutations, mapState} from "vuex";
 
 export default {
   name: "PersonalData",
 
-  props: {
-    user: {
-      type: Object,
-      required: true,
+  computed: {
+    ...mapState ({
+      currentUser: state => state.my.currentUser,
+    }),
+
+    newPassword() {
+      return this.currentUser.password;
+    },
+
+    newLogin() {
+      return this.currentUser.login;
     }
   },
+
   data() {
     return {
       changePassword: true,
       typePassword: 'text',
       changeLogin: true,
-      newPassword: this.user.password,
-      newLogin: this.user.login,
       textLogBtn: 'Изменить логин',
       textPasBtn: 'Изменить пароль',
     }

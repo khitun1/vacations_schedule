@@ -1,14 +1,6 @@
 <template>
   <sample-page :choice="'allVacations'">
-      <h2>Запросы на подпись отпуска</h2>
-    <VueMultiselect
-        class="chooseDep"
-        v-model="selectedDep"
-        :options="namesDeps"
-        :show-no-results="false"
-        @close="chartClick"
-        placeholder="Выберите отдел"
-        :show-labels="false"/>
+      <h2 v-if="vacations.filter(p => p.status === 'Ожидание').length > 0">Запросы на подпись отпуска</h2>
     <signature-table
             :requested="vacations"
             :clickedName="clickedName"
@@ -32,7 +24,6 @@
       <h3 class="year">{{year}} г.</h3>
       <button @click="nextYear">&#62;</button>
     </div>
-    <div class="block" v-if="vacations.length === 0"></div>
     <div class="chart">
       <canvas id="myChart"
               :style="{height: height + 'px'}"
@@ -48,8 +39,7 @@ import {options} from "@/components/Options";
 import moment from "moment";
 import SignatureTable from "@/components/SignatureTable";
 import SamplePage from "@/components/Samples/SamplePage";
-import VueMultiselect from 'vue-multiselect';
-import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
+import {mapActions, mapMutations, mapState} from "vuex";
 
 
 export default {
@@ -71,7 +61,6 @@ export default {
 
   components: {
     SamplePage,
-    VueMultiselect,
     SignatureTable,
   },
 
@@ -79,46 +68,34 @@ export default {
     ...mapState ({
       selectedDep: state => state.admin.selectedDep,
       year: state => state.admin.year,
-      departments: state => state.admin.departments,
+      department: state => state.admin.department,
       users: state => state.admin.users,
       all: state => state.admin.all,
-    }),
-
-    ...mapGetters ({
-      vacations: "vacations",
+      vacations: state => state.admin.vacations,
+      percent: state => state.my.currentUser.percent,
     }),
 
     height: function (){
       return this.vacations.filter(p => p.department === this.selectedDep).length * 50 + 125;
     },
 
-    percent: function (){
-      return this.departments.find(p => p.name === this.selectedDep).percent / 100;
-    },
-
     top: function(){
       return this.vacations.length === 0? '-250px': 0;
     },
-
-    namesDeps: function (){
-      let arr = [];
-      this.departments.forEach(p => arr.push(p.name));
-      return arr;
-    }
   },
 
   methods:{
     ...mapMutations ({
       prev: 'prevYear',
       next: 'nextYear',
-      vuex_shift: "shift",
-      vuex_reject: 'reject',
-      vuex_accept: 'accept',
       changeYear: 'changeYear',
     }),
 
     ...mapActions ({
       auth: 'auth',
+      getUsers: 'getUsers',
+      getEmployeesVacations: 'getEmployeesVacations',
+      decisionVacation: 'decisionVacation',
     }),
 
     cancelExplain() {
@@ -153,7 +130,7 @@ export default {
 
     getLabels(){  // get unique names
       let labels = [];
-      this.vacations.forEach(p => labels.push(p.surname + ' ' + p.name + ' ' + p.lastname));
+      this.vacations.forEach(p => labels.push(p.surname + ' ' + p.first_name + ' ' + p.last_name));
       return [...new Set(labels)];
     },
 
@@ -210,12 +187,15 @@ export default {
             range >= start.diff('01.01.2022', 'days'))
         {
           inters.push(this.vacations[j].start);
+          this.vacations[j].intersections = 'Да';
         }
+        else this.vacations[j].intersections = 'Нет';
       }
 
       if(inters.length !== 0 && inters.length >= quarter)
       {
         inters.push(this.vacations[i].start);
+        this.vacations[i].intersections = 'Да';
         let last = inters[this.getLastDate(inters)];
         if(this.intersections.indexOf(last) === -1)
         {
@@ -238,11 +218,13 @@ export default {
         });
         this.amount++;
       }
+      else this.vacations[i].intersections = 'Нет';
     },
 
     intersection(i){ // find intersection
-      let quarter = Math.floor(this.percent * this.users.filter(p => p.department === this.selectedDep).length);
+      let quarter = Math.floor(this.percent * this.users.length);
       let range;
+      if (i === 0)  this.vacations[i].intersections = 'Нет';
       for (let j = 0; j < i; j++){
         if(!this.findIntersection(i,j)) {
           range = this.getRange(i,j);
@@ -255,55 +237,66 @@ export default {
       this.myChart.data.datasets = [];
       this.intersections = [];
       this.amount = 0;
+      let counter = 0;
       this.myChart.data.labels = this.getLabels();
-      for(let i = 0; i < this.vacations.length; i++) {
-        let n = this.vacations[i].number;
+      this.vacations.forEach(p => {
+        if (p.status === 'none')  counter++;
+      })
+      if (counter === this.users.length) {
+        this.myChart.data.datasets.splice(0, 0,{
+          label: 'Отпуска отсутствуют',
+          grouped: false,
+          data: [],
+        })
+      }
+      else {
+        for(let i = 0; i < this.vacations.length; i++) {
+          let n = this.vacations[i].number;
           if (this.vacations[i].status !== 'Отказ' &&
               this.vacations[i].status !== 'none') {
             this.findSet(n);
             if(n === 1) this.myChart.data.datasets[this.amount].data.push(this.getDates(i));
             else {
-              let name = this.vacations[i].surname + ' ' + this.vacations[i].name + ' ' + this.vacations[i].lastname;
+              let name = this.vacations[i].surname + ' ' + this.vacations[i].first_name +
+                  ' ' + this.vacations[i].last_name;
               this.myChart.data.datasets[n-1+this.amount].data[this.getId(name)] = this.getDates(i);
             }
             this.intersection(i);
           }
           else {
-            if (n === 1) this.myChart.data.datasets[this.amount].data.push(this.getDates(-1))
+            if (n === 1) this.myChart.data.datasets[0].data.push(this.getDates(-1))
           }
+        }
       }
       this.myChart.update();
     },
 
     explain(){
-      let surname = this.all.find(p => p.id === this.id).surname;
-      let name = this.all.find(p => p.id === this.id).name;
-      let lastname = this.all.find(p => p.id === this.id).lastname;
+      let surname = this.vacations.find(p => p.id === this.id).surname;
+      let name = this.vacations.find(p => p.id === this.id).first_name;
+      let lastname = this.vacations.find(p => p.id === this.id).last_name;
       let arr = [surname, name, lastname];
       let count = [];
-      const num = this.all.find(p => p.id === this.id).number;
-      this.all.forEach(p => p.surname === arr[0] && p.name === arr[1] && p.lastname === arr[2] ? count.push(p) : false);
-      const len = count.length;
-      if (num < len) {
-        const con = {
-          arr: arr,
-          num: num,
-        }
-        this.vuex_shift(con);
-      }
+      this.vacations.forEach(p => p.surname === arr[0] && p.first_name === arr[1]
+        && p.last_name === arr[2] ? count.push(p) : false);
       document.querySelector('dialog').close();
       this.indent = 0;
       const rej = {
         id: this.id,
-        exp: this.explanation,
+        explanation: this.explanation,
+        status: 'Отказ'
       }
-      this.vuex_reject(rej);
+      this.decisionVacation(rej);
       this.explanation = '';
       this.chartClick();
     },
 
     accept(id){
-      this.vuex_accept(id);
+      const obj = {
+        id: id,
+        status: 'Утверждено',
+      }
+      this.decisionVacation(obj);
     },
 
     show(id){
@@ -332,6 +325,8 @@ export default {
 
   mounted() {
     this.auth();
+    this.getUsers();
+    this.getEmployeesVacations();
     const ctx = document.getElementById('myChart')
     this.myChart = new Chart(ctx, {
       type: 'bar',
@@ -339,7 +334,17 @@ export default {
       options: options(),
     })
     return this.myChart;
+  },
+
+  watch: {
+    vacations: {
+      handler() {
+        this.chartClick();
+      },
+      deep: true
+    },
   }
+
 }
 </script>
 
@@ -350,16 +355,6 @@ export default {
 
 <style scoped>
 
-.chooseDep
-{
-  width: 300px;
-  margin-left: 40px;
-  margin-bottom: 20px;
-  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
-  outline: none;
-
-}
-
 .chart
 {
   width: 95%;
@@ -367,22 +362,12 @@ export default {
   height: fit-content;
   position: relative;
   top: v-bind(top);
-  z-index: 0;
 
 }
 
 #myChart
 {
   height: v-bind(height);
-}
-
-.block
-{
-  position: relative;
-  width: 100%;
-  background: white;
-  height: 300px;
-  z-index: 1;
 }
 
 .failure

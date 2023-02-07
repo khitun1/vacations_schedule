@@ -15,26 +15,20 @@
                   v-model="user.first_name"
                   v-bind:style="{boxShadow: user.first_name === '' && flag? color : ''}"/>
         <my-input class="in" :placeholder="lastname"
-                  v-model="user.lastname"
+                  v-model="user.last_name"
                   v-bind:style="{boxShadow: user.last_name === '' && flag? color : ''}"/>
         <my-input class="in" :placeholder="log"
                   v-model="user.login"
                   v-bind:style="{boxShadow: user.login === '' && flag? color : ''}"/>
         <div>
           <my-input class="in" :placeholder="pas" :type="typePassword" style="left: 20px"
-                    v-model="user.md5password"
-                    v-bind:style="{boxShadow: user.md5password === '' && flag? color : ''}"/>
+                    v-model="user.password"
+                    v-bind:style="{boxShadow: user.password === '' && flag? color : ''}"/>
           <button-icon style="top: 8px; left: 15px" @click="typePassword = typePassword === 'text'? 'password': 'text'">
             <img src="@/images/WatchIcon.png" v-show="typePassword === 'text'"/>
             <img src="@/images/closePassword.webp" v-show="typePassword !== 'text'">
           </button-icon>
         </div>
-        <VueMultiselect class="selectDep"
-                        v-model="user.departmentId"
-                        :options="namesDeps"
-                        :show-no-results="false"
-                        placeholder="Выберите отдел"
-                        :show-labels="false"/>
         <VueMultiselect class="selectDep"
                         v-model="user.is_admin"
                         :options="rights"
@@ -66,18 +60,12 @@ export default {
   computed: {
     ...mapState ({
       visibleAddUser: state => state.admin.visibleAddUser,
-      departments: state => state.admin.departments,
       users: state => state.admin.users,
     }),
 
     ...mapGetters ({
       visibleAdminWindow: "visibleAdminWindow",
     }),
-    namesDeps: function (){
-      let arr = [];
-      this.departments.forEach(p => arr.push(p.name));
-      return arr;
-    }
   },
 
   data() {
@@ -89,8 +77,7 @@ export default {
         first_name: '',
         last_name: '',
         login: '',
-        md5password: '',
-        departmentId: '',
+        password: '',
         is_admin: '',
       },
       surname: 'Фамилия',
@@ -101,7 +88,7 @@ export default {
       dep: 'Отдел',
       error: false,
       visible: true,
-      errorMsg: 'sad',
+      errorMsg: '',
       typePassword: 'text',
       flag: false,
       visibleForm: false,
@@ -118,24 +105,42 @@ export default {
     }),
 
     createUser(){
+      this.error = false;
+      this.errorMsg = '';
       if(!this.user.surname && !this.user.name && !this.user.lastname
-      && !this.user.login && !this.user.password && !this.user.department && !this.user.isAdmin)  return;
+      && !this.user.login && !this.user.password && !this.user.is_admin)  return;
+      if(!this.user.surname)  {
+        this.error = true;
+        this.surname = 'Введите фамилию!';
+      }
       this.flag = true;
-      if(!this.user.surname)  this.surname = 'Введите фамилию!';
-      if(!this.user.name)  this.name = 'Введите имя!';
-      if(!this.user.lastname)  this.lastname = 'Введите отчество!';
-      if(!this.user.login)  this.log = 'Введите логин!';
-      if(!this.user.password)  this.pas = 'Введите пароль!';
-      if(!this.user.departmentId)  this.dep = 'Выберите отдел!';
-      if(!this.user.is_admin)  this.dep = 'Укажите права!';
-      else if(this.users.find(p => p.login === this.user.login))
+      if(!this.user.first_name)  {
+        this.error = true;
+        this.name = 'Введите имя!';
+      }
+      if(!this.user.last_name)  {
+        this.error = true;
+        this.lastname = 'Введите отчество!';
+      }
+      if(!this.user.login)  {
+        this.error = true;
+        this.log = 'Введите логин!';
+      }
+      if(!this.user.password)  {
+        this.error = true;
+        this.pas = 'Введите пароль!';
+      }
+      if(!this.user.is_admin)  {
+        this.error = true;
+        this.dep = 'Укажите права!';
+      }
+      if(this.users.find(p => p.login === this.user.login))
       {
         this.errorMsg = 'Пользователь с таким логином уже есть!';
         this.error = true;
       }
-      else {
-        const id = this.departments.find(p => p.name === this.user.departmentId).id;
-        this.user.departmentId = id;
+      if (this.error === false) {
+        console.log(this.user)
         this.addUser(this.user)
         this.clear();
       }
@@ -150,12 +155,12 @@ export default {
         password: '',
         department: '',
       };
-      // this.surname = 'Фамилия';
-      // this.name = 'Имя';
-      // this.lastname = 'Отчество';
-      // this.log = 'Логин';
-      // this.pas = 'Пароль';
-      // this.dep = 'Отдел';
+      this.surname = 'Фамилия';
+      this.name = 'Имя';
+      this.lastname = 'Отчество';
+      this.log = 'Логин';
+      this.pas = 'Пароль';
+      this.dep = 'Отдел';
       this.error = false;
       this.flag = false;
       this.changeVisibleAddUser();
@@ -180,7 +185,7 @@ form
   background: #f5f5f5;
 }
 
-.create, .cancel
+.create
 {
   width: 250px;
   height: 37px;

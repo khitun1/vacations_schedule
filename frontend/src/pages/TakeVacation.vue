@@ -73,17 +73,20 @@ export default {
     ...mapState ({
       myVacations: state => state.my.myVacations,
       wishes: state => state.my.wishes,
-      departments: state => state.admin.departments,
       currentUser: state => state.my.currentUser,
       total: state => state.my.total,
-      users: state => state.admin.users,
-      percent: state => state.my.currentUser.percent,
+      len: state => state.my.len,
     }),
+
     ...mapGetters ({
       left: 'left',
       intersInUsersDep: 'intersInUsersDep',
       last: 'last',
     }),
+
+    percent() {
+      return this.currentUser.percent;
+    },
 
 
     width: function(){
@@ -92,7 +95,9 @@ export default {
 
     attrs: function (){
       let attrs =  [];
-      this.myVacations.forEach(p => attrs.push(this.chooseColor(p)));
+      this.myVacations.forEach(p => {
+        if (p.status !== 'Отказ') attrs.push(this.chooseColor(p))
+      });
       this.wishes.forEach(p => attrs.push(this.chooseColor(p)));
       this.inters.forEach(p => attrs.push(this.chooseColor(p)));
       return attrs;
@@ -100,7 +105,9 @@ export default {
 
     dis: function(){
       let dis =  [];
-      this.myVacations.forEach(p => dis.push(this.disDates(p)));
+      this.myVacations.forEach(p => {
+        if (p.status !== 'Отказ')   dis.push(this.disDates(p))
+      });
       this.wishes.forEach(p => dis.push(this.disDates(p)));
       this.inters.forEach(p => dis.push(this.disDates(p)));
       return dis;
@@ -110,7 +117,6 @@ export default {
   data()
   {
     return {
-
       visibleTake: false,
       value: '',
       context: null,
@@ -140,6 +146,7 @@ export default {
       addVacation: 'addVacation',
       getVacations: 'getVacations',
       auth: 'auth',
+      getDates: 'getDates',
     }),
 
     ...mapMutations ({
@@ -147,13 +154,28 @@ export default {
     }),
 
     intersections() {
-      let quarter = Math.floor(this.percent * this.users.filter(p => p.department === this.currentUser.department).length);
-      let lastStart;
-      for (let i = 0; i < this.intersInUsersDep.length; i++) {
-        for (let j = 0; j < i; j++){
-          if(!this.findIntersection(i,j)) {
-            lastStart = this.getLastStart(i,j);
-            this.draw(i, lastStart, quarter);
+      let quarter = Math.floor(this.percent * this.len);
+      if (quarter <= 1) {
+        this.intersInUsersDep.forEach(p => {
+          if (p.userId !== this.currentUser.id) {
+            const vac = {
+              start: p.start,
+              end: p.end,
+              status: 'inters',
+            }
+            console.log(p.userId)
+            this.inters.push(vac);
+          }
+        })
+      }
+      else {
+        let lastStart;
+        for (let i = 0; i < this.intersInUsersDep.length; i++) {
+          for (let j = 0; j < i; j++){
+            if(this.findIntersection(this.intersInUsersDep[i], this.intersInUsersDep[j])) {
+              lastStart = this.getLastStart(i,j);
+              this.draw(i, lastStart, quarter);
+            }
           }
         }
       }
@@ -195,13 +217,13 @@ export default {
     },
 
 
-    findIntersection(i, j){
-      let iStart = moment(this.intersInUsersDep[i].start, 'DD.MM.YYYY');
-      let jStart = moment(this.intersInUsersDep[j].start, 'DD.MM.YYYY');
-      let iEnd = moment(this.intersInUsersDep[i].end, 'DD.MM.YYYY');
-      let jEnd = moment(this.intersInUsersDep[j].end, 'DD.MM.YYYY');
-      return (iEnd.diff('01.01.2022', 'days') <= jStart.diff('01.01.2022', 'days')) ||
-          iStart.diff('01.01.2022', 'days') >= jEnd.diff('01.01.2022', 'days');
+    findIntersection(first, second){
+      let iStart = moment(first.start, 'DD.MM.YYYY');
+      let jStart = moment(second.start, 'DD.MM.YYYY');
+      let iEnd = moment(first.end, 'DD.MM.YYYY');
+      let jEnd = moment(second.end, 'DD.MM.YYYY');
+      return (iEnd.diff('01.01.2022', 'days') >= jStart.diff('01.01.2022', 'days')) ||
+          iStart.diff('01.01.2022', 'days') <= jEnd.diff('01.01.2022', 'days');
     },
 
     updateColumns() {
@@ -226,6 +248,7 @@ export default {
     },
 
     send(wish){
+      let flag = 0;
       let record = {
         start: moment(wish.start, 'DD.MM.YYYY').format('YYYY-MM-DD'),
         end: moment(wish.end, 'DD.MM.YYYY').format('YYYY-MM-DD'),
@@ -235,7 +258,13 @@ export default {
         status: 'Ожидание',
         userId: this.currentUser.id,
       }
-      if (this.totalDays(record.start, record.end) <= this.left){
+      this.intersInUsersDep.forEach(p => {
+        if (this.findIntersection(record, p)) {
+          flag = 1;
+        }
+      })
+      if (flag === 1) alert('Выбранные даты вызовут пересечение');
+      else if (this.totalDays(record.start, record.end) <= this.left){
         this.addVacation(record);
         this.del(wish.id);
       }
@@ -296,10 +325,12 @@ export default {
     },
   },
 
-  mounted() {
-    this.auth();
-    this.getWishes();
-    this.getVacations();
+
+  async mounted() {
+    await this.auth();
+    await this.getDates();
+    await this.getWishes();
+    await this.getVacations();
     this.intersections();
   }
 }
@@ -415,10 +446,10 @@ h2
 
 .wishesDates button
 {
-  top: -5px;
+  top: -9px;
   margin-bottom: 2px;
   padding: 0 15px 2px;
-  height: fit-content;
+  height: 27px;
 }
 
 .colours

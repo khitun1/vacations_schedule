@@ -2,13 +2,31 @@ const {Vacations} = require("../models/models");
 const apiError = require("../error/apiError");
 const winston = require('../winston');
 const {log} = require("winston");
+const { Op } = require("sequelize");
 
 class vacationController {
     async create(req, res, next) {
         try {
             const {number, start, end, requested_date, status, paid, explanation, userId, typeId} = req.body;
-            await Vacations.create({number, start, end, requested_date, status, paid, explanation, userId, typeId});
-            return res.send('Vacation have created!');
+            const vac = await Vacations.create({number, start, end, requested_date
+                , status, paid, explanation, userId, typeId});
+            const vacations = await Vacations.findAll({
+                where: {
+                    userId: req.user.id,
+                    status: {
+                        [Op.ne] : 'Отказ',
+                    }
+                }
+            })
+            let num = 1;
+            for (let i = 0; i < vacations.length; i++) {
+                Vacations.update({number: num++}, {
+                    where: {
+                        id: vacations[i].id,
+                    }
+                })
+            }
+            return res.send({id: vac.id});
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));
@@ -43,6 +61,23 @@ class vacationController {
                     id: req.body.id,
                 }
             })
+            const vacations = await Vacations.findAll({
+                where: {
+                    userId: req.user.id,
+                    status: {
+                        [Op.ne] : 'Отказ',
+                    }
+                }
+            })
+            let num = 1;
+            for (let i = 0; i < vacations.length; i++) {
+                Vacations.update({number: num++}, {
+                    where: {
+                        id: vacations[i].id,
+                    }
+                })
+            }
+            res.send("Vacation have deleted");
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));

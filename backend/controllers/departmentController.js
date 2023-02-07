@@ -23,12 +23,12 @@ class departmentController {
                     id: req.user.id,
                 }
             });
-            const deps = await Department.findOne({
+            const dep = await Department.findOne({
                 where: {
                     id: currentUser.dataValues.departmentId,
                 }
             });
-            return res.send(deps);
+            return res.send(dep);
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));
@@ -38,83 +38,21 @@ class departmentController {
         }
     }
 
-    async changeName(req, res, next) {
-        try {
-            const {id, name} = req.body;
-            await Department.update({name: name}, {
+    async changeCon(req, res, next) {
+        try{
+            const {id, min, max, total, percents} = req.body;
+            await Department.update({min, max, total, percents}, {
                 where: {id}
             });
-            return res.send("Name have changed!");
+            return res.send("Conditions have changed!");
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));
         } finally {
-            winston.info("Time: " + new Date() + " Action: Change department's name"
-                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
-        }
-    }
-
-    async changeMin(req, res, next) {
-        try {
-            const {id, min} = req.body;
-            await Department.update({min}, {
-                where: {id}
-            });
-            return res.send("Min have changed!");
-        } catch (e) {
-            winston.error(e.message);
-            return next(apiError.internal(e.message));
-        } finally {
-            winston.info("Time: " + new Date() + " Action: Change department's min"
-                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
-        }
-    }
-    async changeMax(req, res, next) {
-        try {
-            const {id, max} = req.body;
-            await Department.update({max}, {
-                where: {id}
-            });
-            return res.send("Max have changed!");
-        } catch (e) {
-            winston.error(e.message);
-            return next(apiError.internal(e.message));
-        } finally {
-            winston.info("Time: " + new Date() + " Action: Change department's max"
+            winston.info("Time: " + new Date() + " Action: Change department"
                 + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
 
-    }
-    async changeTotal(req, res, next) {
-        try {
-            const {id, total} = req.body;
-            await Department.update({total}, {
-                where: {id}
-            });
-            return res.send("Total have changed!");
-        } catch (e) {
-            winston.error(e.message);
-            return next(apiError.internal(e.message));
-        } finally {
-            winston.info("Time: " + new Date() + " Action: Change department's total"
-                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
-        }
-
-    }
-    async changePercents(req, res, next) {
-        try {
-            const {id, percents} = req.body;
-            await Department.update({percents}, {
-                where: {id}
-            });
-            return res.send("Percents have changed!");
-        } catch (e) {
-            winston.error(e.message);
-            return next(apiError.internal(e.message));
-        } finally {
-            winston.info("Time: " + new Date() + " Action: Change department's percents"
-                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
-        }
     }
 
     async del(req,res, next) {

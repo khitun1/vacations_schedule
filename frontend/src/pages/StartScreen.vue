@@ -9,6 +9,7 @@
         <my-input placeholder="Логин" v-model="login"/>
         <my-input placeholder="Пароль" v-model="password" :type="'password'"/>
           <my-button class="test" @click="check">Войти</my-button>
+        <p class="error">{{ error }}</p>
       </div>
     </div>
 </template>
@@ -30,7 +31,7 @@ export default {
 
   computed: {
     ...mapState ({
-      jwt: state => state.my.jwt,
+        error: state => state.my.error,
     }),
   },
 
@@ -41,7 +42,7 @@ export default {
 
     async check() {
       await this.log_in({login: this.login, password: this.password});
-      const url = this.jwt !== '' ? '/myVacations' : '/';
+      const url = this.error === '' ? '/myVacations' : '/';
       await router.push(url);
     }
   },
@@ -113,6 +114,14 @@ input
   color: white;
   left: -5px;
   bottom: 10px;
+}
+
+.error {
+  color: #ff3131;
+  font-family: 'Arial';
+  text-align: center;
+  margin-top: 30px;
+  font-weight: bold;
 }
 
 @media screen and (max-width: 800px) { /* Для цветных экранов */

@@ -1,14 +1,13 @@
-import axios from "axios";
+import {host} from "../http/index";
+import moment from "moment";
 
 export const AdminModule = {
     state: () => ({
-        all : [],
-        departments: [],
-        types: [],
+        vacations: [],
+        department: {},
         users: [],
         year: String(new Date().getFullYear()),
         selectedID: Number,
-        selectedDep: '',
         visibleAddUser: false,
         visibleDeleteUser: false,
         visibleAddDep: false,
@@ -17,33 +16,6 @@ export const AdminModule = {
     }),
 
     getters: {
-        intersInUsersDep(state) {
-            return state.all.filter(p => p.department === state.currentUser.department);
-        },
-
-        vacations(state) {
-            let vacs = state.all.filter(p => p.department === state.selectedDep);
-            state.users.forEach(p => {
-                const userName = p.surname + ' ' + p.name + ' ' + p.lastname;
-                vacs.forEach((q, index, arr) => {
-                    const nameInVacs = q.surname + ' ' + q.name + ' ' + q.lastname;
-                    if (userName === nameInVacs) {
-                        return true
-                    }
-                    const newRec = {
-                        id: new Date(),
-                        surname: p.surname,
-                        name: p.name,
-                        lastname: p.lastname,
-                        status: 'none',
-                        number: 1,
-                    }
-                    arr.push(newRec);
-                })
-            })
-            return vacs;
-        },
-
         visibleAdminWindow(state) {
             return state.visibleAddUser || state.visibleDeleteUser
                 || state.visibleAddDep || state.visibleChangeCon || state.visibleAddType;
@@ -71,45 +43,34 @@ export const AdminModule = {
             state.visibleChangeCon = !state.visibleChangeCon;
         },
 
-        changeDepName(state, change) {
-            state.departments.find(p => p.id === change.id).name = change.name;
-        },
-
-        changeTypeName(state, change) {
-            state.types.find(p => p.id === change.id).name = change.name;
-        },
-
-        addDep(state, newDep) {
-            state.departments.push(newDep);
-        },
-
-        addType(state, newType) {
-            state.types.push(newType);
-        },
-
         changeConditions(state, newCon) {
-            state.departments[state.departments.findIndex(p => p.id === newCon.id)] = newCon;
+            state.department = newCon;
         },
 
-        reject(state, rej) {
-            state.all.find(p => p.id === rej.id).explanation = rej.explanation;
-            state.all.find(p => p.id === rej.id).status = 'Отказ';
-        },
-
-        accept(state, id) {
-            state.all.find(p => p.id === id).status = 'Утверждено';
-        },
-
-        shift(state, con) {
-            state.all.forEach(p => {
-                if (p.surname === con.arr[0] && p.name === con.arr[1] && p.lastname === con.arr[2]) {
-                    if (p.number === con.num) {
-                        p.number = 0;
-                    } else {
-                        if (p.number > con.num) {
-                            p.number -= 1
-                        }
+        decision(state, {id, status}) {
+            const {userId} = state.vacations.find(p => p.id === id);
+            const user = state.users.find(p => p.id === userId);
+            if (status === 'Утверждено'){
+                state.vacations.find(p => p.id === id).status = 'Утверждено';
+            }
+            else {
+                state.vacations.splice(state.vacations.indexOf(state.vacations.find(p => p.id === id)), 1);
+                if (!state.vacations.find(p => p.userId === userId)) {
+                    const zero = {
+                        id: new Date(),
+                        surname: user.surname,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        status: 'none',
+                        number: 1,
                     }
+                    state.vacations.push(zero);
+                }
+            }
+            let num = 1;
+            state.vacations.forEach(p => {
+                if (p.userId === user.id) {
+                    p.number = num++
                 }
             })
         },
@@ -130,27 +91,93 @@ export const AdminModule = {
             state.users = users;
         },
 
-        setDepartments(state, deps) {
-            state.departments = deps;
+        setDepartment(state, dep) {
+            state.department = dep;
+        },
+
+        addUser(state, user) {
+          state.users.push(user);
+        },
+
+        delUser(state, id) {
+            let delIndex = state.users.indexOf(state.users.find(p => p.id === id));
+            state.users.splice(delIndex, 1);
+        },
+
+        setEmployeesVacations(state, data) {
+            data.forEach(p => {
+                p.surname = state.users.find(q => q.id === p.userId).surname;
+                p.first_name = state.users.find(q => q.id === p.userId).first_name;
+                p.last_name = state.users.find(q => q.id === p.userId).last_name;
+                p.start = moment(p.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
+                p.end = moment(p.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
+            })
+            let vacs = data;
+            let namesInVacs = new Set();
+            for (let i = 0; i < vacs.length; i++) {
+                const userName = vacs[i].surname + ' ' + vacs[i].first_name
+                    + ' ' + vacs[i].last_name;
+                namesInVacs.add(userName)
+            }
+            for (let i = 0; i < state.users.length; i++) {
+                const userName = state.users[i].surname + ' ' + state.users[i].first_name
+                    + ' ' + state.users[i].last_name;
+                if (!namesInVacs.has(userName)) {
+                    namesInVacs.add(userName);
+                    const newRec = {
+                        id: new Date(),
+                        surname: state.users[i].surname,
+                        first_name: state.users[i].first_name,
+                        last_name: state.users[i].last_name,
+                        status: 'none',
+                        number: 1,
+                    }
+                    vacs.push(newRec)
+                }
+            }
+            state.vacations = vacs;
         }
     },
 
     actions: {
-        async addUser({state}, user) {
-            await axios.post('http://localhost:7000/api/users/create', user, {
-                    headers: {
-                        Authorization: state.jwt,
-                    }
-                })
+        async addUser({commit}, user) {
+            user.is_admin = user.is_admin === 'Админ' ? 1 : 0;
+            await host.post('users/create', user);
+            commit('addUser', user);
         },
 
-        async getDepartments({state, commit}) {
-            const response = await axios('http://localhost:7000/api/department/getList', {
-                headers: {
-                    Authorization: state.jwt,
-                }
-            });
-            commit('setDepartments', response.data);
+        async getDepartment({commit}) {
+            const {data} = await host('department/getList');
+            commit('setDepartment', data);
+        },
+
+        async getUsers({commit}) {
+            const {data} = await host('users/getList');
+            commit('setUsers', data);
+        },
+
+        async deleteUser({commit}, id) {
+            await host.post('users/del', {id: id});
+            commit('delUser', id);
+        },
+
+        async changeConditions({commit}, newCon) {
+            await host.post('department/changeConditions', newCon);
+            commit('changeConditions', newCon)
+        },
+
+        async getEmployeesVacations({commit}) {
+            const {data} = await host('users/getVacations');
+            commit('setEmployeesVacations', data.vacationsEmployees);
+        },
+
+        async decisionVacation({commit}, {id, status, explanation}) {
+            await host.post('users/decision', {
+                id: id,
+                status: status,
+                explanation: explanation
+            })
+            commit('decision', {id, status, explanation});
         }
     }
 }

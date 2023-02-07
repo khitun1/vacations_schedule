@@ -28,13 +28,16 @@ export default {
 
   methods: {
     ...mapActions ({
-      getDepartments: 'getDepartments',
-      auth: 'auth'
+      getDepartment: 'getDepartment',
+      auth: 'auth',
+      getUsers: 'getUsers',
     }),
   },
 
   mounted() {
     this.auth();
+    this.getDepartment();
+    this.getUsers();
   }
 }
 </script>

@@ -1,14 +1,13 @@
 <template>
   <sample-page :choice="'settings'">
-    <personal-data
-        :user="currentUser"/>
+    <personal-data/>
   </sample-page>
 </template>
 
 <script>
 import SamplePage from "@/components/Samples/SamplePage";
 import PersonalData from "@/components/PersonalData";
-import {mapActions, mapState} from "vuex";
+import {mapActions} from "vuex";
 
 
 export default {
@@ -17,12 +16,6 @@ export default {
   components:{
     PersonalData,
     SamplePage,
-  },
-
-  computed: {
-    ...mapState ({
-      currentUser: state => state.my.currentUser,
-    }),
   },
 
   methods: {

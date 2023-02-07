@@ -8,7 +8,7 @@
         <img src="@/images/NoticeIcon.png">
       </button-icon>
       <router-link to="/">
-        <button-icon class="btn" @click="clearJwt">
+        <button-icon class="btn">
           <img src="@/images/ExitIcon.png">
         </button-icon>
       </router-link>
@@ -17,19 +17,13 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from "vuex";
+import {mapState} from "vuex";
 
 export default {
   computed: {
     ...mapState ({
       currentUser: state => state.my.currentUser,
     }),
-
-    methods: {
-      ...mapMutations ({
-        clearJwt: 'clearJWT'
-      })
-    },
   }
 }
 </script>

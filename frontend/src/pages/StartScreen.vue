@@ -44,11 +44,6 @@ export default {
     async check() {
       await this.log_in({login: this.login, password: this.password});
       const url = this.error === '' ? '/myVacations' : '/';
-      // const socket = new WebSocket('ws://localhost:7000');
-      this.socket.onopen = () => {
-        console.log('aye')
-      }
-
       await router.push(url);
     }
   },

@@ -12,7 +12,6 @@ export const MyModule = {
         len: 0,
         percent: 0,
         error: '',
-        socket: new WebSocket('ws://localhost:7000'),
     }),
 
     getters: {

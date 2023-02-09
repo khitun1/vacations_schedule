@@ -4,13 +4,13 @@
       <div class="gif">
         <img src="@/images/Bear.gif">
       </div>
-      <div class="login">
+      <form class="login" @submit.prevent>
         <h3>Авторизация</h3>
         <my-input placeholder="Логин" v-model="login"/>
         <my-input placeholder="Пароль" v-model="password" :type="'password'"/>
-          <my-button class="test" @click="check">Войти</my-button>
+          <my-button class="test" @click="check" type="submit">Войти</my-button>
         <p class="error">{{ error }}</p>
-      </div>
+      </form>
     </div>
 </template>
 
@@ -32,6 +32,7 @@ export default {
   computed: {
     ...mapState ({
         error: state => state.my.error,
+      socket: state => state.my.socket,
     }),
   },
 
@@ -43,6 +44,11 @@ export default {
     async check() {
       await this.log_in({login: this.login, password: this.password});
       const url = this.error === '' ? '/myVacations' : '/';
+      // const socket = new WebSocket('ws://localhost:7000');
+      this.socket.onopen = () => {
+        console.log('aye')
+      }
+
       await router.push(url);
     }
   },

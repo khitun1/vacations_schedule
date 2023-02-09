@@ -6,7 +6,8 @@
                      @click="showDate"
                      :attributes="attrs"
                      :disabled-dates="dis"
-                     class="calendar"/>
+                     class="calendar"
+                      :min-date="minDate"/>
       <div class="infoBar">
         <h2 style="margin-top: -20px">Осталось отпускных дней: {{left}}</h2>
         <div class="prog">
@@ -88,6 +89,10 @@ export default {
       return this.currentUser.percent;
     },
 
+    minDate() {
+      return moment()._d;
+    },
+
 
     width: function(){
       return 100 - this.left / this.total * 100 + '%';
@@ -163,7 +168,6 @@ export default {
               end: p.end,
               status: 'inters',
             }
-            console.log(p.userId)
             this.inters.push(vac);
           }
         })

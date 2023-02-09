@@ -4,7 +4,7 @@
     <div class="panel">
       <p>{{currentUser.surname + ' ' + currentUser.first_name + ' '
       + currentUser.last_name}}</p>
-      <button-icon class="btn">
+      <button-icon class="btn" v-if="currentUser.is_admin">
         <img src="@/images/NoticeIcon.png">
       </button-icon>
       <router-link to="/">
@@ -33,7 +33,7 @@ export default {
 .panel p
 {
   position: relative;
-  top: 15px;
+  top: 12px;
   width: fit-content;
   left: -50px;
   height: 40px;

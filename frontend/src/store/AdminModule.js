@@ -178,6 +178,11 @@ export const AdminModule = {
                 explanation: explanation
             })
             commit('decision', {id, status, explanation});
+        },
+
+        async clear({state}) {
+            await host('users/clearNotes');
+            console.log(state.users)
         }
     }
 }

@@ -96,6 +96,7 @@ export default {
       getUsers: 'getUsers',
       getEmployeesVacations: 'getEmployeesVacations',
       decisionVacation: 'decisionVacation',
+      clear: 'clear',
     }),
 
     cancelExplain() {
@@ -325,6 +326,7 @@ export default {
 
   mounted() {
     this.auth();
+    this.clear();
     this.getUsers();
     this.getEmployeesVacations();
     const ctx = document.getElementById('myChart')

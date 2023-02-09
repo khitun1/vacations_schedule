@@ -1,5 +1,6 @@
 <template>
   <sample-page :choice="'myVacations'">
+    <p>{{ msg }}</p>
     <div v-show="calendarShow">
       <h2>Осталось отпускных дней: {{left}}</h2>
       <div class="prog">
@@ -114,6 +115,10 @@ export default {
       this.wishes.forEach(p => dis.push(this.disDates(p)));
       return dis;
     },
+
+    msg() {
+      return ''
+    }
   },
 
     created() {

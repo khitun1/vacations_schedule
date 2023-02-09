@@ -3,15 +3,12 @@
     {{u}}
     <div class="rec"
          v-for="vac in requested.filter(p => p.status === 'Ожидание'
-         && (p.surname + ' ' + p.name + ' ' + p.lastname) === u)"
+         && (p.surname + ' ' + p.first_name + ' ' + p.last_name) === u)"
          :key="vac.id"
          @mouseover="visible=vac.id" @mouseleave="visible = false"
           tabindex="-1">
-      <div class="info" v-bind:style="{background: vac.intersections === 'Нет'? '#d9ccff': '#ffd8d1'}">
+      <div class="info" v-bind:style="{background: vac.intersections === 'Да'? '#ffd8d1': '#d9ccff'}">
         <button class="withOutInter" @click="showData(vac)">
-<!--          <p class="name">-->
-<!--            {{vac.surname}} {{vac.name}} {{vac.lastname}}-->
-<!--          </p>-->
           <p style="width: 150px">
             {{ vac.start }} - {{ vac.end }}
           </p>
@@ -19,7 +16,7 @@
             кол-во дней: {{totalDays(vac.start, vac.end)}}
           </p>
           <p style="width: 130px">
-            {{vac.paid === 'Да'? 'Оплачиваемый': 'Не оплачиваемый'}}
+            {{vac.paid ? 'Оплачиваемый': 'Не оплачиваемый'}}
           </p>
         </button>
         <p class="inters" style="margin-left: 0"
@@ -29,7 +26,7 @@
         <div class="btns">
           <button class="dec"
                   style="color: #36f64a; background: #a19fff"
-                  v-if="vac.intersections === 'Нет'"
+                  v-if="vac.intersections !== 'Да'"
                   @click="this.$emit('accepted', vac.id)"
                   title="Утвердить">
             &#10004;
@@ -65,7 +62,8 @@ export default {
   computed: {
     uniq: function () {
       let u = new Set();
-      this.requested.filter(p => p.status === "Ожидание").forEach(p => u.add(p.surname + ' ' + p.name + ' ' + p.lastname));
+      this.requested.filter(p => p.status === "Ожидание").forEach(p => u.add(p.surname
+          + ' ' + p.first_name + ' ' + p.last_name));
       u = Array.from(u);
       return u;
     },
@@ -80,13 +78,11 @@ export default {
           person = document.getElementsByClassName('person')[this.prevPerson];
           person.getElementsByClassName('rec')[this.prevRec].style.filter = 'none';
         }
-        console.log(person);
         this.prevPerson = this.uniq.indexOf(this.clickedName);
         this.prevRec = this.clickedNumber;
         person = (document.getElementsByClassName('person')[this.prevPerson]);
         person.getElementsByClassName('rec')[this.prevRec].focus();
         person.getElementsByClassName('rec')[this.prevRec].style.filter = 'drop-shadow(0 2px 12px #7951f5)';
-        console.log(person);
       }
     },
   },
@@ -94,7 +90,7 @@ export default {
 
   methods: {
     totalDays(start,end){
-      return moment(end, 'DD.MM.YYYY').diff(moment(start, 'DD.MM.YYYY'), 'days');
+      return moment(end, 'DD.MM.YYYY').diff(moment(start, 'DD.MM.YYYY'), 'days') + 1;
     },
 
     showData(vac){
@@ -103,13 +99,14 @@ export default {
         person = document.getElementsByClassName('person')[this.prevPerson];
         person.getElementsByClassName('rec')[this.prevRec].style.filter = 'none';
       }
-      this.prevPerson = this.uniq.indexOf(vac.surname + ' ' + vac.name + ' ' + vac.lastname);
+      this.prevPerson = this.uniq.indexOf(vac.surname + ' ' + vac.first_name + ' ' + vac.last_name);
       this.prevRec = vac.number - 1;
       person = document.getElementsByClassName('person')[this.prevPerson];
       person.getElementsByClassName('rec')[this.prevRec].style.filter = 'drop-shadow(0 2px 12px #7951f5)';
-      this.index[0] = vac.surname + ' ' + vac.name + ' ' + vac.lastname;
+      this.index[0] = vac.surname + ' ' + vac.first_name + ' ' + vac.last_name;
       this.index[1] = vac.number - 1;
       this.index[2] = vac.start.split('.')[2];
+      console.log(this.index)
       this.$emit('showRec', this.index);
     },
 
@@ -118,22 +115,18 @@ export default {
   props: {
     requested: {
       type: Array,
-      required: false,
     },
 
     clickedName: {
       type: String,
-      required: false,
     },
 
     clickedNumber: {
       type: Number,
-      required: false,
     },
 
     clicked: {
       type: Number,
-      required: false,
     },
 
   },
@@ -145,8 +138,9 @@ export default {
 .rec
 {
   display: flex;
+  align-items: center;
   margin: 10px 0 10px 10px;
-  width: 100%;
+  width: 95%;
   background: none;
   border-width: 0;
 }
@@ -190,13 +184,6 @@ p
   margin-right: 5px;
 }
 
-.name
-{
-  width: 250px;
-  margin-left: 10px;
-  text-align: left;
-}
-
 .dec
 {
   margin-left: 20px;
@@ -204,7 +191,6 @@ p
   font-weight: bold;
   font-size: 22px;
   border-width: 0;
-  background: gray;
   cursor: pointer;
   border-radius: 5px;
 }
@@ -231,7 +217,7 @@ textarea
   border-radius: 10px;
   margin-bottom: 10px;
   margin-left: 15px;
-  width: 63%;
+  width: 65%;
 }
 
 .rec:focus
@@ -241,8 +227,30 @@ textarea
 
 .btns
 {
-  width: 180px;
+  position: absolute;
+  right: 10px;
   text-align: right;
+}
+
+@media screen and (max-width: 1400px) {
+  .inters {
+    display: none;
+  }
+  @media screen and (max-width: 1000px) {
+    .person {
+      width: 100%;
+    }
+    @media screen and (max-width: 580px) {
+      .person {
+        width: 108%;
+      }
+      @media screen and (max-width: 540px) {
+        .info {
+          height: 65px;
+        }
+      }
+    }
+  }
 }
 
 </style>

@@ -11,13 +11,13 @@
           <p>Мои отпуска</p>
         </button>
       </router-link>
-      <router-link to="allVacations" v-if="$store.state.currentUser.isAdmin" class="link">
+      <router-link to="allVacations" v-if="currentUser.is_admin" class="link">
         <button class="pick all" title="Отпуска сотрудников">
           <img src="@/images/CalendarIcon.png"/>
           <p>Отпуска сотрудников</p>
         </button>
       </router-link>
-      <router-link to="admin" v-if="$store.state.currentUser.isAdmin" class="link">
+      <router-link to="admin" v-if="currentUser.is_admin" class="link">
         <button class="pick admin" title="Админ">
           <img src="@/images/LetterIcon.png"/>
           <p>Админ</p>
@@ -32,6 +32,8 @@
 </template>
 
 <script>
+import {mapState} from "vuex";
+
 export default {
   name: "SampleNavBar",
 
@@ -48,6 +50,9 @@ export default {
   },
 
   computed: {
+    ...mapState ({
+      currentUser: state => state.my.currentUser,
+    }),
     take(){
       return this.choice === 'takeVacation' ? '#e2e2e2': 'none';
     },

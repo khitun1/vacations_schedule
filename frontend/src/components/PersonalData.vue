@@ -1,113 +1,108 @@
 <template>
   <div class="table">
     <h1>Личные данные</h1>
-    <table style="text-align: center">
-      <tr>
-        <td>
-          Фамилия:
-        </td>
-        <td>
-          <my-input readonly :value="user.surname"/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Имя:
-        </td>
-        <td>
-          <my-input readonly :value="user.name"/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Отчество:
-        </td>
-        <td>
-          <my-input readonly :value="user.lastname"/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Логин:
-        </td>
-        <td>
-          <my-input :readonly="changeLogin"
-                    v-model="newLogin"/>
-        </td>
-        <td>
-          <my-button class="change" @click="changeLog">
-            {{ textLogBtn }}
-          </my-button>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Пароль:
-        </td>
-        <td>
-          <my-input :readonly="changePassword" :type="typePassword"
-                    v-model="newPassword"/>
-          <button-icon class="watch" @click="typePassword = typePassword === 'text'? 'password' : 'text'"  >
-            <img src="@/images/WatchIcon.png">
-          </button-icon>
-        </td>
-        <td>
-          <my-button class="change" @click="changePas">
-            {{ textPasBtn }}
-          </my-button>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Отдел:
-        </td>
-        <td>
-          <my-input readonly :value="user.department"/>
-        </td>
-      </tr>
-    </table>
+    <div class="info surname">
+      <p>Фамилия:</p>
+      <div class="text"><my-input readonly :value="currentUser.surname"/></div>
+    </div>
+    <div class="info name">
+      <p>Имя:</p>
+      <div class="text"><my-input readonly :value="currentUser.first_name"/></div>
+    </div>
+    <div class="info lastname">
+      <p>Отчество:</p>
+      <div class="text"><my-input readonly :value="currentUser.last_name"/></div>
+    </div>
+    <div class="info login">
+      <p>Логин:</p>
+      <div class="text">
+        <my-input :readonly="changeLogin"
+                  v-model="newLogin" class="inputLogin"/>
+      </div>
+      <my-button class="change" @click="changeLog">
+        {{ textLogBtn }}
+      </my-button>
+    </div>
+    <div class="info password">
+      <p>Пароль:</p>
+      <div class="text">
+        <my-input :readonly="changePassword" :type="typePassword"
+                  v-model="newPassword" class="inputPassword"/>
+        <button-icon class="watch" @click="typePassword = typePassword === 'text'? 'password' : 'text'"  >
+          <img src="@/images/WatchIcon.png" v-show="typePassword === 'text'">
+          <img src="@/images/closePassword.webp" v-show="typePassword !== 'text'">
+        </button-icon>
+      </div>
+      <my-button class="change" @click="changePas">
+        {{ textPasBtn }}
+      </my-button>
+    </div>
+    <div class="info department">
+      <p>Отдел:</p>
+      <div class="text">
+        <my-input readonly :value="currentUser.department"/>
+      </div>
+
+    </div>
   </div>
 
 </template>
 
 <script>
-import store from "@/store";
+
+import {mapActions, mapMutations, mapState} from "vuex";
 
 export default {
   name: "PersonalData",
 
-  props: {
-    user: {
-      type: Object,
-      required: true,
+  computed: {
+    ...mapState ({
+      currentUser: state => state.my.currentUser,
+    }),
+
+    newPassword() {
+      return this.currentUser.password;
+    },
+
+    newLogin() {
+      return this.currentUser.login;
     }
   },
+
   data() {
     return {
       changePassword: true,
       typePassword: 'text',
       changeLogin: true,
-      newPassword: this.user.password,
-      newLogin: this.user.login,
       textLogBtn: 'Изменить логин',
       textPasBtn: 'Изменить пароль',
     }
   },
   methods: {
+    ...mapActions ({
+      change_login: 'changeLogin',
+      change_password: 'changePassword',
+    }),
+
+    ...mapMutations ({
+    }),
+
     changePas(){
+      document.getElementsByClassName('inputPassword')[0].focus();
       if(this.changePassword === true) this.textPasBtn = 'Подтвердить';
       else{
-        store.commit('changePassword', this.newPassword);
+        this.change_password(this.newPassword);
         this.textPasBtn = 'Изменить пароль';
       }
       this.changePassword = !this.changePassword;
     },
 
     changeLog(){
+      document.getElementsByClassName('inputLogin')[0].focus();
       if(this.changeLogin === true)  this.textLogBtn = 'Подтвердить';
       else
       {
-        store.commit('changeLogin', this.newLogin);
+        this.change_login(this.newLogin);
         this.textLogBtn = 'Изменить логин';
       }
       this.changeLogin = !this.changeLogin;
@@ -118,39 +113,70 @@ export default {
 </script>
 
 <style scoped>
-td
-{
-  position: relative;
-  text-align: left;
-  padding-left: 50px;
-  padding-right: 50px;
-  height: 50px;
-  font-size: 18px;
-  padding-bottom: 20px;
-}
 
 .watch
 {
-  left: 20px;
-  top: 8px;
+  top: 2px;
 }
 
-.change
-{
-  padding: -5px;
-  height: 30px;
-  width: 200px;
-  font-size: 16px;
+.info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: fit-content;
+  flex-flow: row wrap;
+}
+
+input {
+  height: fit-content;
+}
+
+.info p {
+  width: 120px;
+}
+
+.change {
+  padding: 5px 20px;
+}
+
+.text {
+  width: 260px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .table
 {
-  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0 10px 10px;
   margin-top: 5px;
   background: #f5f5f5;
   border-radius: 10px;
   height: 95%;
-  width: 80%;
+  width: fit-content;
+
 }
+
+@media screen and (max-width: 1000px) {
+  .table {
+    width: 108%;
+  }
+  .info p {
+    width: 90px;
+  }
+  @media screen and (max-width: 715px) {
+    .table {
+      width: 119%;
+    }
+    .change {
+      margin-left: 25%;
+    }
+  }
+}
+
+
+
 
 </style>

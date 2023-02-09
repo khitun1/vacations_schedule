@@ -2,12 +2,10 @@
   <sample-page :choice="'admin'">
     <h1> Панель администратора</h1>
     <div class="buttons">
-      <add-user
-          :deps="$store.state.departments.sort((a, b) => a.name > b.name ? 1 : -1)"/>
-      <set-data
-          :deps="$store.state.departments.sort((a, b) => a.name > b.name ? 1 : -1)"
-          :types="$store.state.types.sort((a, b) => a.name > b.name ? 1 : -1)"
-          @changeCon="setCon"/>
+      <add-user/>
+      <delete-user/>
+
+      <set-data/>
     </div>
   </sample-page>
 </template>
@@ -16,24 +14,32 @@
 import SamplePage from "@/components/Samples/SamplePage";
 import AddUser from "@/components/AddUser";
 import SetData from "@/components/SetData";
+import DeleteUser from "@/components/DeleteUser.vue";
+import {mapActions} from "vuex";
 
 export default {
   name: "SetSignature",
 
   components:{
+    DeleteUser,
     SamplePage,
     AddUser,
     SetData,
   },
 
-  data(){
-    return {
-
-    }
-  },
-
   methods: {
+    ...mapActions ({
+      getDepartment: 'getDepartment',
+      auth: 'auth',
+      getUsers: 'getUsers',
+    }),
   },
+
+  mounted() {
+    this.auth();
+    this.getDepartment();
+    this.getUsers();
+  }
 }
 </script>
 

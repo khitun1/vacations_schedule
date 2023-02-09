@@ -11,7 +11,9 @@
           borderColor: setBorder(rec.status),
           color: setBorder(rec.status)
         }"
-             @mouseover="visibleExplanation = rec.id" @mouseleave="visibleExplanation = false">
+             @mouseover="visibleExplanation =  rec.status === 'Отказ';
+             explanation = rec.explanation;"
+             @mouseleave="visibleExplanation = false">
           {{rec.status}}
         </div>
       </div>
@@ -21,17 +23,17 @@
       <button-icon class="del" v-if="checkDel(rec.status, rec.id)" @click="Del(rec.id)">
         <img src="@/images/DeleteIcon.png">
       </button-icon>
-    <div class="exp"
-         v-if="rec.hasOwnProperty('explanation') && visibleExplanation === rec.id">
-      <h4>Причина отказа:</h4>
-      {{ rec.explanation }}
-    </div>
+  </div>
+  <div class="exp"
+       v-if="visibleExplanation">
+    <h4>Причина отказа:</h4>
+    {{ explanation }}
   </div>
 </template>
 
 <script>
 import moment from "moment";
-import store from "@/store";
+import {mapActions, mapMutations} from "vuex";
 
 export default {
   name: "MyTable",
@@ -40,6 +42,7 @@ export default {
     return{
       visible: false,
       visibleExplanation: false,
+      explanation: '',
     }
   },
   props: {
@@ -50,6 +53,13 @@ export default {
   },
 
   methods: {
+    ...mapActions ({
+      deleteVacation: 'deleteVacation',
+    }),
+
+    ...mapMutations ({
+    }),
+
     setColor(status){
       switch (status){
         case 'Утверждено':
@@ -81,7 +91,7 @@ export default {
     },
 
     Del(id){
-      store.commit('delVac', id);
+      this.deleteVacation(id);
     },
 
     checkDel(status, id){
@@ -170,12 +180,12 @@ pre
 
 .exp
 {
-  position: absolute;
+  position: fixed;
+  top: 30%;
+  right: 20%;
   width: 250px;
   height: fit-content;
   padding: 10px;
-  left: 700px;
-  top: 150px;
   text-align: center;
   background: #ffc4b9;
   border-radius: 10px;
@@ -192,23 +202,50 @@ pre
   .rec {
     width: 70%;
   }
-  @media screen and (max-width: 1000px) {
-    .rec {
-      width: 80%;
+  .exp {
+    right: 5%;
+  }
+  @media screen and (max-width: 1200px) {
+      .exp {
+        right: 3%;
+        width: 200px;
+      }
+    @media screen and (max-width: 1000px) {
+      .rec {
+        width: 80%;
+      }
+      .exp {
+        width: 200px;
+      }
+      @media screen and (max-width: 780px) {
+        .rec {
+          width: 80%;
+        }
+
+        .exp {
+          right: 2%;
+          width: 180px;
+        }
+
+        @media screen and (max-width: 715px) {
+          .rec {
+            width: 100%;
+          }
+
+          .amount {
+            display: none;
+          }
+          .exp {
+            display: none;
+          }
+        }
+      }
     }
   }
 }
 
 
 
-@media screen and (max-width: 715px) {
-  .rec {
-    width: 100%;
-  }
 
-  .amount {
-    display: none;
-  }
-}
 
 </style>

@@ -1,13 +1,13 @@
 <template>
   <sample-page :choice="'settings'">
-    <personal-data
-        :user="$store.state.currentUser"/>
+    <personal-data/>
   </sample-page>
 </template>
 
 <script>
 import SamplePage from "@/components/Samples/SamplePage";
 import PersonalData from "@/components/PersonalData";
+import {mapActions} from "vuex";
 
 
 export default {
@@ -17,6 +17,16 @@ export default {
     PersonalData,
     SamplePage,
   },
+
+  methods: {
+    ...mapActions ({
+      auth: 'auth',
+    }),
+  },
+
+  mounted() {
+    this.auth();
+  }
 
 }
 </script>

@@ -2,8 +2,9 @@
   <div class="hat">
     <h1>Планирование отпусков</h1>
     <div class="panel">
-      <p>Хитун Иван Михайлович</p>
-      <button-icon class="btn">
+      <p>{{currentUser.surname + ' ' + currentUser.first_name + ' '
+      + currentUser.last_name}}</p>
+      <button-icon class="btn" v-if="currentUser.is_admin">
         <img src="@/images/NoticeIcon.png">
       </button-icon>
       <router-link to="/">
@@ -16,7 +17,15 @@
 </template>
 
 <script>
+import {mapState} from "vuex";
 
+export default {
+  computed: {
+    ...mapState ({
+      currentUser: state => state.my.currentUser,
+    }),
+  }
+}
 </script>
 
 <style scoped>
@@ -24,7 +33,7 @@
 .panel p
 {
   position: relative;
-  top: 15px;
+  top: 12px;
   width: fit-content;
   left: -50px;
   height: 40px;

@@ -1,7 +1,8 @@
 <template>
   <sample-page :choice="'myVacations'">
+    <p>{{ msg }}</p>
     <div v-show="calendarShow">
-      <h2>Осталось отпускных дней: {{$store.getters.left}}</h2>
+      <h2>Осталось отпускных дней: {{left}}</h2>
       <div class="prog">
         <div class="progBar"/>
       </div>
@@ -10,24 +11,24 @@
         <p>В режиме календаря</p>
       </my-button>
       <div class="plan">
-        <h1>Запланированные отпуска</h1>
+        <h1 v-show="myVacations.length > 0">Запланированные отпуска</h1>
         <my-table
-            :records="$store.state.myVacations.filter(p => p.status !== 'Использовано')"/>
-        <h1 style="margin-top: 20px">История отпусков</h1>
+            :records="myVacations.filter(p => p.status !== 'Использовано')"/>
+        <h1 style="margin-top: 20px" v-show="myVacations.length > 0">История отпусков</h1>
         <my-table
-            :records="$store.state.myVacations.filter(p => p.status === 'Использовано')"/>
+            :records="myVacations.filter(p => p.status === 'Использовано')"/>
       </div>
     </div>
     <div v-show="!calendarShow"  class="Main">
       <button-back @click="calendarShow = true"
                   class="back"/>
       <div class="calendarShow">
-        <v-calendar :rows="2" :columns="3"
+        <v-calendar :rows="rows" :columns="columns"
                        :attributes="attrs"
                        :disabled-dates="dis"
                        class="vCalendar"/>
         <div class="inside">
-          <h2 style="margin-top: -20px">Осталось отпускных дней: {{$store.getters.left}}</h2>
+          <h2 style="margin-top: -20px">Осталось отпускных дней: {{left}}</h2>
           <div class="prog">
             <div class="progBar"/>
           </div>
@@ -48,7 +49,7 @@
         </div>
         <div class="colour">
           <div style="background:#feb2b2"/>
-          <p>Пересекаемые даты</p>
+          <p>Отказ</p>
         </div>
         <div class="colour">
           <div style="background: #e2e8f0"/>
@@ -56,16 +57,18 @@
         </div>
       </div>
     </div>
+<!--    <button @click="auth">Click me!</button>-->
+<!--    <p v-for="user in $store.state.users" :key="user.id">{{user.surname}}</p>-->
   </sample-page>
 </template>
 
 <script>
 import MyTable from "@/components/MyTable";
 import SamplePage from "@/components/Samples/SamplePage";
-import store from "@/store";
 import MyButton from "@/components/UI/MyButton";
 import moment from "moment";
 import ButtonBack from "@/components/UI/ButtonBack";
+import {mapActions, mapGetters, mapState} from "vuex";
 
 export default {
   name: "MyVacations",
@@ -79,28 +82,59 @@ export default {
 
   data(){
     return {
-      width: (100 - store.getters.left / store.state.total * 100) + '%',
       calendarShow: true,
+      rows: 2,
+      columns: 3,
     }
   },
 
   computed: {
+    ...mapState ({
+      myVacations: state => state.my.myVacations,
+      wishes: state => state.my.wishes,
+      total: state => state.my.total,
+    }),
+
+    ...mapGetters ({
+      left: 'left',
+    }),
+
+    width: function(){
+      return 100 - this.left / this.total * 100 + '%';
+    },
+
     attrs: function () {
       let attrs = [];
-      store.state.myVacations.forEach(p => attrs.push(this.chooseColor(p)));
-      store.state.wishes.forEach(p => attrs.push(this.chooseColor(p)));
+      this.myVacations.forEach(p => attrs.push(this.chooseColor(p)));
+      this.wishes.forEach(p => attrs.push(this.chooseColor(p)));
       return attrs;
     },
     dis: function () {
       let dis = [];
-      store.state.myVacations.forEach(p => dis.push(this.disDates(p)));
-      store.state.wishes.forEach(p => dis.push(this.disDates(p)));
+      this.myVacations.forEach(p => dis.push(this.disDates(p)));
+      this.wishes.forEach(p => dis.push(this.disDates(p)));
       return dis;
     },
+
+    msg() {
+      return ''
+    }
   },
 
+    created() {
+      window.addEventListener('resize', this.updateColumns);
+    },
 
-    methods: {
+  methods: {
+      ...mapActions({
+        getUsers: "getUsers",
+        auth: "auth",
+        getVacations: "getVacations",
+      }),
+
+      updateColumns() {
+        this.columns = window.innerWidth > 1100? 3 : window.innerWidth > 600 ? 2 : 1;
+      },
       chooseColor(rec){
         return {
           id: new Date(),
@@ -121,7 +155,12 @@ export default {
           end: moment(rec.end, 'DD.MM.YYYY')._d,
         }
       },
-    }
+    },
+
+  mounted() {
+    this.auth();
+    this.getVacations();
+  },
 }
 </script>
 
@@ -249,6 +288,10 @@ export default {
     top: 50px;
   }
 
+  .Main {
+    height: 900px;
+  }
+
   .vCalendar {
     top: 200px;
   }
@@ -281,13 +324,13 @@ export default {
   }
   @media screen and (max-width: 1100px) {
     .colours {
-      width: 700px;
+      width: 570px;
     }
     .vCalendar {
       top: 240px;
     }
     .Main {
-      height: 1300px;
+      height: 1000px;
     }
     @media screen and (max-width: 1000px) {
       .colours {

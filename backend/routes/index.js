@@ -3,14 +3,12 @@ const router = new Router();
 const userRouter = require('./userRouter');
 const departmentRouter = require('./departmentRouter');
 const vacationRouter = require('./vacationRouter');
-const typeRouter = require('./typeRouter');
 const wishesRouter = require('./wishesRouter');
 const usersRouter = require('./usersRouter');
 
 router.use('/user', userRouter);
 router.use('/department', departmentRouter);
 router.use('/vacation', vacationRouter);
-router.use('/type', typeRouter);
 router.use('/wishes', wishesRouter);
 router.use('/users', usersRouter);
 

@@ -3,7 +3,7 @@
     <h2 style="margin-top: 40px">Календарь отпусков</h2>
     <div style="display: flex">
       <v-date-picker is-range :rows="rows" :columns="columns" v-model="date"
-                     @click="showDate"
+                     @click="showWish"
                      :attributes="attrs"
                      :disabled-dates="dis"
                      class="calendar"
@@ -38,10 +38,6 @@
     </div>
     <div class="colours">
       <div class="colour">
-        <div style="background: #d6bcfa"/>
-        <p>Использовано</p>
-      </div>
-      <div class="colour">
         <div style="background: #9deab7"/>
         <p>Одобрено</p>
       </div>
@@ -51,7 +47,7 @@
       </div>
       <div class="colour">
         <div style="background:#feb2b2"/>
-        <p>Пересекаемые даты</p>
+        <p>Выбран лимит отдела</p>
       </div>
       <div class="colour">
         <div style="background: #e2e8f0"/>
@@ -63,280 +59,47 @@
 
 <script>
 import SamplePage from "@/components/Samples/SamplePage";
-import moment from "moment";
-import MyButton from "@/components/UI/MyButton";
-import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
+import {preventInters} from "@/hooks/preventInters";
+import {calendar} from "@/hooks/calendar";
+import {progBar} from "@/hooks/progBar";
+import {wishesAndVacations} from "@/hooks/wishesAndVacations";
 
 export default {
   name: "TakeVacation",
 
-  computed: {
-    ...mapState ({
-      myVacations: state => state.my.myVacations,
-      wishes: state => state.my.wishes,
-      currentUser: state => state.my.currentUser,
-      total: state => state.my.total,
-      len: state => state.my.len,
-    }),
+  setup() {
+    let { len, inters, intersInUsersDep, currentUser, findIntersection } = preventInters();
+    let { rows, columns, attrs, dis, minDate } = calendar(inters);
+    let {width} = progBar();
+    let {date, paid, wishes, left,
+      send, sendAll, showWish, del,} = wishesAndVacations(currentUser, findIntersection, intersInUsersDep);
 
-    ...mapGetters ({
-      left: 'left',
-      intersInUsersDep: 'intersInUsersDep',
-      last: 'last',
-    }),
-
-    percent() {
-      return this.currentUser.percent;
-    },
-
-    minDate() {
-      return moment()._d;
-    },
-
-
-    width: function(){
-      return 100 - this.left / this.total * 100 + '%';
-    },
-
-    attrs: function (){
-      let attrs =  [];
-      this.myVacations.forEach(p => {
-        if (p.status !== 'Отказ') attrs.push(this.chooseColor(p))
-      });
-      this.wishes.forEach(p => attrs.push(this.chooseColor(p)));
-      this.inters.forEach(p => attrs.push(this.chooseColor(p)));
-      return attrs;
-    },
-
-    dis: function(){
-      let dis =  [];
-      this.myVacations.forEach(p => {
-        if (p.status !== 'Отказ')   dis.push(this.disDates(p))
-      });
-      this.wishes.forEach(p => dis.push(this.disDates(p)));
-      this.inters.forEach(p => dis.push(this.disDates(p)));
-      return dis;
-    }
-  },
-
-  data()
-  {
     return {
-      visibleTake: false,
-      value: '',
-      context: null,
-      choice: {},
-      date: null,
-      paid: [],
-      rows: 2,
-      columns: 3,
-      inters: [],
+      findIntersection,
+      len,
+      intersInUsersDep,
+      currentUser,
+      rows,
+      columns,
+      attrs,
+      dis,
+      minDate,
+      width,
+      date,
+      paid,
+      wishes,
+      left,
+      send,
+      sendAll,
+      showWish,
+      del,
     }
   },
 
   components:{
-    MyButton,
     SamplePage,
   },
 
-  created() {
-    window.addEventListener('resize', this.updateColumns);
-  },
-
-  methods: {
-    ...mapActions({
-      addWish: 'addWish',
-      getWishes: 'getWishes',
-      delWish: 'deleteWish',
-      addVacation: 'addVacation',
-      getVacations: 'getVacations',
-      auth: 'auth',
-      getDates: 'getDates',
-    }),
-
-    ...mapMutations ({
-
-    }),
-
-    intersections() {
-      let quarter = Math.floor(this.percent * this.len);
-      if (quarter <= 1) {
-        this.intersInUsersDep.forEach(p => {
-          if (p.userId !== this.currentUser.id) {
-            const vac = {
-              start: p.start,
-              end: p.end,
-              status: 'inters',
-            }
-            this.inters.push(vac);
-          }
-        })
-      }
-      else {
-        let lastStart;
-        for (let i = 0; i < this.intersInUsersDep.length; i++) {
-          for (let j = 0; j < i; j++){
-            if(this.findIntersection(this.intersInUsersDep[i], this.intersInUsersDep[j])) {
-              lastStart = this.getLastStart(i,j);
-              this.draw(i, lastStart, quarter);
-            }
-          }
-        }
-      }
-    },
-
-    getLastStart(i,j){
-      let iStart = moment(this.intersInUsersDep[i].start, 'DD.MM.YYYY');
-      let jStart = moment(this.intersInUsersDep[j].start, 'DD.MM.YYYY');
-      if(iStart.diff('01.01.2022', 'days') > jStart.diff('01.01.2022', 'days'))
-        return iStart.diff('01.01.2022', 'days');
-      return jStart.diff('01.01.2022', 'days');
-    },
-
-    draw(i, lastStart, quarter){
-      let start;
-      let end;
-      for(let j = 0; j < i; j++){
-        start = moment(this.intersInUsersDep[j].start, 'DD.MM.YYYY')
-            .diff('01.01.2022', 'days');
-        end = moment(this.intersInUsersDep[j].end, 'DD.MM.YYYY')
-            .diff('01.01.2022', 'days');
-        if(lastStart <= end &&
-            lastStart >= start)
-        {
-          let range = {};
-          range.start = this.intersInUsersDep[i].start;
-          const earlierEnd = moment(this.intersInUsersDep[i].end, 'DD.MM.YYYY')
-              .diff('01.01.2022', 'days');
-          range.end = earlierEnd < end ? this.intersInUsersDep[i].end
-              : this.intersInUsersDep[j].end;
-          range.status = 'inters';
-          this.inters.push(range);
-        }
-      }
-
-      if (this.inters.length < quarter) {
-        this.inters = [];
-      }
-    },
-
-
-    findIntersection(first, second){
-      let iStart = moment(first.start, 'DD.MM.YYYY');
-      let jStart = moment(second.start, 'DD.MM.YYYY');
-      let iEnd = moment(first.end, 'DD.MM.YYYY');
-      let jEnd = moment(second.end, 'DD.MM.YYYY');
-      return (iEnd.diff('01.01.2022', 'days') >= jStart.diff('01.01.2022', 'days')) ||
-          iStart.diff('01.01.2022', 'days') <= jEnd.diff('01.01.2022', 'days');
-    },
-
-    updateColumns() {
-      this.columns = window.innerWidth > 1100? 3 : window.innerWidth > 600 ? 2 : 1;
-    },
-
-    showDate(){
-      if (this.date !== null){
-        this.date =
-            {
-              start: moment(this.date.start).format('YYYY-MM-DD'),
-              end: moment(this.date.end).format('YYYY-MM-DD'),
-              userId: this.currentUser.id,
-            }
-            this.addWish(this.date);
-        this.date = null;
-      }
-    },
-
-    del(id){
-      this.delWish(id);
-    },
-
-    send(wish){
-      let flag = 0;
-      let record = {
-        start: moment(wish.start, 'DD.MM.YYYY').format('YYYY-MM-DD'),
-        end: moment(wish.end, 'DD.MM.YYYY').format('YYYY-MM-DD'),
-        number: this.last,
-        requested_date: moment(),
-        paid: this.paid[this.wishes.indexOf(wish)] ? 1 : 0,
-        status: 'Ожидание',
-        userId: this.currentUser.id,
-      }
-      this.intersInUsersDep.forEach(p => {
-        if (this.findIntersection(record, p)) {
-          flag = 1;
-        }
-      })
-      if (flag === 1) alert('Выбранные даты вызовут пересечение');
-      else if (this.totalDays(record.start, record.end) <= this.left){
-        this.addVacation(record);
-        this.del(wish.id);
-      }
-      else (alert('Выбрано больше дней, чем доступно!'));
-    },
-
-    sendAll(){
-      let record = {};
-      let total = 0;
-      this.wishes.forEach(p => {
-        const start = moment(p.start, 'DD.MM.YYYY').format('YYYY-MM-DD');
-        const end = moment(p.end, 'DD.MM.YYYY').format('YYYY-MM-DD');
-        total += this.totalDays(start, end);
-      });
-      if (total <= this.left){
-        this.wishes.forEach((p, index) => {
-          record = {
-            start: moment(p.start, 'DD.MM.YYYY').format('YYYY-MM-DD'),
-            end: moment(p.end, 'DD.MM.YYYY').format('YYYY-MM-DD'),
-            requested_date: moment(),
-            paid: this.paid[this.wishes.indexOf(p)] ? 1 : 0,
-            status: 'Ожидание',
-            userId: this.currentUser.id,
-            number: this.last + index,
-          }
-          this.addVacation(record);
-          this.del(p.id);
-        })
-      }
-      else (alert('Выбрано больше дней, чем доступно!'));
-    },
-
-    totalDays(start,end){
-      return moment(end, 'YYYY-MM-DD').diff(moment(start, 'YYYY-MM-DD'), 'days') + 1;
-    },
-
-    chooseColor(rec){
-        return {
-          id: new Date(),
-          highlight: {
-            start: { fillMode: 'transparent' },
-            base: { fillMode: 'light', color: rec.status === undefined ? 'gray' :
-                  rec.status === 'Утверждено'? 'green':
-                  rec.status === 'Ожидание'? 'orange': rec.status === 'Использовано' ? 'purple'
-                      : rec.status === 'inters' ? 'red':'none'},
-            end: { fillMode: 'transparent' },
-          },
-          dates: { start: moment(rec.start, 'DD.MM.YYYY')._d, end: moment(rec.end, 'DD.MM.YYYY')._d },
-        }
-    },
-
-    disDates(rec){
-      return {
-        id: new Date(),
-        start: moment(rec.start, 'DD.MM.YYYY')._d,
-        end: moment(rec.end, 'DD.MM.YYYY')._d,
-      }
-    },
-  },
-
-
-  async mounted() {
-    await this.auth();
-    await this.getDates();
-    await this.getWishes();
-    await this.getVacations();
-    this.intersections();
-  }
 }
 </script>
 
@@ -386,7 +149,7 @@ h2
 {
   position: relative;
   top: 7px;
-  left: 0%;
+  left: 0;
 }
 
 .check_div

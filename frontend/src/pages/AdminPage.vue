@@ -15,7 +15,7 @@ import SamplePage from "@/components/Samples/SamplePage";
 import AddUser from "@/components/AddUser";
 import SetData from "@/components/SetData";
 import DeleteUser from "@/components/DeleteUser.vue";
-import {mapActions} from "vuex";
+import store from "@/store";
 
 export default {
   name: "SetSignature",
@@ -27,18 +27,10 @@ export default {
     SetData,
   },
 
-  methods: {
-    ...mapActions ({
-      getDepartment: 'getDepartment',
-      auth: 'auth',
-      getUsers: 'getUsers',
-    }),
-  },
-
-  mounted() {
-    this.auth();
-    this.getDepartment();
-    this.getUsers();
+  setup() {
+    store.dispatch('auth');
+    store.dispatch('getDepartment');
+    store.dispatch('getUsers');
   }
 }
 </script>

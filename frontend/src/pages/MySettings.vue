@@ -7,7 +7,7 @@
 <script>
 import SamplePage from "@/components/Samples/SamplePage";
 import PersonalData from "@/components/PersonalData";
-import {mapActions} from "vuex";
+import store from "@/store";
 
 
 export default {
@@ -18,14 +18,8 @@ export default {
     SamplePage,
   },
 
-  methods: {
-    ...mapActions ({
-      auth: 'auth',
-    }),
-  },
-
-  mounted() {
-    this.auth();
+  setup() {
+    store.dispatch('auth');
   }
 
 }

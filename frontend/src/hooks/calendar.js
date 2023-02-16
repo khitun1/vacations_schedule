@@ -1,0 +1,92 @@
+import {computed, onMounted, ref} from "vue";
+import moment from "moment/moment";
+import store from "@/store";
+
+export function calendar(inters, flag = 0) {
+    const rows = ref('2');
+    let columns = ref('3');
+    let calendarShow = ref(true);
+    let myVacations = computed(() => store.state.my.myVacations);
+    let wishes = computed(() => store.state.my.wishes);
+
+
+    let attrs = computed(() => {
+        let attrs =  [];
+        myVacations.value.forEach(p => {
+            if (flag === 0) {
+                if (p.status !== 'Отказ' && p.status !== 'Использовано') attrs.push(chooseColor(p));
+            }
+            else {
+                if (p.status !== 'inters') attrs.push(chooseColor(p));
+            }
+        });
+        wishes.value.forEach(p => attrs.push(chooseColor(p)));
+        if (flag === 0) inters.value.forEach(p => attrs.push(chooseColor(p)));
+        return attrs;
+    })
+
+    let dis = computed(() => {
+        let dis =  [];
+        myVacations.value.forEach(p => {
+            if (flag === 0) {
+                if (p.status !== 'Отказ' && p.status !== 'Использовано')   dis.push(disDates(p))
+            }
+            else {
+                if (p.status !== 'inters') dis.push(disDates(p));
+            }
+        });
+        wishes.value.forEach(p => dis.push(disDates(p)));
+        if (flag === 0) inters.value.forEach(p => dis.push(disDates(p)));
+        return dis;
+    })
+
+    let minDate = computed(() => moment()._d);
+
+    const updateColumns = () => {
+        console.log(inters)
+        columns.value = window.innerWidth > 1100? 3 : window.innerWidth > 600 ? 2 : 1;
+    }
+
+    const chooseColor = (rec) => {
+        return {
+            id: new Date(),
+            highlight: {
+                start: { fillMode: 'transparent' },
+                base: { fillMode: 'light', color: rec.status === undefined ? 'gray' :
+                        rec.status === 'Утверждено'? 'green': rec.status === 'Использовано' ? 'purple':
+                            rec.status === 'Ожидание'? 'orange'
+                                : (rec.status === 'inters' || rec.status === 'Отказ') ? 'red' :'none'},
+                end: { fillMode: 'transparent' },
+            },
+            dates: { start: moment(rec.start, 'DD.MM.YYYY')._d, end: moment(rec.end, 'DD.MM.YYYY')._d },
+        }
+    }
+
+    const disDates = (rec) => {
+        return {
+            id: new Date(),
+            start: moment(rec.start, 'DD.MM.YYYY')._d,
+            end: moment(rec.end, 'DD.MM.YYYY')._d,
+        }
+    }
+
+
+    onMounted(async () => {
+        window.addEventListener('resize', updateColumns);
+        await store.dispatch('auth');
+        await store.dispatch('getVacations');
+
+    })
+
+    return {
+        rows,
+        columns,
+        attrs,
+        dis,
+        minDate,
+        calendarShow,
+        myVacations,
+    }
+
+
+}

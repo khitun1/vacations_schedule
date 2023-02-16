@@ -6,9 +6,9 @@
          && (p.surname + ' ' + p.first_name + ' ' + p.last_name) === u)"
          :key="vac.id"
          @mouseover="visible=vac.id" @mouseleave="visible = false"
-          tabindex="-1">
+         tabindex="-1">
       <div class="info" v-bind:style="{background: vac.intersections === 'Да'? '#ffd8d1': '#d9ccff'}">
-        <button class="withOutInter" @click="showData(vac)">
+        <button class="withOutInter" @click="showData(vac); $emit('showRec', index);">
           <p style="width: 150px">
             {{ vac.start }} - {{ vac.end }}
           </p>
@@ -45,29 +45,9 @@
 </template>
 
 <script>
-import moment from "moment";
+import {showDataHook} from "@/hooks/showData";
 export default {
   name: "SignatureTable",
-
-  data() {
-    return {
-      menuVisible: 0,
-      visible: false,
-      index: [],
-      prevPerson: null,
-      prevRec: null,
-    }
-  },
-
-  computed: {
-    uniq: function () {
-      let u = new Set();
-      this.requested.filter(p => p.status === "Ожидание").forEach(p => u.add(p.surname
-          + ' ' + p.first_name + ' ' + p.last_name));
-      u = Array.from(u);
-      return u;
-    },
-  },
 
   watch: {
     clicked(){
@@ -75,66 +55,61 @@ export default {
       {
         let person;
         if (this.prevPerson !== null){
-          person = document.getElementsByClassName('person')[this.prevPerson];
-          person.getElementsByClassName('rec')[this.prevRec].style.filter = 'none';
+          if (this.prevRec >= 0) {
+            person = document.getElementsByClassName('person')[this.prevPerson];
+            person.getElementsByClassName('rec')[this.prevRec].style.filter = 'none';
+          }
         }
         this.prevPerson = this.uniq.indexOf(this.clickedName);
-        this.prevRec = this.clickedNumber;
-        person = (document.getElementsByClassName('person')[this.prevPerson]);
-        person.getElementsByClassName('rec')[this.prevRec].focus();
-        person.getElementsByClassName('rec')[this.prevRec].style.filter = 'drop-shadow(0 2px 12px #7951f5)';
+        this.prevRec = this.clickedNumber - this.requested.filter(p =>
+            (p.surname + ' ' + p.first_name + ' ' + p.last_name === this.clickedName)
+            && (p.status === 'Использовано' || p.status === 'Утверждено')).length;
+        if (this.prevRec >= 0) {
+          person = (document.getElementsByClassName('person')[this.prevPerson]);
+          person.getElementsByClassName('rec')[this.prevRec].focus();
+          person.getElementsByClassName('rec')[this.prevRec].style.filter = 'drop-shadow(0 2px 12px #7951f5)';
+        }
       }
     },
   },
 
-
-  methods: {
-    totalDays(start,end){
-      return moment(end, 'DD.MM.YYYY').diff(moment(start, 'DD.MM.YYYY'), 'days') + 1;
-    },
-
-    showData(vac){
-      let person;
-      if (this.prevPerson !== null){
-        person = document.getElementsByClassName('person')[this.prevPerson];
-        person.getElementsByClassName('rec')[this.prevRec].style.filter = 'none';
-      }
-      this.prevPerson = this.uniq.indexOf(vac.surname + ' ' + vac.first_name + ' ' + vac.last_name);
-      this.prevRec = vac.number - 1;
-      person = document.getElementsByClassName('person')[this.prevPerson];
-      person.getElementsByClassName('rec')[this.prevRec].style.filter = 'drop-shadow(0 2px 12px #7951f5)';
-      this.index[0] = vac.surname + ' ' + vac.first_name + ' ' + vac.last_name;
-      this.index[1] = vac.number - 1;
-      this.index[2] = vac.start.split('.')[2];
-      console.log(this.index)
-      this.$emit('showRec', this.index);
-    },
-
+  setup() {
+    let {
+      uniq,
+      index,
+      prevPerson,
+      prevRec,
+      requested,
+      visible,
+      showData,
+      totalDays,
+    } = showDataHook();
+    return {
+      uniq,
+      index,
+      prevPerson,
+      prevRec,
+      requested,
+      visible,
+      showData,
+      totalDays,
+    }
   },
-
   props: {
-    requested: {
-      type: Array,
-    },
-
     clickedName: {
       type: String,
     },
-
     clickedNumber: {
       type: Number,
     },
-
     clicked: {
       type: Number,
     },
-
   },
 }
 </script>
 
 <style scoped>
-
 .rec
 {
   display: flex;
@@ -144,7 +119,6 @@ export default {
   background: none;
   border-width: 0;
 }
-
 .info
 {
   display: flex;
@@ -156,7 +130,6 @@ export default {
   cursor: default;
   border-width: 0;
 }
-
 .withOutInter
 {
   display: flex;
@@ -165,14 +138,12 @@ export default {
   width: 75%;
   border-width: 0;
 }
-
 p
 {
   margin-right: 30px;
   text-align: left;
   color: #595959;
 }
-
 .inters
 {
   height: fit-content;
@@ -183,7 +154,6 @@ p
   margin-top: 15px;
   margin-right: 5px;
 }
-
 .dec
 {
   margin-left: 20px;
@@ -194,9 +164,6 @@ p
   cursor: pointer;
   border-radius: 5px;
 }
-
-
-
 textarea
 {
   padding: 10px;
@@ -209,7 +176,6 @@ textarea
   outline: none;
   font-size: 16px;
 }
-
 .person
 {
   padding: 15px;
@@ -219,19 +185,16 @@ textarea
   margin-left: 15px;
   width: 65%;
 }
-
 .rec:focus
 {
   filter: drop-shadow(0 2px 12px #7951f5);
 }
-
 .btns
 {
   position: absolute;
   right: 10px;
   text-align: right;
 }
-
 @media screen and (max-width: 1400px) {
   .inters {
     display: none;
@@ -252,5 +215,4 @@ textarea
     }
   }
 }
-
 </style>

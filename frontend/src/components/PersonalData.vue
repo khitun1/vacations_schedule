@@ -50,64 +50,38 @@
 
 <script>
 
-import {mapActions, mapMutations, mapState} from "vuex";
+import {changePersonal} from "@/hooks/changePersonal";
 
 export default {
   name: "PersonalData",
 
-  computed: {
-    ...mapState ({
-      currentUser: state => state.my.currentUser,
-    }),
+  setup() {
+    let {
+      currentUser,
+      newPassword,
+      newLogin,
+      typePassword,
+      changePassword,
+      changeLogin,
+      textLogBtn,
+      textPasBtn,
+      changePas,
+      changeLog
+    } = changePersonal();
 
-    newPassword() {
-      return this.currentUser.password;
-    },
-
-    newLogin() {
-      return this.currentUser.login;
-    }
-  },
-
-  data() {
     return {
-      changePassword: true,
-      typePassword: 'text',
-      changeLogin: true,
-      textLogBtn: 'Изменить логин',
-      textPasBtn: 'Изменить пароль',
+      currentUser,
+      newPassword,
+      newLogin,
+      typePassword,
+      changePassword,
+      changeLogin,
+      textLogBtn,
+      textPasBtn,
+      changePas,
+      changeLog
     }
   },
-  methods: {
-    ...mapActions ({
-      change_login: 'changeLogin',
-      change_password: 'changePassword',
-    }),
-
-    ...mapMutations ({
-    }),
-
-    changePas(){
-      document.getElementsByClassName('inputPassword')[0].focus();
-      if(this.changePassword === true) this.textPasBtn = 'Подтвердить';
-      else{
-        this.change_password(this.newPassword);
-        this.textPasBtn = 'Изменить пароль';
-      }
-      this.changePassword = !this.changePassword;
-    },
-
-    changeLog(){
-      document.getElementsByClassName('inputLogin')[0].focus();
-      if(this.changeLogin === true)  this.textLogBtn = 'Подтвердить';
-      else
-      {
-        this.change_login(this.newLogin);
-        this.textLogBtn = 'Изменить логин';
-      }
-      this.changeLogin = !this.changeLogin;
-    },
-  }
 
 }
 </script>

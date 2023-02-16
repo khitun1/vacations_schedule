@@ -31,6 +31,10 @@ export const MyModule = {
         intersInUsersDep(state) {
             return state.dates;
         },
+
+        newLogin(state) {
+            return state.currentUser.login
+        }
     },
 
     mutations: {
@@ -117,6 +121,7 @@ export const MyModule = {
         },
 
         async addWish({commit},wish) {
+            console.log(wish)
             const {data} = await host.post('wishes/create', wish);
             commit('addWish', {wish, data});
         },

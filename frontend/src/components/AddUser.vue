@@ -48,7 +48,7 @@
 
 <script>
 import VueMultiselect from "vue-multiselect";
-import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
+import {addUser} from "@/hooks/createUser";
 
 export default {
   name: "AddUser",
@@ -57,115 +57,33 @@ export default {
     VueMultiselect,
   },
 
-  computed: {
-    ...mapState ({
-      visibleAddUser: state => state.admin.visibleAddUser,
-      users: state => state.admin.users,
-    }),
-
-    ...mapGetters ({
-      visibleAdminWindow: "visibleAdminWindow",
-    }),
-  },
-
-  data() {
+  setup() {
+    let {rights, color, user, surname, name, lastname, log, pas, dep,
+      error, visible, errorMsg, typePassword, flag, visibleForm, visibleAdminWindow,
+      visibleAddUser, clear, createUser, changeVisibleAddUser} = addUser();
     return {
-      rights: ['Обычный сотрудник', 'Админ'],
-      color: 'inset 0px 0px 5px red',
-      user: {
-        surname: '',
-        first_name: '',
-        last_name: '',
-        login: '',
-        password: '',
-        is_admin: '',
-      },
-      surname: 'Фамилия',
-      name: 'Имя',
-      lastname: 'Отчество',
-      log: 'Логин',
-      pas: 'Пароль',
-      dep: 'Отдел',
-      error: false,
-      visible: true,
-      errorMsg: '',
-      typePassword: 'text',
-      flag: false,
-      visibleForm: false,
-   }
-  },
-  methods: {
-    ...mapActions({
-      addUser: 'addUser',
-    }),
-
-    ...mapMutations({
-      changeVisibleAddUser: 'changeVisibleAddUser',
-
-    }),
-
-    createUser(){
-      this.error = false;
-      this.errorMsg = '';
-      if(!this.user.surname && !this.user.name && !this.user.lastname
-      && !this.user.login && !this.user.password && !this.user.is_admin)  return;
-      if(!this.user.surname)  {
-        this.error = true;
-        this.surname = 'Введите фамилию!';
-      }
-      this.flag = true;
-      if(!this.user.first_name)  {
-        this.error = true;
-        this.name = 'Введите имя!';
-      }
-      if(!this.user.last_name)  {
-        this.error = true;
-        this.lastname = 'Введите отчество!';
-      }
-      if(!this.user.login)  {
-        this.error = true;
-        this.log = 'Введите логин!';
-      }
-      if(!this.user.password)  {
-        this.error = true;
-        this.pas = 'Введите пароль!';
-      }
-      if(!this.user.is_admin)  {
-        this.error = true;
-        this.dep = 'Укажите права!';
-      }
-      if(this.users.find(p => p.login === this.user.login))
-      {
-        this.errorMsg = 'Пользователь с таким логином уже есть!';
-        this.error = true;
-      }
-      if (this.error === false) {
-        console.log(this.user)
-        this.addUser(this.user)
-        this.clear();
-      }
-    },
-
-    clear(){
-      this.user = {
-        surname: '',
-        name: '',
-        lastname: '',
-        login: '',
-        password: '',
-        department: '',
-      };
-      this.surname = 'Фамилия';
-      this.name = 'Имя';
-      this.lastname = 'Отчество';
-      this.log = 'Логин';
-      this.pas = 'Пароль';
-      this.dep = 'Отдел';
-      this.error = false;
-      this.flag = false;
-      this.changeVisibleAddUser();
+      rights,
+      color,
+      user,
+      surname,
+      name,
+      lastname,
+      log,
+      pas,
+      dep,
+      error,
+      visible,
+      errorMsg,
+      typePassword,
+      flag,
+      visibleForm,
+      visibleAdminWindow,
+      visibleAddUser,
+      clear,
+      createUser,
+      changeVisibleAddUser,
     }
-  }
+  },
 }
 </script>
 

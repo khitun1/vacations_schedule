@@ -15,38 +15,20 @@
 </template>
 
 <script>
-
-import {mapActions, mapState} from "vuex";
-import router from "@/router/router";
+import {auth} from '@/hooks/login';
 
 export default {
   name: "StartScreen",
 
-  data() {
+  setup() {
+    let {login, password, error, check} = auth();
     return {
-      login: '',
-      password: '',
+      login,
+      password,
+      error,
+      check,
     }
-  },
-
-  computed: {
-    ...mapState ({
-        error: state => state.my.error,
-      socket: state => state.my.socket,
-    }),
-  },
-
-  methods: {
-    ...mapActions({
-      log_in: 'login'
-    }),
-
-    async check() {
-      await this.log_in({login: this.login, password: this.password});
-      const url = this.error === '' ? '/myVacations' : '/';
-      await router.push(url);
-    }
-  },
+  }
 }
 </script>
 

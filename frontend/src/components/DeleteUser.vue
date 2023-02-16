@@ -23,60 +23,31 @@
 </template>
 
 <script>
-import ButtonBack from "@/components/UI/ButtonBack.vue";
-import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
+
+import {deluser} from "@/hooks/deleteUser";
 
 export default {
   name: "deleteUser",
 
-  components: {
-    ButtonBack,
-  },
-
-  data() {
+  setup() {
+    let {
+      visibleDeleteUser,
+      department,
+      visibleAdminWindow,
+      user,
+      usersList,
+      changeVisibleDeleteUser,
+      deleteUser,
+    } = deluser();
     return {
-      selectedDep: '',
-      user: '',
+      visibleDeleteUser,
+      department,
+      visibleAdminWindow,
+      user,
+      usersList,
+      changeVisibleDeleteUser,
+      deleteUser,
     }
-  },
-
-  methods: {
-    ...mapMutations ({
-      changeVisibleDeleteUser: 'changeVisibleDeleteUser',
-    }),
-
-    ...mapActions ({
-      deleteUserVuex: 'deleteUser',
-    }),
-
-    deleteUser(id) {
-      this.deleteUserVuex(id);
-    }
-  },
-
-  computed: {
-    ...mapState ({
-      currentUser: state => state.my.currentUser,
-      visibleDeleteUser: state => state.admin.visibleDeleteUser,
-      users: state => state.admin.users,
-      department: state => state.admin.department
-    }),
-
-    ...mapGetters ({
-      visibleAdminWindow: 'visibleAdminWindow',
-    }),
-
-    searchUser: function(){
-      return new RegExp('^' + this.user + '.+');
-    },
-
-    usersList: function () {
-      if (this.user === '')  return [];
-      let list = this.users.filter(p => (this.searchUser.test(p.name) || p.name === this.user)
-          && p.departmentId === this.department.name);
-      list.splice(list.indexOf(list.find(p => p.id === this.currentUser.id)), 1);
-      return list;
-    },
   },
 
 }

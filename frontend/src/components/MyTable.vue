@@ -17,9 +17,6 @@
           {{rec.status}}
         </div>
       </div>
-<!--      <button-icon class="edit" v-if="checkEdit(rec.status, rec.id) ">-->
-<!--        <img src="@/components/images/EditIcon.png">-->
-<!--      </button-icon>-->
       <button-icon class="del" v-if="checkDel(rec.status, rec.id)" @click="Del(rec.id)">
         <img src="@/images/DeleteIcon.png">
       </button-icon>
@@ -32,19 +29,11 @@
 </template>
 
 <script>
-import moment from "moment";
-import {mapActions, mapMutations} from "vuex";
+import {colors} from "@/hooks/colors";
+import {block} from "@/hooks/block";
 
 export default {
   name: "MyTable",
-
-  data(){
-    return{
-      visible: false,
-      visibleExplanation: false,
-      explanation: '',
-    }
-  },
   props: {
     records: {
       type: Array,
@@ -52,57 +41,19 @@ export default {
     }
   },
 
-  methods: {
-    ...mapActions ({
-      deleteVacation: 'deleteVacation',
-    }),
-
-    ...mapMutations ({
-    }),
-
-    setColor(status){
-      switch (status){
-        case 'Утверждено':
-          return '#b6faba';
-        case 'Ожидание':
-          return '#ffd7a6';
-        case 'Использовано':
-          return '#b2b0ff';
-        case 'Отказ':
-          return '#ffc4b9';
-        case 'Отменено':
-          return '#c0c0c0';
-      }
-    },
-
-    setBorder(status){
-      switch (status){
-        case 'Утверждено':
-          return '#01b026';
-        case 'Ожидание':
-          return '#d07100';
-        case 'Использовано':
-          return '#5b30b7';
-        case 'Отказ':
-          return '#d70000';
-        case 'Отменено':
-          return '#606060';
-      }
-    },
-
-    Del(id){
-      this.deleteVacation(id);
-    },
-
-    checkDel(status, id){
-      if(this.visible !== id) return false;
-      if(status !== 'Утверждено' && status !== 'Использовано') return true;
-    },
-
-    totalDays(start,end){
-      return moment(end, 'DD.MM.YYYY').diff(moment(start, 'DD.MM.YYYY'), 'days') + 1;
-    }
-  }
+  setup() {
+    const { setColor, setBorder} = colors();
+    let { visible, visibleExplanation, explanation, Del, checkDel, totalDays,} = block();
+    return {
+      visible,
+      visibleExplanation,
+      explanation,
+      Del,
+      checkDel,
+      totalDays,
+      setColor,
+      setBorder}
+  },
 }
 </script>
 

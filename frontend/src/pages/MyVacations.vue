@@ -1,6 +1,5 @@
 <template>
   <sample-page :choice="'myVacations'">
-    <p>{{ msg }}</p>
     <div v-show="calendarShow">
       <h2>Осталось отпускных дней: {{left}}</h2>
       <div class="prog">
@@ -57,109 +56,38 @@
         </div>
       </div>
     </div>
-<!--    <button @click="auth">Click me!</button>-->
-<!--    <p v-for="user in $store.state.users" :key="user.id">{{user.surname}}</p>-->
   </sample-page>
 </template>
 
 <script>
 import MyTable from "@/components/MyTable";
 import SamplePage from "@/components/Samples/SamplePage";
-import MyButton from "@/components/UI/MyButton";
-import moment from "moment";
-import ButtonBack from "@/components/UI/ButtonBack";
-import {mapActions, mapGetters, mapState} from "vuex";
+import {calendar} from "@/hooks/calendar";
+import {progBar} from "@/hooks/progBar";
 
 export default {
   name: "MyVacations",
 
   components:{
-    ButtonBack,
     MyTable,
     SamplePage,
-    MyButton,
   },
 
-  data(){
+  setup() {
+    let {calendarShow, rows, columns, attrs, dis, chooseColor, disDates, myVacations} = calendar([], 1);
+    let {width, left} = progBar();
     return {
-      calendarShow: true,
-      rows: 2,
-      columns: 3,
+      calendarShow,
+      rows,
+      columns,
+      attrs,
+      dis,
+      chooseColor,
+      disDates,
+      width,
+      left,
+      myVacations,
     }
-  },
-
-  computed: {
-    ...mapState ({
-      myVacations: state => state.my.myVacations,
-      wishes: state => state.my.wishes,
-      total: state => state.my.total,
-    }),
-
-    ...mapGetters ({
-      left: 'left',
-    }),
-
-    width: function(){
-      return 100 - this.left / this.total * 100 + '%';
-    },
-
-    attrs: function () {
-      let attrs = [];
-      this.myVacations.forEach(p => attrs.push(this.chooseColor(p)));
-      this.wishes.forEach(p => attrs.push(this.chooseColor(p)));
-      return attrs;
-    },
-    dis: function () {
-      let dis = [];
-      this.myVacations.forEach(p => dis.push(this.disDates(p)));
-      this.wishes.forEach(p => dis.push(this.disDates(p)));
-      return dis;
-    },
-
-    msg() {
-      return ''
-    }
-  },
-
-    created() {
-      window.addEventListener('resize', this.updateColumns);
-    },
-
-  methods: {
-      ...mapActions({
-        getUsers: "getUsers",
-        auth: "auth",
-        getVacations: "getVacations",
-      }),
-
-      updateColumns() {
-        this.columns = window.innerWidth > 1100? 3 : window.innerWidth > 600 ? 2 : 1;
-      },
-      chooseColor(rec){
-        return {
-          id: new Date(),
-          highlight: {
-            start: { fillMode: 'transparent' },
-            base: { fillMode: 'light', color: rec.status === undefined ? 'gray' :
-                  rec.status === 'Утверждено'? 'green':
-                      rec.status === 'Ожидание'? 'orange': rec.status === 'Использовано' ? 'purple': rec.status === 'Отказ' ? 'red':'none'},
-            end: { fillMode: 'transparent' },
-          },
-          dates: { start: moment(rec.start, 'DD.MM.YYYY')._d, end: moment(rec.end, 'DD.MM.YYYY')._d },
-        }
-      },
-      disDates(rec) {
-        return {
-          id: new Date(),
-          start: moment(rec.start, 'DD.MM.YYYY')._d,
-          end: moment(rec.end, 'DD.MM.YYYY')._d,
-        }
-      },
-    },
-
-  mounted() {
-    this.auth();
-    this.getVacations();
   },
 }
 </script>

@@ -1,14 +1,14 @@
 <template>
   <sample-page :choice="'allVacations'">
-      <h2 v-if="vacations.filter(p => p.status === 'Ожидание').length > 0">Запросы на подпись отпуска</h2>
+    <h2 v-if="vacations.filter(p => p.status === 'Ожидание').length > 0">Запросы на подпись отпуска</h2>
     <signature-table
-            :requested="vacations"
-            :clickedName="clickedName"
-            :clickedNumber="clickedNumber"
-            :clicked="clickEvent"
-            @accepted="accept"
-            @showWindow="show"
-            @showRec="showData">
+        :requested="vacations"
+        :clickedName="clickedName"
+        :clickedNumber="clickedNumber"
+        :clicked="clickEvent"
+        @accepted="accept"
+        @showWindow="show"
+        @showRec="showData">
     </signature-table>
     <dialog class="failure">
       <form @submit.prevent>
@@ -40,11 +40,8 @@ import moment from "moment";
 import SignatureTable from "@/components/SignatureTable";
 import SamplePage from "@/components/Samples/SamplePage";
 import {mapActions, mapMutations, mapState} from "vuex";
-
-
 export default {
   name: "AllVacations",
-
   data() {
     return{
       colors:  ['lightblue', 'deepskyblue' , 'royalblue ', 'blue', 'darkblue', 'purple'],
@@ -58,12 +55,10 @@ export default {
       clickEvent: 0,
     }
   },
-
   components: {
     SamplePage,
     SignatureTable,
   },
-
   computed: {
     ...mapState ({
       selectedDep: state => state.admin.selectedDep,
@@ -74,23 +69,19 @@ export default {
       vacations: state => state.admin.vacations,
       percent: state => state.my.currentUser.percent,
     }),
-
     height: function (){
       return this.vacations.filter(p => p.department === this.selectedDep).length * 50 + 125;
     },
-
     top: function(){
       return this.vacations.length === 0? '-250px': 0;
     },
   },
-
   methods:{
     ...mapMutations ({
       prev: 'prevYear',
       next: 'nextYear',
       changeYear: 'changeYear',
     }),
-
     ...mapActions ({
       auth: 'auth',
       getUsers: 'getUsers',
@@ -98,7 +89,6 @@ export default {
       decisionVacation: 'decisionVacation',
       clear: 'clear',
     }),
-
     cancelExplain() {
       this.explanation = '';
       document.querySelector('dialog').close();
@@ -124,17 +114,14 @@ export default {
       dates.push(moment(this.vacations[number].end, 'DD.MM.YYYY').format('YYYY-MM-DD'));
       return dates;
     },
-
     getId(name){ // find name for add record, if number of vacation > 1
       return this.myChart.data.labels.indexOf(name);
     },
-
     getLabels(){  // get unique names
       let labels = [];
       this.vacations.forEach(p => labels.push(p.surname + ' ' + p.first_name + ' ' + p.last_name));
       return [...new Set(labels)];
     },
-
     findSet(n){ // create dataset for nonexistent number of vacation
       let check = 0;
       let label = 'Отпуск ' + n;
@@ -150,7 +137,6 @@ export default {
           hoverBackgroundColor: '#ffed76',
         })
     },
-
     getLastDate(inter){ // get last date in date set of intersections
       let help = [];
       inter.forEach(p => {
@@ -158,7 +144,6 @@ export default {
       });
       return help.indexOf(Math.max(...help));
     },
-
     findIntersection(i, j){
       let iStart = moment(this.vacations[i].start, 'DD.MM.YYYY');
       let jStart = moment(this.vacations[j].start, 'DD.MM.YYYY');
@@ -167,8 +152,6 @@ export default {
       return (iEnd.diff('01.01.2022', 'days') <= jStart.diff('01.01.2022', 'days')) ||
           iStart.diff('01.01.2022', 'days') >= jEnd.diff('01.01.2022', 'days');
     },
-
-
     getRange(i,j){
       let iStart = moment(this.vacations[i].start, 'DD.MM.YYYY');
       let jStart = moment(this.vacations[j].start, 'DD.MM.YYYY');
@@ -176,7 +159,6 @@ export default {
         return iStart.diff('01.01.2022', 'days');
       return jStart.diff('01.01.2022', 'days');
     },
-
     draw(i,range, quarter){
       let inters = [];
       let start;
@@ -192,7 +174,6 @@ export default {
         }
         else this.vacations[j].intersections = 'Нет';
       }
-
       if(inters.length !== 0 && inters.length >= quarter)
       {
         inters.push(this.vacations[i].start);
@@ -204,7 +185,6 @@ export default {
           last = moment(last, 'DD.MM.YYYY')
         }
         else return;
-
         let line = [];
         for(let q = 0; q < this.vacations.length; q++)  line.push(moment(last, 'DD.MM.YYYY').format('YYYY-MM-DD'));
         this.myChart.data.datasets.unshift({
@@ -221,7 +201,6 @@ export default {
       }
       else this.vacations[i].intersections = 'Нет';
     },
-
     intersection(i){ // find intersection
       let quarter = Math.floor(this.percent * this.users.length);
       let range;
@@ -233,7 +212,6 @@ export default {
         }
       }
     },
-
     chartClick(){
       this.myChart.data.datasets = [];
       this.intersections = [];
@@ -271,7 +249,6 @@ export default {
       }
       this.myChart.update();
     },
-
     explain(){
       let surname = this.vacations.find(p => p.id === this.id).surname;
       let name = this.vacations.find(p => p.id === this.id).first_name;
@@ -279,7 +256,7 @@ export default {
       let arr = [surname, name, lastname];
       let count = [];
       this.vacations.forEach(p => p.surname === arr[0] && p.first_name === arr[1]
-        && p.last_name === arr[2] ? count.push(p) : false);
+      && p.last_name === arr[2] ? count.push(p) : false);
       document.querySelector('dialog').close();
       this.indent = 0;
       const rej = {
@@ -291,7 +268,6 @@ export default {
       this.explanation = '';
       this.chartClick();
     },
-
     accept(id){
       const obj = {
         id: id,
@@ -299,11 +275,10 @@ export default {
       }
       this.decisionVacation(obj);
     },
-
     show(id){
       document.querySelector('dialog').showModal();
       this.id = id;
-        if(this.vacations.filter(p => p.status === 'Ожидание').length === 1) this.indent = 100;
+      if(this.vacations.filter(p => p.status === 'Ожидание').length === 1) this.indent = 100;
     },
     showRec(){
       this.clickEvent++;
@@ -311,7 +286,6 @@ export default {
       this.clickedName = this.myChart.data.labels[clickedIndex];
       this.clickedNumber = this.myChart.getActiveElements()[0].datasetIndex;
     },
-
     showData(index){
       this.myChart.setActiveElements([
         {datasetIndex: index[1], index: this.myChart.data.labels.indexOf(index[0])},
@@ -337,7 +311,6 @@ export default {
     })
     return this.myChart;
   },
-
   watch: {
     vacations: {
       handler() {
@@ -346,17 +319,13 @@ export default {
       deep: true
     },
   }
-
 }
 </script>
 
 <style src="../../node_modules/vue-multiselect/dist/vue-multiselect.css">
-
-
 </style>
 
 <style scoped>
-
 .chart
 {
   width: 95%;
@@ -364,14 +333,11 @@ export default {
   height: fit-content;
   position: relative;
   top: v-bind(top);
-
 }
-
 #myChart
 {
   height: v-bind(height);
 }
-
 .failure
 {
   position: absolute;
@@ -385,11 +351,9 @@ export default {
   text-align: center;
   font-weight: lighter;
 }
-
 dialog::backdrop{
   background: rgba(0, 0, 0, 0.6);
 }
-
 textarea
 {
   padding: 10px;
@@ -402,36 +366,28 @@ textarea
   outline: none;
   font-size: 16px;
 }
-
 .failure button
 {
   height: 30px;
   width: 120px;
   font-size: 16px;
 }
-
 .changeYear {
   display: flex;
   flex-direction: row;
   cursor: default;
 }
-
 .changeYear button {
   background: none;
   border: 0;
   cursor: pointer;
   margin-top: 5px;
 }
-
-
-
-
 @media screen and (max-width: 800px) {
   .changeYear {
     margin-bottom: 0;
   }
 }
-
 </style>
 
 <style>
@@ -441,13 +397,11 @@ textarea
   outline: none;
   color: black;
 }
-
 .multiselect__option--selected.multiselect__option--highlight
 {
   background: #e7e7e7;
   color: black;
 }
-
 .multiselect__tags {
   min-height: 20px;
   display: block;
@@ -457,16 +411,13 @@ textarea
   font-size: 16px;
   text-align: center;
 }
-
 .multiselect__content-wrapper::-webkit-scrollbar {
   width: 7px;
 }
-
 .multiselect__content-wrapper::-webkit-scrollbar-thumb {
   background-color: #7e7e7e;
   border-radius: 20px;
 }
-
 .multiselect__option {
   display: block;
   padding: 12px;
@@ -479,6 +430,4 @@ textarea
   cursor: pointer;
   white-space: nowrap;
 }
-
 </style>
-

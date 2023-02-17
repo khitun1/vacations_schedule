@@ -1,5 +1,6 @@
 import moment from "moment";
 import store from "@/store";
+import {chartDateConverter} from "@/hooks/chartDateConverter";
 
 export function options() // config for chart
 {
@@ -22,35 +23,9 @@ export function options() // config for chart
                     align: 'start',
                     stepSize: 1,
                     callback: function (value) {
-                        const year = store.state.admin.year;
-                        switch (value) {
-                            case 'Jan ' + year:
-                                return '  Январь'
-                            case 'Feb ' + year:
-                                return ' Февраль'
-                            case 'Mar ' + year:
-                                return '    Март'
-                            case 'Apr ' + year:
-                                return '  Апрель'
-                            case 'May ' + year:
-                                return '     Май'
-                            case 'Jun ' + year:
-                                return '    Июнь'
-                            case 'Jul ' + year:
-                                return '    Июль'
-                            case 'Aug ' + year:
-                                return '   Август'
-                            case 'Sep ' + year:
-                                return ' Сентябрь'
-                            case 'Oct ' + year:
-                                return '  Октябрь'
-                            case 'Nov ' + year:
-                                return '   Ноябрь'
-                            case 'Dec ' + year:
-                                return '  Декабрь'
-                            default:
-                                break
-                        }
+                            const {converterInYear, converterInQuarter, converterInMonth} = chartDateConverter(value);
+                            return store.state.admin.range === 'Год' ? converterInYear() :
+                                store.state.admin.range === 'Квартал' ? converterInQuarter() : converterInMonth();
                     }
                 }
             }

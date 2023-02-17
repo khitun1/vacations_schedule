@@ -6,13 +6,16 @@ export const AdminModule = {
         vacations: [],
         department: {},
         users: [],
-        year: String(new Date().getFullYear()),
+        year: String(new Date().getFullYear() + 1),
+        month: 1,
+        quarter: 1,
         selectedID: Number,
         visibleAddUser: false,
         visibleDeleteUser: false,
         visibleAddDep: false,
         visibleAddType: false,
         visibleChangeCon: false,
+        range: 'Год',
     }),
 
     getters: {
@@ -31,12 +34,8 @@ export const AdminModule = {
             state.visibleDeleteUser = !state.visibleDeleteUser;
         },
 
-        changeVisibleAddDep(state) {
-            state.visibleAddDep = !state.visibleAddDep;
-        },
-
-        changeVisibleAddType(state) {
-            state.visibleAddType = !state.visibleAddType;
+        changeRange(state, newRange) {
+            state.range = newRange;
         },
 
         changeVisibleChangeCon(state) {
@@ -80,11 +79,52 @@ export const AdminModule = {
         },
 
         prevYear(state) {
-            state.year--;
+            if (state.range === 'Год') {
+                state.year--;
+            }
+            else if (state.range === 'Квартал') {
+                if (state.quarter !== 1) {
+                    state.quarter--;
+                }
+                else {
+                    state.year--;
+                    state.quarter = 4;
+                }
+            }
+            else if (state.range === 'Месяц') {
+                if (state.month !== 1) {
+                    state.month--;
+                }
+                else {
+                    state.year--;
+                    state.month = 12;
+                }
+            }
+
         },
 
         nextYear(state) {
-            state.year++;
+            if (state.range === 'Год') {
+                state.year++;
+            }
+            else if (state.range === 'Квартал') {
+                if (state.quarter !== 4) {
+                    state.quarter++;
+                }
+                else {
+                    state.year++;
+                    state.quarter = 1;
+                }
+            }
+            else if (state.range === 'Месяц') {
+                if (state.month !== 12) {
+                    state.month++;
+                }
+                else {
+                    state.year++;
+                    state.month = 1;
+                }
+            }
         },
 
         setUsers(state, users) {

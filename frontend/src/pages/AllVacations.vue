@@ -1,4 +1,4 @@
-<template>
+<template >
   <sample-page :choice="'allVacations'">
     <h2 v-if="vacations.filter(p => p.status === 'Ожидание').length > 0">Запросы на подпись отпуска</h2>
     <signature-table
@@ -19,11 +19,22 @@
       </form>
     </dialog>
     <h2 v-show="vacations.length > 0">График отпусков</h2>
-    <div class="changeYear" v-show="vacations.length > 0">
-      <button @click="prevYear ">&#60;</button>
-      <h3 class="year">{{year}} г.</h3>
-      <button @click="nextYear">&#62;</button>
+    <div class="range">
+      <div class="changeYear" v-show="vacations.length > 0">
+        <button @click="prevRange ">&#60;</button>
+        <h3 class="year">{{rangeChart}}</h3>
+        <button @click="nextRange">&#62;</button>
+      </div>
+      <VueMultiselect class="selectRange"
+                      :options="ranges"
+                      placeholder="Диапазон графика"
+                      :show-labels="false"
+                      :show-no-results="false"
+                      v-model="selectedRange"
+                      @close="changeRangeInChart(selectedRange)"/>
+
     </div>
+
     <div class="chart">
       <canvas id="myChart"
               :style="{height: height + 'px'}"
@@ -40,6 +51,7 @@ import moment from "moment";
 import SignatureTable from "@/components/SignatureTable";
 import SamplePage from "@/components/Samples/SamplePage";
 import {mapActions, mapMutations, mapState} from "vuex";
+import VueMultiselect from "vue-multiselect";
 export default {
   name: "AllVacations",
   data() {
@@ -53,12 +65,16 @@ export default {
       clickedName: '',
       clickedNumber: undefined,
       clickEvent: 0,
+      ranges: ['Год', 'Квартал', 'Месяц'],
+      selectedRange: '',
     }
   },
   components: {
     SamplePage,
     SignatureTable,
+    VueMultiselect,
   },
+
   computed: {
     ...mapState ({
       selectedDep: state => state.admin.selectedDep,
@@ -68,6 +84,9 @@ export default {
       all: state => state.admin.all,
       vacations: state => state.admin.vacations,
       percent: state => state.my.currentUser.percent,
+      range: state => state.admin.range,
+      month: state => state.admin.month,
+      quarter: state => state.admin.quarter,
     }),
     height: function (){
       return this.vacations.filter(p => p.department === this.selectedDep).length * 50 + 125;
@@ -75,12 +94,20 @@ export default {
     top: function(){
       return this.vacations.length === 0? '-250px': 0;
     },
+
+    rangeChart() {
+      return this.range === 'Год' ? this.year + ' г.' :
+          this.range === 'Квартал' ? this.quarter + '-й квартал ' + this.year + ' г.' :
+          moment(this.year + '-' + this.month + '-01').lang('ru').format('MMMM') + ' ' + this.year + ' r.';
+    },
   },
+
   methods:{
     ...mapMutations ({
       prev: 'prevYear',
       next: 'nextYear',
       changeYear: 'changeYear',
+      changeRange: 'changeRange',
     }),
     ...mapActions ({
       auth: 'auth',
@@ -93,17 +120,64 @@ export default {
       this.explanation = '';
       document.querySelector('dialog').close();
     },
-    prevYear() {
-      this.prev();
-      this.myChart.options.scales.x.min = this.year + '-01-01';
-      this.myChart.options.scales.x.max = this.year + '-12-31';
+
+    setRangeInChart(){
+      if (this.range === 'Год') {
+        this.myChart.options.scales.x.time.unit = 'month';
+        this.myChart.options.scales.x.min = this.year + '-01-01';
+        this.myChart.options.scales.x.max = this.year + '-12-31';
+      }
+      else if (this.range === 'Квартал') {
+        this.myChart.options.scales.x.time.unit = 'week';
+        let min = this.year + '-' + (1 + ( 3 * (this.quarter - 1))) + '-01';
+        if (min.length === 9) {
+          min = min.split('');
+          min.splice(5, 0, '0');
+          min = min.join('');
+        }
+        const days = moment(this.year + '-' + (3 + ( 3 * (this.quarter - 1)))).daysInMonth();
+        let max = this.year + '-' + (3 + ( 3 * (this.quarter - 1))) + '-' + days;
+        if (max.length === 9) {
+          max = max.split('');
+          max.splice(5, 0, '0');
+          max = max.join('');
+        }
+        this.myChart.options.scales.x.min = min;
+        this.myChart.options.scales.x.max = max;
+      }
+      else if (this.range === 'Месяц') {
+        this.myChart.options.scales.x.time.unit = 'day';
+        let min = this.year + '-' + this.month + '-01';
+        if (min.length === 9) {
+          min = min.split('');
+          min.splice(5, 0, '0');
+          min = min.join('');
+        }
+        const days = moment(this.year + '-' + this.month).daysInMonth();
+        let max = this.year + '-' + this.month + '-' + days;
+        if (max.length === 9) {
+          max = max.split('');
+          max.splice(5, 0, '0');
+          max = max.join('');
+        }
+        this.myChart.options.scales.x.min = min;
+        this.myChart.options.scales.x.max = max;
+      }
       this.myChart.update();
     },
-    nextYear() {
+
+    changeRangeInChart(selectedRange) {
+      this.changeRange(selectedRange);
+      this.setRangeInChart();
+    },
+
+    prevRange() {
+      this.prev();
+      this.setRangeInChart();
+    },
+    nextRange() {
       this.next();
-      this.myChart.options.scales.x.min = this.year + '-01-01';
-      this.myChart.options.scales.x.max = this.year + '-12-31';
-      this.myChart.update();
+      this.setRangeInChart();
     },
     getDates(number){ // get vacation range
       if (number === -1) {
@@ -334,6 +408,26 @@ export default {
   position: relative;
   top: v-bind(top);
 }
+
+.range {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  width: 90%;
+}
+
+.selectRange {
+  height: 30px;
+  width: 200px;
+  margin-left: 71px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
+}
+
+
 #myChart
 {
   height: v-bind(height);
@@ -375,6 +469,8 @@ textarea
 .changeYear {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  width: 200px;
   cursor: default;
 }
 .changeYear button {

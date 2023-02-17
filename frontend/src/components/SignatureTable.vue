@@ -46,34 +46,12 @@
 
 <script>
 import {showDataHook} from "@/hooks/showData";
+import {watch} from "vue";
+import {block} from "@/hooks/block";
 export default {
   name: "SignatureTable",
 
-  watch: {
-    clicked(){
-      if (this.uniq.indexOf(this.clickedName) !== -1)
-      {
-        let person;
-        if (this.prevPerson !== null){
-          if (this.prevRec >= 0) {
-            person = document.getElementsByClassName('person')[this.prevPerson];
-            person.getElementsByClassName('rec')[this.prevRec].style.filter = 'none';
-          }
-        }
-        this.prevPerson = this.uniq.indexOf(this.clickedName);
-        this.prevRec = this.clickedNumber - this.requested.filter(p =>
-            (p.surname + ' ' + p.first_name + ' ' + p.last_name === this.clickedName)
-            && (p.status === 'Использовано' || p.status === 'Утверждено')).length;
-        if (this.prevRec >= 0) {
-          person = (document.getElementsByClassName('person')[this.prevPerson]);
-          person.getElementsByClassName('rec')[this.prevRec].focus();
-          person.getElementsByClassName('rec')[this.prevRec].style.filter = 'drop-shadow(0 2px 12px #7951f5)';
-        }
-      }
-    },
-  },
-
-  setup() {
+  setup(props) {
     let {
       uniq,
       index,
@@ -82,8 +60,32 @@ export default {
       requested,
       visible,
       showData,
-      totalDays,
     } = showDataHook();
+
+    const {totalDays} =  block();
+
+    watch(() => props.clicked, () => {
+      if (uniq.value.indexOf(props.clickedName) !== -1)
+      {
+        let person;
+        if (prevPerson.value !== null){
+          if (prevRec.value >= 0) {
+            person = document.getElementsByClassName('person')[prevPerson.value];
+            person.getElementsByClassName('rec')[prevRec.value].style.filter = 'none';
+          }
+        }
+        prevPerson.value = uniq.value.indexOf(props.clickedName);
+        prevRec.value = props.clickedNumber - requested.value.filter(p =>
+            (p.surname + ' ' + p.first_name + ' ' + p.last_name === props.clickedName)
+            && (p.status === 'Использовано' || p.status === 'Утверждено')).length;
+        if (prevRec.value >= 0) {
+          person = (document.getElementsByClassName('person')[prevPerson.value]);
+          person.getElementsByClassName('rec')[prevRec.value].focus();
+          person.getElementsByClassName('rec')[prevRec.value].style.filter = 'drop-shadow(0 2px 12px #7951f5)';
+        }
+      }
+    })
+
     return {
       uniq,
       index,

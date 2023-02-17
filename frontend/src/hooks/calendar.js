@@ -10,8 +10,34 @@ export function calendar(inters, flag = 0) {
     let wishes = computed(() => store.state.my.wishes);
 
 
+
     let attrs = computed(() => {
-        let attrs =  [];
+        let attrs = [];
+        const holidays = computed(() => store.getters.hollidays);
+
+        const daysOff = computed(() => store.getters.daysOff);
+
+        daysOff.value.forEach(p => {
+            attrs.push(p);
+        })
+
+        holidays.value.forEach(p => {
+            attrs.push({
+                content: 'red',
+                dates: p,
+                bar: 'red'
+            })
+            if (moment(p).format('dddd') === 'Sunday' || moment(p).format('dddd') === 'Saturday') {
+                attrs.push({
+                    content: 'red',
+                    dates: moment(p).weekday(1)._d,
+                    bar: 'red',
+                    status: 'holliday',
+                })
+            }
+        })
+
+
         myVacations.value.forEach(p => {
             if (flag === 0) {
                 if (p.status !== 'Отказ' && p.status !== 'Использовано') attrs.push(chooseColor(p));
@@ -26,24 +52,28 @@ export function calendar(inters, flag = 0) {
     })
 
     let dis = computed(() => {
-        let dis =  [];
+        let dis = [];
         myVacations.value.forEach(p => {
             if (flag === 0) {
-                if (p.status !== 'Отказ' && p.status !== 'Использовано')   dis.push(disDates(p))
+                if (p.status !== 'Отказ' && p.status !== 'Использовано')
+                {
+                    dis.push(disDates(p))
+                }
             }
             else {
                 if (p.status !== 'inters') dis.push(disDates(p));
             }
         });
         wishes.value.forEach(p => dis.push(disDates(p)));
-        if (flag === 0) inters.value.forEach(p => dis.push(disDates(p)));
         return dis;
     })
 
-    let minDate = computed(() => moment()._d);
+    let minDate = computed(() => {
+        const start = moment().year() + 1 + '-01-01';
+        return moment(start)._d;
+    });
 
     const updateColumns = () => {
-        console.log(inters)
         columns.value = window.innerWidth > 1100? 3 : window.innerWidth > 600 ? 2 : 1;
     }
 

@@ -12,6 +12,7 @@ export const MyModule = {
         len: 0,
         percent: 0,
         error: '',
+        year: String(new Date().getFullYear()),
     }),
 
     getters: {
@@ -32,8 +33,35 @@ export const MyModule = {
             return state.dates;
         },
 
-        newLogin(state) {
-            return state.currentUser.login
+        hollidays(state) {
+            const year = parseInt(state.year);
+            let hollidays = [];
+            for (let i = -5; i < 5; i++) {
+                hollidays.push(moment(year + i + '-02-23')._d,);
+                hollidays.push(moment(year + i + '-03-08')._d,);
+                hollidays.push(moment(year + i + '-05-01')._d,);
+                hollidays.push(moment(year + i + '-05-09')._d,);
+            }
+            return hollidays
+        },
+
+        daysOff(state) {
+            const year = parseInt(state.year) - 1;
+            let dates = [];
+            for (let i = 6; i < 1000; i += 7) {
+                dates.push({
+                    content: 'red',
+                    dates: moment(year + '-01-01').weekday(i)._d,
+                    status: 'Day off',
+                })
+                dates.push({
+                    content: 'red',
+                    dates: moment(year + '-01-01').weekday(i + 1)._d,
+                    status: 'Day off',
+                })
+            }
+
+            return dates;
         }
     },
 

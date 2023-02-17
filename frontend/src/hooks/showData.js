@@ -1,6 +1,5 @@
 import {computed, ref} from "vue";
 import store from "@/store";
-import moment from "moment/moment";
 
 
 export function showDataHook() {
@@ -19,7 +18,6 @@ export function showDataHook() {
     let prevRec = ref(null);
     const showData = (vac) => {
         let person;
-        console.log(vac)
         if (prevPerson.value !== null){
             person = document.getElementsByClassName('person')[prevPerson.value];
             person.getElementsByClassName('rec')[prevRec.value].style.filter = 'none';
@@ -34,7 +32,6 @@ export function showDataHook() {
         index.value[2] = vac.start.split('.')[2];
     }
 
-    const totalDays = (start,end) => moment(end, 'DD.MM.YYYY').diff(moment(start, 'DD.MM.YYYY'), 'days') + 1;
 
 
     return {
@@ -45,6 +42,5 @@ export function showDataHook() {
         showData,
         requested,
         visible,
-        totalDays,
     }
 }

@@ -32,15 +32,10 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {backNavBar} from "@/hooks/backNavBar";
 
 export default {
   name: "SampleNavBar",
-
-  data(){
-    return{
-    }
-  },
 
   props: {
     choice: {
@@ -49,26 +44,25 @@ export default {
     },
   },
 
-  computed: {
-    ...mapState ({
-      currentUser: state => state.my.currentUser,
-    }),
-    take(){
-      return this.choice === 'takeVacation' ? '#e2e2e2': 'none';
-    },
-    mine(){
-      return this.choice === 'myVacations' ? '#e2e2e2': 'none';
-    },
-    all(){
-      return this.choice === 'allVacations' ? '#e2e2e2': 'none';
-    },
-    admin(){
-      return this.choice === 'admin' ? '#e2e2e2': 'none';
-    },
-    settings(){
-      return this.choice === 'settings' ? '#e2e2e2': 'none';
-    },
+  setup(props) {
+    const {
+      currentUser,
+          take,
+          mine,
+          all,
+          admin,
+          settings,
+    } = backNavBar(props.choice);
+    return {
+      currentUser,
+      take,
+      mine,
+      all,
+      admin,
+      settings,
+    }
   },
+
 }
 </script>
 

@@ -135,12 +135,6 @@ form
   width: 250px;
 }
 
-.back
-{
-  margin-top: 10px;
-  margin-left: -8px;
-}
-
 .selectDep
 {
   height: 30px;

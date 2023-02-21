@@ -32,11 +32,6 @@ const Vacations = sequelize.define('vacations', {
     explanation: {type: DataTypes.TEXT},
 })
 
-const Type = sequelize.define('type', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, unique: true},
-})
-
 const Wishes = sequelize.define('wishes', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     start: {type: DataTypes.DATE},
@@ -47,18 +42,21 @@ const Year = sequelize.define('current_year', {
     year: {type: DataTypes.INTEGER},
 })
 
+const History = sequelize.define('history', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    user: {type: DataTypes.STRING},
+    adminId: {type: DataTypes.INTEGER},
+})
+
 User.hasMany(Vacations);
 Vacations.belongsTo(User);
 
 Department.hasMany(User);
 User.belongsTo(Department);
 
-Type.hasMany(Vacations);
-Vacations.belongsTo(Type);
-
 User.hasMany(Wishes);
 Wishes.belongsTo(User);
 
 module.exports = {
-    User, Department, Type, Vacations, Wishes, Year
+    User, Department, Vacations, Wishes, Year, History
 }

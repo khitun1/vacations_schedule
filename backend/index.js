@@ -2,13 +2,72 @@ require('dotenv').config();
 const express = require('express');
 const sequelize = require('./db');
 const cors = require('cors');
-const {User, Year, Department} = require('./models/models');
+const {User, Year, Department, History, Vacations} = require('./models/models');
 const router = require('./routes/index');
 const errorHandler = require('./middleware/errorHandleMiddleware');
+
 
 const port = process.env.PORT;
 
 const app = express();
+const WS = require('express-ws')(app);
+const aWss = WS.getWss();
+
+app.ws('/', function(ws, req) {
+    console.log('qwerty')
+    ws.on('message', async (msg) => {
+        const message = JSON.parse(msg);
+        console.log(message)
+        switch (message.method) {
+            case 'connection':
+                const dep = await Department.findOne({
+                    where: {
+                        name: message.department,
+                    }
+                })
+                const admin = await User.findOne({
+                    where: {
+                        departmentId: dep.id,
+                        is_admin: 1,
+                    }
+                })
+                ws.id = message.id;
+                ws.adminId = admin.id;
+                break;
+            case 'message':
+                aWss.clients.forEach(async (p) => {
+                    if(p.id === ws.adminId) {
+                        let notes = await History.findAll({
+                            where: {
+                                adminId: p.id,
+                            }
+                        })
+                        const user = await User.findOne({
+                            where: {
+                                id: ws.id
+                            }
+                        })
+                        const vacs = await Vacations.findAll({
+                            where: {
+                                userId: ws.id,
+                            }
+                        })
+                        vacs.sort((a, b) => a.id > b.id ? -1 : 1);
+                        notes.sort((a, b) => a.id > b.id ? -1 : 1);
+                        const name = user.surname + ' ' + user.first_name[0] + '.' + user.last_name[0] +'.';
+                        const note = {
+                            name: name,
+                            notes: notes,
+                            vac: vacs[0],
+                        }
+                        p.send(JSON.stringify(note))
+                    }
+                }) 
+                break;
+        }
+    })
+});
+
 app.use(cors())
     .use(express.json())
     .use('/api', router)

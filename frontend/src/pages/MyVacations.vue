@@ -64,6 +64,7 @@ import MyTable from "@/components/MyTable";
 import SamplePage from "@/components/Samples/SamplePage";
 import {calendar} from "@/hooks/calendar";
 import {progBar} from "@/hooks/progBar";
+import {useStore} from "vuex";
 
 export default {
   name: "MyVacations",
@@ -74,8 +75,11 @@ export default {
   },
 
   setup() {
-    let {calendarShow, rows, columns, attrs, dis, chooseColor, disDates, myVacations} = calendar([], 1);
-    let {width, left} = progBar();
+    const store = useStore();
+    const {calendarShow, rows, columns, attrs, dis, chooseColor, disDates, myVacations} = calendar([], 1);
+    store.dispatch('createSocket');
+    const {width, left} = progBar();
+    console.log(store.state.my.socket)
     return {
       calendarShow,
       rows,

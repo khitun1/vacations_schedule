@@ -12,6 +12,7 @@
         <p class="error">{{ error }}</p>
       </form>
     </div>
+
 </template>
 
 <script>
@@ -21,6 +22,19 @@ export default {
   name: "StartScreen",
 
   setup() {
+    // socket.onopen = () => {
+    //   const info = {
+    //     id: 6,
+    //     admin: 'John',
+    //     method: 'connection',
+    //     departmentId: 5,
+    //   }
+    //   socket.send(JSON.stringify(info))
+    // }
+    // socket.onmessage = (event) => {
+    //   console.log(event.data)
+    // }
+
     let {login, password, error, check} = auth();
     return {
       login,

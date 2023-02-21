@@ -1,4 +1,4 @@
-const {User, Department, Vacations} = require('../models/models');
+const {User, Department, Vacations,History} = require('../models/models');
 const bcrypt = require('bcrypt');
 const apiError = require("../error/apiError");
 const winston = require('../winston');
@@ -154,6 +154,23 @@ class UsersController {
         } finally {
             winston.info("Time: " + new Date() + " Action: Decide vacation"
                 + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
+        }
+    }
+
+    async clearNotes(req, res, next) {
+        try {
+            await History.destroy({
+                where: {
+                    adminId: req.user.id,
+                }
+            })
+            return res.send("Notes have cleared!");
+        } catch (e) {
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Clear notes"
+                + "   User: " + JSON.stringify(req.user));
         }
     }
 

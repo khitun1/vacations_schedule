@@ -87,6 +87,7 @@ export default {
       range: state => state.admin.range,
       month: state => state.admin.month,
       quarter: state => state.admin.quarter,
+      socket: state => state.my.socket,
     }),
     height: function (){
       return this.vacations.filter(p => p.department === this.selectedDep).length * 50 + 125;
@@ -115,6 +116,7 @@ export default {
       getEmployeesVacations: 'getEmployeesVacations',
       decisionVacation: 'decisionVacation',
       clear: 'clear',
+      createSocket: 'createSocket',
     }),
     cancelExplain() {
       this.explanation = '';
@@ -374,6 +376,7 @@ export default {
 
   mounted() {
     this.auth();
+    this.createSocket();
     this.clear();
     this.getUsers();
     this.getEmployeesVacations();

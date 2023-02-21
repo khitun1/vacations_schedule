@@ -16,6 +16,7 @@ export const AdminModule = {
         visibleAddType: false,
         visibleChangeCon: false,
         range: 'Год',
+        socket: null,
     }),
 
     getters: {
@@ -176,7 +177,7 @@ export const AdminModule = {
                 }
             }
             state.vacations = vacs;
-        }
+        },
     },
 
     actions: {
@@ -219,10 +220,6 @@ export const AdminModule = {
             })
             commit('decision', {id, status, explanation});
         },
-
-        async clear({state}) {
-            await host('users/clearNotes');
-            console.log(state.users)
-        }
+        
     }
 }

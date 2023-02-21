@@ -63,11 +63,13 @@ import {preventInters} from "@/hooks/preventInters";
 import {calendar} from "@/hooks/calendar";
 import {progBar} from "@/hooks/progBar";
 import {wishesAndVacations} from "@/hooks/wishesAndVacations";
+import store from "@/store";
 
 export default {
   name: "TakeVacation",
 
   setup() {
+    store.dispatch('createSocket');
     let { len, inters, intersInUsersDep, currentUser, findIntersection } = preventInters();
     let { rows, columns, attrs, dis, minDate } = calendar(inters);
     let {width} = progBar();

@@ -8,8 +8,11 @@ export function auth() {
     let error = computed(() => store.state.my.error);
     const check = async () => {
         await store.dispatch('login', {login: login.value, password: password.value});
-        const url = error.value === '' ? '/myVacations' : '/';
-        await router.push(url);
+        if (error.value === '') {
+            const url = '/myVacations';
+            await router.push(url);
+        }
+
     }
 
     return {

@@ -8,6 +8,7 @@ export function wishesAndVacations(currentUser, findIntersection, intersInUsersD
     let last = computed(() => store.getters.last);
     let wishes = computed(() => store.state.my.wishes);
     let left = computed(() => store.getters.left);
+    const socket = computed(() => store.state.my.socket);
     
     const showWish = () => {
         if (date.value !== null){
@@ -45,6 +46,10 @@ export function wishesAndVacations(currentUser, findIntersection, intersInUsersD
         if (flag === 1) alert('Выбранные даты вызовут пересечение');
         else if (totalDays(record.start, record.end) <= left.value){
             await store.dispatch('addVacation', record);
+            socket.value.send(JSON.stringify({
+                method: 'message',
+                department: currentUser.value.department,
+            }))
             del(wish.id);
         }
         else (alert('Выбрано больше дней, чем доступно!'));
@@ -70,6 +75,10 @@ export function wishesAndVacations(currentUser, findIntersection, intersInUsersD
                     number: last.value + index,
                 }
                 await store.dispatch('addVacation', record);
+                socket.value.send(JSON.stringify({
+                    method: 'message',
+                    department: currentUser.value.department,
+                }))
                 del(p.id);
             })
         }

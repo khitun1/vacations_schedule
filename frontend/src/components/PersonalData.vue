@@ -51,12 +51,14 @@
 <script>
 
 import {changePersonal} from "@/hooks/changePersonal";
+import {onMounted} from "vue";
+import {useStore} from "vuex";
 
 export default {
   name: "PersonalData",
 
   setup() {
-    let {
+    const {
       currentUser,
       newPassword,
       newLogin,
@@ -68,6 +70,13 @@ export default {
       changePas,
       changeLog
     } = changePersonal();
+
+    const store = useStore();
+
+    onMounted(async () => {
+      console.log(store.state.my.currentUser.login)
+      newLogin.value = store.state.my.currentUser.login;
+    })
 
     return {
       currentUser,

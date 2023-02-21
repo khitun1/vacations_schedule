@@ -1,7 +1,6 @@
-const {Vacations} = require("../models/models");
+const {Vacations, Department, User, History} = require("../models/models");
 const apiError = require("../error/apiError");
 const winston = require('../winston');
-const {log} = require("winston");
 const { Op } = require("sequelize");
 
 class vacationController {
@@ -26,6 +25,20 @@ class vacationController {
                     }
                 })
             }
+            const dep = await Department.findOne({
+                where: {
+                    name: req.user.department
+                }});
+            const admin = await User.findOne({
+                where: {
+                    departmentId: dep.id,
+                    is_admin: true,
+                }
+            })
+            await History.create({
+                user: req.user.surname + ' ' + req.user.first_name[0] + '.' + req.user.last_name[0] + '.',
+                adminId: admin.id,
+            })
             return res.send({id: vac.id});
         } catch (e) {
             winston.error(e.message);

@@ -1,11 +1,11 @@
 const apiError = require('../error/apiError');
-const {User, Department, Vacations} = require('../models/models');
+const {User, Department, Vacations, History} = require('../models/models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 const winston = require('../winston');
 const { Op } = require("sequelize");
 
-const generateJwt = (id, is_admin, department, surname, first_name, last_name, login, percent, password) => {
+const generateJwt = (id, is_admin, department, surname, first_name, last_name, login, percent, password,) => {
     return jwt.sign(
         {
             id: id,
@@ -16,7 +16,7 @@ const generateJwt = (id, is_admin, department, surname, first_name, last_name, l
             is_admin: is_admin,
             department: department,
             percent: percent,
-            password: password
+            password: password,
         },
         process.env.SECRET_KEY,
         {
@@ -48,7 +48,13 @@ class UserController {
             const token = generateJwt(user.id, user.is_admin, department.name,
                 user.surname, user.first_name, user.last_name, user.login,
                 department.percents / 100, password);
-            return res.json({token});
+            let history = await History.findAll({
+                where: {
+                    adminId: user.id,
+                }
+            })
+            history.sort((a, b) => a.id > b.id ? -1 : 1);
+            return res.json({token: token, history: history});
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));
@@ -62,10 +68,16 @@ class UserController {
     async check(req, res, next) {
         try {
              const user = req.user;
+            let history = await History.findAll({
+                where: {
+                    adminId: user.id,
+                }
+            })
+            history.sort((a, b) => a.id > b.id ? -1 : 1);
             const token = generateJwt(user.id, user.is_admin, user.department,
                 user.surname, user.first_name, user.last_name, user.login,
                 user.percent, user.password);
-             return res.json({token});
+             return res.json({token: token, history: history});
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));

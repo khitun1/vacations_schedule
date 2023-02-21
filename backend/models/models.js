@@ -8,6 +8,7 @@ const User = sequelize.define('user', {
     surname: {type: DataTypes.STRING},
     left_days: {type: DataTypes.INTEGER},
     login: {type: DataTypes.STRING, unique: true},
+    mail: {type: DataTypes.STRING},
     md5password: {type: DataTypes.STRING},
     is_admin: {type: DataTypes.BOOLEAN},
 })

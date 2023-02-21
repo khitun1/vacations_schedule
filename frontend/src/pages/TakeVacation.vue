@@ -59,22 +59,201 @@
 
 <script>
 import SamplePage from "@/components/Samples/SamplePage";
-import {preventInters} from "@/hooks/preventInters";
 import {calendar} from "@/hooks/calendar";
-import {progBar} from "@/hooks/progBar";
-import {wishesAndVacations} from "@/hooks/wishesAndVacations";
-import store from "@/store";
+import {computed, onMounted, ref} from "vue";
+import moment from "moment";
+import {useStore} from "vuex";
+import {total_days} from "@/hooks/totalDays";
 
 export default {
   name: "TakeVacation",
 
   setup() {
+    const store = useStore();
     store.dispatch('createSocket');
-    let { len, inters, intersInUsersDep, currentUser, findIntersection } = preventInters();
-    let { rows, columns, attrs, dis, minDate } = calendar(inters);
-    let {width} = progBar();
-    let {date, paid, wishes, left,
-      send, sendAll, showWish, del,} = wishesAndVacations(currentUser, findIntersection, intersInUsersDep);
+    store.dispatch('getDepartment');
+    const percent = computed(() => store.state.my.currentUser.percent);
+    const len = computed(() => store.state.my.len);
+    const intersInUsersDep = computed(() => store.state.my.dates);
+    const inters = ref([]);
+    const currentUser = computed(() => store.state.my.currentUser);
+
+    const intersections = () => {
+      let quarter = Math.floor(percent.value * len.value);
+      if (quarter <= 1) {
+        intersInUsersDep.value.forEach(p => {
+          if (p.userId !== currentUser.value.id) {
+            const vac = {
+              start: p.start,
+              end: p.end,
+              status: 'inters',
+            }
+            inters.value.push(vac);
+          }
+        })
+      }
+      else {
+        let lastStart;
+        for (let i = 0; i < intersInUsersDep.value.length; i++) {
+          for (let j = 0; j < i; j++){
+            if(findIntersection(intersInUsersDep.value[i], intersInUsersDep.value[j])) {
+              lastStart = getLastStart(i,j);
+              draw(i, lastStart, quarter);
+            }
+          }
+        }
+      }
+    }
+
+    const getLastStart = (i,j) => {
+      let iStart = moment(intersInUsersDep.value[i].start, 'DD.MM.YYYY');
+      let jStart = moment(intersInUsersDep.value[j].start, 'DD.MM.YYYY');
+      if(iStart.diff('01.01.2022', 'days') > jStart.diff('01.01.2022', 'days'))
+        return iStart.diff('01.01.2022', 'days');
+      return jStart.diff('01.01.2022', 'days');
+    }
+
+    const findIntersection = (first, second) => {
+      let iStart = moment(first.start, 'DD.MM.YYYY');
+      let jStart = moment(second.start, 'DD.MM.YYYY');
+      let iEnd = moment(first.end, 'DD.MM.YYYY');
+      let jEnd = moment(second.end, 'DD.MM.YYYY');
+      return iStart.isBetween(jStart, jEnd) || iEnd.isBetween(jStart, jEnd);
+    }
+
+    const draw = (i, lastStart, quarter) => {
+      let start;
+      let end;
+      for(let j = 0; j < i; j++){
+        start = moment(intersInUsersDep.value[j].start, 'DD.MM.YYYY')
+            .diff('01.01.2022', 'days');
+        end = moment(intersInUsersDep.value[j].end, 'DD.MM.YYYY')
+            .diff('01.01.2022', 'days');
+        if(lastStart <= end &&
+            lastStart >= start)
+        {
+          let range = {};
+          range.start = intersInUsersDep.value[i].start;
+          const earlierEnd = moment(intersInUsersDep.value[i].end, 'DD.MM.YYYY')
+              .diff('01.01.2022', 'days');
+          range.end = earlierEnd < end ? intersInUsersDep.value[i].end
+              : intersInUsersDep.value[j].end;
+          range.status = 'inters';
+          inters.value.push(range);
+        }
+      }
+
+      if (inters.value.length < quarter) {
+        inters.value = [];
+      }
+    }
+
+    onMounted(async () => {
+      await store.dispatch('auth');
+      await store.dispatch('getDates');
+      await store.dispatch('getWishes');
+      await store.dispatch('getVacations');
+      intersections();
+    });
+
+
+    const { rows, columns, attrs, dis, minDate } = calendar(inters);
+    const left = computed(() => store.getters.left);
+    const total = computed(() => store.state.my.total);
+    const width = computed(() => 100 - left.value / total.value * 100 + '%');
+
+    const date = ref(null);
+    const paid = ref([]);
+    const last = computed(() => store.getters.last);
+    const wishes = computed(() => store.state.my.wishes);
+    const socket = computed(() => store.state.my.socket);
+
+    const showWish = () => {
+      if (date.value !== null){
+        const start =  moment(date.value.start).format('YYYY-MM-DD');
+        const end = moment(date.value.end).format('YYYY-MM-DD');
+        if (totalDays(moment(start).format('DD.MM.YYYY'), moment(end).format('DD.MM.YYYY')) >
+            store.state.admin.department.max) {
+          alert('Выбрано больше дней, чем максимум за один отпуск!');
+        }
+        else if (totalDays(moment(start).format('DD.MM.YYYY'), moment(end).format('DD.MM.YYYY')) <
+            store.state.admin.department.min) {
+          alert('Выбрано меньше дней, чем минимум за один отпуск!');
+        }
+        else {
+          date.value =
+              {
+                start: start,
+                end: end,
+                userId: currentUser.value.id,
+              }
+          store.dispatch('addWish', date.value);
+        }
+        date.value = null;
+      }
+    }
+
+    const del = async (id) => await store.dispatch('deleteWish', id);
+
+    const send = async (wish) => {
+      let flag = 0;
+      let record = {
+        start: moment(wish.start, 'DD.MM.YYYY').format('YYYY-MM-DD'),
+        end: moment(wish.end, 'DD.MM.YYYY').format('YYYY-MM-DD'),
+        number: last.value,
+        requested_date: moment(),
+        paid: paid.value[wishes.value.indexOf(wish)] ? 1 : 0,
+        status: 'Ожидание',
+        userId: currentUser.value.id,
+      }
+      intersInUsersDep.value.forEach(p => {
+        if (findIntersection(record, p)) {
+          flag = 1;
+        }
+      })
+      if (flag === 1) alert('Выбранные даты вызовут пересечение');
+      else if (totalDays(moment(record.start).format('DD.MM.YYYY'), moment(record.end).format('DD.MM.YYYY')) <= left.value){
+        await store.dispatch('addVacation', record);
+        socket.value.send(JSON.stringify({
+          method: 'message',
+          department: currentUser.value.department,
+        }))
+        del(wish.id);
+      }
+      else (alert('Выбрано больше дней, чем доступно!'));
+    }
+
+    const sendAll = () => {
+      let record = {};
+      let total = 0;
+      wishes.value.forEach(p => {
+        const start = moment(p.start, 'DD.MM.YYYY');
+        const end = moment(p.end, 'DD.MM.YYYY');
+        total += totalDays(start, end);
+      });
+      if (total <= left.value){
+        wishes.value.forEach(async (p, index) => {
+          record = {
+            start: moment(p.start, 'DD.MM.YYYY').format('YYYY-MM-DD'),
+            end: moment(p.end, 'DD.MM.YYYY').format('YYYY-MM-DD'),
+            requested_date: moment(),
+            paid: paid.value[wishes.value.indexOf(p)] ? 1 : 0,
+            status: 'Ожидание',
+            userId: currentUser.value.id,
+            number: last.value + index,
+          }
+          await store.dispatch('addVacation', record);
+          socket.value.send(JSON.stringify({
+            method: 'message',
+            department: currentUser.value.department,
+          }))
+          del(p.id);
+        })
+      }
+      else (alert('Выбрано больше дней, чем доступно!'));
+    }
+
+    const {totalDays} = total_days();
 
     return {
       findIntersection,

@@ -13,6 +13,16 @@
       <p>Отчество:</p>
       <div class="text"><my-input readonly :value="currentUser.last_name"/></div>
     </div>
+    <div class="info mail">
+      <p>Почта:</p>
+      <div class="text">
+        <my-input :readonly="changeMail"
+                  v-model="newMail" class="inputMail"/>
+      </div>
+      <my-button class="change" @click="change_mail">
+        {{ textMailBtn }}
+      </my-button>
+    </div>
     <div class="info login">
       <p>Логин:</p>
       <div class="text">
@@ -50,33 +60,58 @@
 
 <script>
 
-import {changePersonal} from "@/hooks/changePersonal";
-import {onMounted} from "vue";
+import {computed, ref} from "vue";
 import {useStore} from "vuex";
+import jwt_decode from "jwt-decode";
 
 export default {
   name: "PersonalData",
 
   setup() {
-    const {
-      currentUser,
-      newPassword,
-      newLogin,
-      typePassword,
-      changePassword,
-      changeLogin,
-      textLogBtn,
-      textPasBtn,
-      changePas,
-      changeLog
-    } = changePersonal();
-
     const store = useStore();
+    const currentUser = computed(() => store.state.my.currentUser);
+    const newLogin = ref(jwt_decode(localStorage.getItem('token')).login);
+    const newPassword = ref(jwt_decode(localStorage.getItem('token')).password);
+    const newMail = ref(jwt_decode(localStorage.getItem('token')).mail);
+    //let newLogin = computed(() => currentUser.value.login);
+    //let newLogin = ref(currentUser.value.login);
+    const changePassword = ref(true) ;
+    const typePassword = ref('text');
+    const changeLogin = ref(true);
+    const changeMail = ref(true);
+    const textLogBtn = ref('Изменить логин');
+    const textMailBtn = ref('Изменить почту');
+    const textPasBtn = ref('Изменить пароль');
 
-    onMounted(async () => {
-      console.log(store.state.my.currentUser.login)
-      newLogin.value = store.state.my.currentUser.login;
-    })
+    const changeLog = () => {
+      document.getElementsByClassName('inputLogin')[0].focus();
+      if(changeLogin.value === true)  textLogBtn.value = 'Подтвердить';
+      else
+      {
+        store.dispatch('changeLogin', newLogin.value);
+        textLogBtn.value = 'Изменить логин';
+      }
+      changeLogin.value = !changeLogin.value;
+    }
+    const changePas = () => {
+      document.getElementsByClassName('inputPassword')[0].focus();
+      if(changePassword.value === true) textPasBtn.value = 'Подтвердить';
+      else{
+        store.dispatch('changePassword', newPassword.value);
+        textPasBtn.value = 'Изменить пароль';
+      }
+      changePassword.value = !changePassword.value;
+    }
+
+    const change_mail = () => {
+      document.getElementsByClassName('inputMail')[0].focus();
+      if(changeMail.value === true) textMailBtn.value = 'Подтвердить';
+      else{
+        store.dispatch('changeMail', newMail.value);
+        textMailBtn.value = 'Изменить почту';
+      }
+      changeMail.value = !changeMail.value;
+    }
 
     return {
       currentUser,
@@ -87,6 +122,10 @@ export default {
       changeLogin,
       textLogBtn,
       textPasBtn,
+      textMailBtn,
+      newMail,
+      changeMail,
+      change_mail,
       changePas,
       changeLog
     }

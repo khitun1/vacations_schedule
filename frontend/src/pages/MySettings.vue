@@ -7,7 +7,6 @@
 <script>
 import SamplePage from "@/components/Samples/SamplePage";
 import PersonalData from "@/components/PersonalData";
-import {onBeforeMount} from "vue";
 import {useStore} from "vuex";
 
 
@@ -21,13 +20,8 @@ export default {
 
   setup() {
     const store = useStore();
-    onBeforeMount(async () => {
-      console.log('before')
-      await store.dispatch('auth');
-      console.log(store.state.my.currentUser.login)
-    })
+    store.dispatch('auth');
   }
-
 }
 </script>
 

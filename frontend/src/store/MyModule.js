@@ -206,6 +206,14 @@ export const MyModule = {
             commit('setCurrentUser', data);
         },
 
+        async changeMail({commit}, mail) {
+            const {data} = await host.post('user/changeMail', {
+                mail: mail,
+            })
+            localStorage.setItem('token', data.token);
+            commit('setCurrentUser', data);
+        },
+
         async getDates({commit}) {
             const {data} = await host('user/getDates');
             commit('setDates', data)

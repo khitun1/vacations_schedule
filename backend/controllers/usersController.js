@@ -3,8 +3,12 @@ const bcrypt = require('bcrypt');
 const apiError = require("../error/apiError");
 const winston = require('../winston');
 const { Op } = require("sequelize");
+const nodemailer = require('nodemailer');
+const moment = require("moment");
+
 
 class UsersController {
+
     async getVacations(req, res, next) {
         try {
             const dep = await Department.findOne({
@@ -44,7 +48,7 @@ class UsersController {
 
     async create(req, res, next) {
         try {
-            const {first_name, last_name, surname, login, password, is_admin} = req.body;
+            const {first_name, last_name, surname, mail, login, password, is_admin} = req.body;
             const dep = await Department.findOne({
                 where: {
                     name: req.user.department,
@@ -59,7 +63,7 @@ class UsersController {
             const departmentId = dep.id;
             const left_days = dep.total;
             const md5password = await bcrypt.hash(password, 5);
-            await User.create({first_name, last_name, surname, left_days,
+            await User.create({first_name, last_name, surname, left_days, mail,
                 login, md5password, is_admin, departmentId});
             res.send("User have created!");
         } catch (e) {
@@ -117,12 +121,19 @@ class UsersController {
 
     async decisionVacation(req, res, next) {
         try {
+
             const {id, status, explanation} = req.body;
             const userId = await Vacations.findOne({
                 where: {
                     id: id,
                 }
             });
+            const statusMsg = status === 'Отказ' ? 'отклонена.' : 'принята.';
+            const user = await User.findOne({
+                where: {
+                    id: userId.userId,
+                }
+            })
             await Vacations.update({
                 status: status,
                 explanation: explanation,
@@ -147,6 +158,26 @@ class UsersController {
                     }
                 })
             }
+
+            let transporter = nodemailer.createTransport({
+                host: 'smtp.mail.ru',
+                port: 465,
+                secure: true,
+                auth: {
+                    user: 'vschedule@mail.ru',
+                    pass: '0xVq3Lj72R7N4W2kwANm',
+                },
+            })
+            await transporter.sendMail({
+                from: 'Сервис для планирования отпусков сотрудников <vschedule@mail.ru>',
+                to: user.mail,
+                subject: 'Решение по отпуску',
+                text: 'Ваша заявка на отпуск с ' +
+                    moment(userId.start).format('DD.MM.YYYY')
+                    + ' по ' + moment(userId.end).format('DD.MM.YYYY')  + ' была ' + statusMsg,
+            }, (err) => {
+                console.log(err)
+            });
             return res.send("Vacation have decided!");
         } catch (e) {
             winston.error(e.message);

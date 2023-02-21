@@ -79,6 +79,14 @@ export const AdminModule = {
             state.year = year;
         },
 
+        changeMonth(state, month) {
+            state.month = month;
+        },
+
+        changeQuarter(state, quarter) {
+            state.quarter = quarter;
+        },
+
         prevYear(state) {
             if (state.range === 'Год') {
                 state.year--;

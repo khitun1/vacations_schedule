@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const winston = require('../winston');
 const { Op } = require("sequelize");
 
-const generateJwt = (id, is_admin, department, surname, first_name, last_name, login, percent, password,) => {
+const generateJwt = (id, is_admin, department, surname, first_name, last_name, login, percent, password, mail) => {
     return jwt.sign(
         {
             id: id,
@@ -17,6 +17,7 @@ const generateJwt = (id, is_admin, department, surname, first_name, last_name, l
             department: department,
             percent: percent,
             password: password,
+            mail: mail,
         },
         process.env.SECRET_KEY,
         {
@@ -47,7 +48,7 @@ class UserController {
             });
             const token = generateJwt(user.id, user.is_admin, department.name,
                 user.surname, user.first_name, user.last_name, user.login,
-                department.percents / 100, password);
+                department.percents / 100, password, user.mail);
             let history = await History.findAll({
                 where: {
                     adminId: user.id,
@@ -76,7 +77,7 @@ class UserController {
             history.sort((a, b) => a.id > b.id ? -1 : 1);
             const token = generateJwt(user.id, user.is_admin, user.department,
                 user.surname, user.first_name, user.last_name, user.login,
-                user.percent, user.password);
+                user.percent, user.password, user.mail);
              return res.json({token: token, history: history});
         } catch (e) {
             winston.error(e.message);
@@ -97,7 +98,7 @@ class UserController {
             const user = req.user;
             const token = generateJwt(user.id, user.is_admin, user.department,
                 user.surname, user.first_name, user.last_name, req.body.login,
-                user.percent, user.password);
+                user.percent, user.password, user.mail);
             return res.json({token});
         } catch (e) {
             winston.error(e.message);
@@ -106,7 +107,27 @@ class UserController {
             winston.info("Time: " + new Date() + " Action: Change login"
                 + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
+    }
 
+    async changeMail(req, res, next) {
+        try {
+            await User.update({mail: req.body.mail}, {
+                where: {
+                    id: req.user.id
+                }
+            })
+            const user = req.user;
+            const token = generateJwt(user.id, user.is_admin, user.department,
+                user.surname, user.first_name, user.last_name, req.body.login,
+                user.percent, user.password, user.mail);
+            return res.json({token});
+        } catch (e) {
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Change login"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
+        }
     }
 
     async changePassword(req, res, next) {
@@ -120,7 +141,7 @@ class UserController {
             const user = req.user;
             const token = generateJwt(user.id, user.is_admin, user.department,
                 user.surname, user.first_name, user.last_name, user.login,
-                user.percent, req.body.password);
+                user.percent, req.body.password, user.mail);
             return res.json({token});
         } catch (e) {
             winston.error(e.message);

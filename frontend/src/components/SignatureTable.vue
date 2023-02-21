@@ -27,14 +27,14 @@
           <button class="dec"
                   style="color: #36f64a; background: #a19fff"
                   v-if="vac.intersections !== 'Да'"
-                  @click="this.$emit('accepted', vac.id)"
+                  @click="$emit('accepted', vac.id)"
                   title="Утвердить">
             &#10004;
           </button>
           <button class="dec"
                   style="color: #ff2323"
                   v-bind:style="vac.intersections === 'Да'? {background: '#ff9e9e'}: {background:'#a19fff'}"
-                  @click="this.$emit('showWindow', vac.id)"
+                  @click="$emit('showWindow', vac.id)"
                   title="Отказать">
             &#10006;
           </button>
@@ -45,24 +45,43 @@
 </template>
 
 <script>
-import {showDataHook} from "@/hooks/showData";
-import {watch} from "vue";
-import {block} from "@/hooks/block";
+import {computed, ref, watch} from "vue";
+import store from "@/store";
+import {total_days} from "@/hooks/totalDays";
 export default {
   name: "SignatureTable",
 
   setup(props) {
-    let {
-      uniq,
-      index,
-      prevPerson,
-      prevRec,
-      requested,
-      visible,
-      showData,
-    } = showDataHook();
+    const visible = ref(false);
+    const requested = computed(() => store.state.admin.vacations)
+    const uniq = computed(() => {
+      let u = new Set();
+      requested.value.filter(p => p.status === "Ожидание").forEach(p => u.add(p.surname
+          + ' ' + p.first_name + ' ' + p.last_name));
+      u = Array.from(u);
+      return u;
+    })
 
-    const {totalDays} =  block();
+    const index = ref([]);
+    const prevPerson = ref(null);
+    const prevRec = ref(null);
+    const showData = (vac) => {
+      let person;
+      if (prevPerson.value !== null){
+        person = document.getElementsByClassName('person')[prevPerson.value];
+        person.getElementsByClassName('rec')[prevRec.value].style.filter = 'none';
+      }
+      prevPerson.value = uniq.value.indexOf(vac.surname + ' ' + vac.first_name + ' ' + vac.last_name);
+      prevRec.value = vac.number - 1 - requested.value.filter(p => (p.userId === vac.userId)
+          && (p.status === 'Использовано' || p.status === 'Утверждено')).length;
+      person = document.getElementsByClassName('person')[prevPerson.value];
+      person.getElementsByClassName('rec')[prevRec.value].style.filter = 'drop-shadow(0 2px 12px #7951f5)';
+      index.value[0] = vac.surname + ' ' + vac.first_name + ' ' + vac.last_name;
+      index.value[1] = vac.number - 1;
+      index.value[2] = vac.start;
+    }
+
+    const {totalDays} = total_days();
 
     watch(() => props.clicked, () => {
       if (uniq.value.indexOf(props.clickedName) !== -1)

@@ -32,7 +32,8 @@
 </template>
 
 <script>
-import {backNavBar} from "@/hooks/backNavBar";
+import {computed} from "vue";
+import {useStore} from "vuex";
 
 export default {
   name: "SampleNavBar",
@@ -45,14 +46,14 @@ export default {
   },
 
   setup(props) {
-    const {
-      currentUser,
-          take,
-          mine,
-          all,
-          admin,
-          settings,
-    } = backNavBar(props.choice);
+    const store = useStore();
+    const currentUser =  computed(() => store.state.my.currentUser);
+    const take = computed(() => props.choice === 'takeVacation' ? '#e2e2e2': 'none');
+    const mine = computed(() => props.choice === 'myVacations' ? '#e2e2e2': 'none');
+    const all = computed(() => props.choice === 'allVacations' ? '#e2e2e2': 'none');
+    const admin = computed(() => props.choice === 'admin' ? '#e2e2e2': 'none');
+    const settings = computed(() => props.choice === 'settings' ? '#e2e2e2': 'none');
+
     return {
       currentUser,
       take,

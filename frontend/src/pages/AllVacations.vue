@@ -56,7 +56,7 @@ export default {
   name: "AllVacations",
   data() {
     return{
-      colors:  ['lightblue', 'deepskyblue' , 'royalblue ', 'blue', 'darkblue', 'purple'],
+      color:  'deepskyblue',
       intersections:  [],
       amount:  0,
       indent: 0,
@@ -108,6 +108,8 @@ export default {
       prev: 'prevYear',
       next: 'nextYear',
       changeYear: 'changeYear',
+      changeMonth: 'changeMonth',
+      changeQuarter: 'changeQuarter',
       changeRange: 'changeRange',
     }),
     ...mapActions ({
@@ -123,7 +125,12 @@ export default {
       document.querySelector('dialog').close();
     },
 
-    setRangeInChart(){
+      setRangeInChart(start = null){
+      if (start) {
+        this.changeYear(start.split('.')[2]);
+        this.changeQuarter(Math.floor((start.split('.')[1] - 1) / 3  + 1));
+        this.changeMonth(start.split('.')[1]);
+      }
       if (this.range === 'Год') {
         this.myChart.options.scales.x.time.unit = 'month';
         this.myChart.options.scales.x.min = this.year + '-01-01';
@@ -209,7 +216,7 @@ export default {
           label: label,
           grouped: false,
           data: [],
-          backgroundColor: this.colors[n-1],
+          backgroundColor: this.color,
           hoverBackgroundColor: '#ffed76',
         })
     },
@@ -366,9 +373,7 @@ export default {
       this.myChart.setActiveElements([
         {datasetIndex: index[1], index: this.myChart.data.labels.indexOf(index[0])},
       ]);
-      this.myChart.options.scales.x.min = index[2] + '-01-01';
-      this.myChart.options.scales.x.max = index[2] + '-12-31';
-      this.changeYear(index[2]);
+      this.setRangeInChart(index[2]);
       this.myChart.update();
       document.getElementById('myChart') .focus();
     },

@@ -28,7 +28,7 @@
     </div>
   </div>
   <transition name="note">
-    <div class="newNote" v-show="showNote">
+    <div class="newNote" v-if="showNote && currentUser.is_admin">
       Пользователь {{noteName}} отправил заявку на отпуск
     </div>
   </transition>
@@ -37,17 +37,16 @@
 
 <script>
 import {computed, ref, watch} from "vue";
-import store from "@/store";
 import moment from "moment";
-import MyButton from "@/components/UI/MyButton.vue";
 import router from "@/router/router";
+import {useStore} from "vuex";
 
 export default {
-  components: {MyButton},
 
   setup() {
-    let showNote = ref(false);
-    let showAllNotes = ref(false);
+    const store = useStore();
+    const showNote = ref(false);
+    const showAllNotes = ref(false);
     const currentUser = computed(() => store.state.my.currentUser);
     const noteName = computed(() => store.state.my.noteName);
     const notes = computed(() => store.state.my.notes);
@@ -75,6 +74,7 @@ export default {
       showNote,
       currentUser,
       notes,
+      store,
       noteName,
       showAllNotes,
       onClickAway,

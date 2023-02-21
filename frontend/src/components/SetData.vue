@@ -34,31 +34,128 @@
 </template>
 
 <script>
-
-import {setData} from "@/hooks/setData";
+import {computed, ref} from "vue";
+import {useStore} from "vuex";
 
 export default {
   name: "SetData",
 
   setup() {
-    let {
-      changeMin,
-          changeMax,
-          changeTotal,
-          changePercent,
-          minText,
-          maxText,
-          totalText,
-          percentText,
-          errorNum,
-          errorMsg,
-          visibleCon,
-          visibleChangeCon,
-          visibleAdminWindow,
-          condition,
-          changeVisibleCon,
-          setCon,
-    } = setData();
+    const store = useStore();
+    const changeMin =  ref(true);
+    const changeMax =  ref(true);
+    const changeTotal =  ref(true);
+    const changePercent =  ref(true);
+    const minText =  ref('Изменить');
+    const maxText =  ref('Изменить');
+    const totalText =  ref('Изменить');
+    const percentText =  ref('Изменить');
+    const errorNum =  ref(false);
+    const errorMsg =  ref('');
+    const visibleCon =  ref(false);
+    const visibleChangeCon = computed(() => store.state.admin.visibleChangeCon);
+    const visibleAdminWindow = computed(() => store.getters.visibleAdminWindow)
+    const condition = computed(() => store.state.admin.department);
+    const changeVisibleCon = () => store.commit('changeVisibleChangeCon');
+    const setCon = (flag) => {
+      let accept = false;
+      switch (flag){
+        case 1:
+          if(changeMin.value === false)
+          {
+            condition.value.min = parseInt(condition.value.min);
+            if (validate(condition.value.min)) {
+              if (condition.value.min > condition.value.max)
+              {
+                errorMsg.value = 'Максимальное кол-во дней не может быть меньше минимального';
+                errorNum.value = true;
+              }
+              else {
+                changeMin.value = true;
+                minText.value =  'Изменить';
+                accept = true;
+              }
+            }
+            else errorMsg.value = 'Минимальное количество дней должно быть целым и положительным числом!';
+          }
+          else
+          {
+            changeMin.value = false;
+            document.getElementsByClassName('minDays')[0].focus();
+            minText.value =  'Подтвердить';
+          }
+          break;
+        case 2:
+          if(changeMax.value === false)
+          {
+            condition.value.max = parseInt(condition.value.max);
+            if (validate(condition.value.max)) {
+              if (condition.value.min > condition.value.max)
+              {
+                errorMsg.value = 'Максимальное кол-во дней не может быть меньше минимального';
+                errorNum.value = true;
+              }
+              else{
+                changeMax.value = true;
+                maxText.value =  'Изменить';
+                accept = true;
+              }
+            }
+            else errorMsg.value = 'Максимальное количество дней должно быть целым и положительным числом!';
+          }
+          else
+          {
+            changeMax.value = false;
+            document.getElementsByClassName('maxDays')[0].focus();
+            maxText.value =  'Подтвердить';
+          }
+          break;
+        case 3:
+          if(changeTotal.value === false)
+          {
+            condition.value.total = parseInt(condition.value.total);
+            if(validate(condition.value.total)) {
+              changeTotal.value = true;
+              totalText.value = 'Изменить';
+              accept = true;
+            }
+            else errorMsg.value = 'Общее количество дней должно быть целым и положительным числом!';
+          }
+          else
+          {
+            changeTotal.value = false;
+            document.getElementsByClassName('totalDays')[0].focus();
+            totalText.value =  'Подтвердить';
+          }
+          break;
+        case 4:
+          if(changePercent.value === false)
+          {
+            condition.value.percents = parseInt(condition.value.percents);
+            if(validate(condition.value.percents) && condition.value.percents < 100) {
+              changePercent.value = true;
+              percentText.value = 'Изменить';
+              accept = true;
+            }
+            else errorMsg.value = '% пересечений должен быть целым, положительным и меньшем, чем 100, числом !';
+          }
+          else
+          {
+            changePercent.value = false;
+            document.getElementsByClassName('percentsDays')[0].focus();
+            percentText.value =  'Подтвердить';
+          }
+          break;
+      }
+
+      if (accept){
+        store.dispatch('changeConditions',condition.value);
+        errorNum.value = false;
+        errorMsg.value = '';
+      }
+      else errorNum.value = true;
+    }
+    const validate = (con) => con && con > 0 && con % 1 === 0;
     return {
       changeMin,
       changeMax,

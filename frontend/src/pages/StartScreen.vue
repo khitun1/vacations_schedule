@@ -16,26 +16,25 @@
 </template>
 
 <script>
-import {auth} from '@/hooks/login';
+import {computed, ref} from "vue";
+import store from "@/store";
+import router from "@/router/router";
 
 export default {
   name: "StartScreen",
 
   setup() {
-    // socket.onopen = () => {
-    //   const info = {
-    //     id: 6,
-    //     admin: 'John',
-    //     method: 'connection',
-    //     departmentId: 5,
-    //   }
-    //   socket.send(JSON.stringify(info))
-    // }
-    // socket.onmessage = (event) => {
-    //   console.log(event.data)
-    // }
+    const login = ref('');
+    const password = ref('');
+    const error = computed(() => store.state.my.error);
+    const check = async () => {
+      await store.dispatch('login', {login: login.value, password: password.value});
+      if (error.value === '') {
+        const url = '/myVacations';
+        await router.push(url);
+      }
 
-    let {login, password, error, check} = auth();
+    }
     return {
       login,
       password,

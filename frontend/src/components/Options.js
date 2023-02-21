@@ -1,6 +1,7 @@
 import moment from "moment";
 import store from "@/store";
 import {chartDateConverter} from "@/hooks/chartDateConverter";
+import {ref} from "vue";
 
 export function options() // config for chart
 {
@@ -31,6 +32,9 @@ export function options() // config for chart
             }
         },
         plugins: {
+            legend: {
+              display: false,
+            },
             // title: {
             //     display: true,
             //     text: 'График отпусков',
@@ -43,12 +47,11 @@ export function options() // config for chart
                     label: function(context) {
                         let label = context.dataset.label || '';
 
-                        let start = new Date(context.parsed._custom.barStart);
-                        let end = new Date(context.parsed._custom.barEnd);
-                        let dif = moment(end).diff('01-01-2022', 'days') - moment(start).diff('01-01-2022', 'days');
+                        const start = moment(context.parsed._custom.barStart).format('DD.MM.YYYY');
+                        const end = moment(context.parsed._custom.barEnd).format('DD.MM.YYYY');
                         if (label) {
                             label = label + ': Начало: ' + moment(start).format('DD.MM.YYYY')+
-                                '   Конец: ' + moment(end).format('DD.MM.YYYY') + '    Кол-во дней:  ' + dif;
+                                '   Конец: ' + moment(end).format('DD.MM.YYYY') + '    Кол-во дней:  ' + totalDays(start, end);
                         }
                         return label;
                     },
@@ -65,4 +68,25 @@ export function viewDate(date) // collect date in view 'dd.mm.yy'
     let split = date.split('-')
     view = split[2] + '.' + split[1] + '.' + split[0][2] + split[0][3]
     return view
+}
+
+const totalDays = (start,end) => {
+    const s = moment(start, 'DD.MM.YYYY');
+    const e = moment(end, 'DD.MM.YYYY');
+    let total = moment(e).diff((s), 'days') + 1;
+    // const hollidays = computed(() => store.getters.hollidays);
+    // hollidays.value.forEach(p => {
+    //     const holliday = moment(p).format('DD.MM.YYYY');
+    //     if (moment(p).isBetween(s,e) || holliday === s.format('DD.MM.YYYY')
+    //         || holliday === e.format('DD.MM.YYYY'))   total--;
+    // })
+    const daysOff = ref(store.getters.daysOff);
+    daysOff.value.forEach(p => {
+        const dayOff= moment(p.dates).format('DD.MM.YYYY');
+        if (moment(p.dates).isBetween(s,e)|| dayOff === s.format('DD.MM.YYYY')
+            || dayOff === e.format('DD.MM.YYYY'))   {
+            total--;
+        }
+    })
+    return total;
 }

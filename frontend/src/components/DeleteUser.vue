@@ -23,22 +23,37 @@
 </template>
 
 <script>
-
-import {deluser} from "@/hooks/deleteUser";
+import {computed, ref} from "vue";
+import {useStore} from "vuex";
 
 export default {
   name: "deleteUser",
 
   setup() {
-    let {
-      visibleDeleteUser,
-      department,
-      visibleAdminWindow,
-      user,
-      usersList,
-      changeVisibleDeleteUser,
-      deleteUser,
-    } = deluser();
+    const store = useStore();
+    const currentUser = computed(() => store.state.my.currentUser);
+    const visibleDeleteUser = computed(() => store.state.admin.visibleDeleteUser);
+    const users = computed(() => store.state.admin.users);
+    const department = computed(() => store.state.admin.department);
+    const visibleAdminWindow = computed(() => store.getters.visibleAdminWindow);
+    const user = ref('');
+    const searchUser = computed(() => new RegExp('^' + user.value + '.+'));
+
+    const usersList = computed(() => {
+      if (user.value === '')  return [];
+      let list = users.value.filter(p => (searchUser.value.test(p.name) || p.name === user.value)
+          && p.departmentId === department.value.name);
+      list.splice(list.indexOf(list.find(p => p.id === currentUser.value.id)), 1);
+      return list;
+    })
+
+    const changeVisibleDeleteUser = () => {
+      store.commit('changeVisibleDeleteUser');
+    }
+
+    const deleteUser = (id) => {
+      store.dispatch('deleteUser', id);
+    }
     return {
       visibleDeleteUser,
       department,

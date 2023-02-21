@@ -63,8 +63,8 @@
 import MyTable from "@/components/MyTable";
 import SamplePage from "@/components/Samples/SamplePage";
 import {calendar} from "@/hooks/calendar";
-import {progBar} from "@/hooks/progBar";
 import {useStore} from "vuex";
+import {computed} from "vue";
 
 export default {
   name: "MyVacations",
@@ -78,8 +78,10 @@ export default {
     const store = useStore();
     const {calendarShow, rows, columns, attrs, dis, chooseColor, disDates, myVacations} = calendar([], 1);
     store.dispatch('createSocket');
-    const {width, left} = progBar();
-    console.log(store.state.my.socket)
+    const left = computed(() => store.getters.left);
+    const total = computed(() => store.state.my.total);
+    const width = computed(() => 100 - left.value / total.value * 100 + '%');
+
     return {
       calendarShow,
       rows,

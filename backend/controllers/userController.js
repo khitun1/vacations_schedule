@@ -31,10 +31,15 @@ class UserController {
         try {
             const {login, password} = req.body;
             const user = await User.findOne({
-                where: {login}
+                where: {
+                    [Op.or]: [
+                        {login: login},
+                        {mail: login}
+                    ]
+                }
             });
             if (!user) {
-                return res.send('Неверный логин');
+                return res.send('Неверный логин или почта');
             }
             let comparePassword =  bcrypt.compareSync(password, user.md5password);
             if (!comparePassword) {

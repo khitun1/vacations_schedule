@@ -6,7 +6,7 @@
       </div>
       <form class="login" @submit.prevent>
         <h3>Авторизация</h3>
-        <my-input placeholder="Логин" v-model="login"/>
+        <my-input placeholder="Логин или почта" v-model="login"/>
         <my-input placeholder="Пароль" v-model="password" :type="'password'"/>
           <my-button class="test" @click="check" type="submit">Войти</my-button>
         <p class="error">{{ error }}</p>
@@ -16,9 +16,9 @@
 </template>
 
 <script>
-import {computed, ref} from "vue";
 import store from "@/store";
 import router from "@/router/router";
+import {computed, ref} from "vue";
 
 export default {
   name: "StartScreen",
@@ -26,8 +26,11 @@ export default {
   setup() {
     const login = ref('');
     const password = ref('');
-    const error = computed(() => store.state.my.error);
+    const error = computed(() => store.state.my.errorMsg);
     const check = async () => {
+      if (login.value === '' || password.value === '') {
+        return
+      }
       await store.dispatch('login', {login: login.value, password: password.value});
       if (error.value === '') {
         const url = '/myVacations';

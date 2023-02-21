@@ -10,10 +10,13 @@ export default createStore({
 
     mutations: {
         setCurrentUser(state, data) {
-            state.my.error = '';
-            state.my.percent = jwt_decode(data.token).percent;
-            state.my.currentUser = jwt_decode(data.token);
-            state.my.notes = data.history;
+            if (data.token) {
+                console.log(data)
+                state.my.errorMsg = '';
+                state.my.percent = jwt_decode(data.token).percent;
+                state.my.currentUser = jwt_decode(data.token);
+                state.my.notes = data.history;
+            }
         },
 
         setSocket(state) {

@@ -10,7 +10,7 @@ export const MyModule = {
         dates: [],
         len: 0,
         percent: 0,
-        error: '',
+        errorMsg: '',
         year: String(new Date().getFullYear()),
         socket: null,
         noteName: '',
@@ -120,7 +120,7 @@ export const MyModule = {
         },
 
         setError(state, data) {
-                state.error = data;
+            state.errorMsg = data;
         },
 
         clearNoteName(state) {

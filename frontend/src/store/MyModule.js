@@ -222,9 +222,11 @@ export const MyModule = {
         },
 
 
-        async clear({commit}) {
-            await host('users/clearNotes');
-            commit('clearNotes');
+        async clear({state, commit}) {
+            if (!state.currentUser.director) {
+                await host('users/clearNotes');
+                commit('clearNotes');
+            }
         },
     }
 }

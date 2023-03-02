@@ -14,10 +14,8 @@ const WS = require('express-ws')(app);
 const aWss = WS.getWss();
 
 app.ws('/', function(ws, req) {
-    console.log('qwerty')
     ws.on('message', async (msg) => {
         const message = JSON.parse(msg);
-        console.log(message)
         switch (message.method) {
             case 'connection':
                 const dep = await Department.findOne({

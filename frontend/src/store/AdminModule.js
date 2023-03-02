@@ -5,6 +5,7 @@ export const AdminModule = {
     state: () => ({
         vacations: [],
         department: {},
+        departments: [],
         users: [],
         year: String(new Date().getFullYear() + 1),
         month: 1,
@@ -180,6 +181,7 @@ export const AdminModule = {
                         last_name: state.users[i].last_name,
                         status: 'none',
                         number: 1,
+                        userId: state.users[i].id,
                     }
                     vacs.push(newRec)
                 }

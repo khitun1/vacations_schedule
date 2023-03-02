@@ -11,11 +11,13 @@ export default createStore({
     mutations: {
         setCurrentUser(state, data) {
             if (data.token) {
-                console.log(data)
                 state.my.errorMsg = '';
                 state.my.percent = jwt_decode(data.token).percent;
                 state.my.currentUser = jwt_decode(data.token);
                 state.my.notes = data.history;
+                if (data.allDepartments) {
+                    state.admin.departments = data.allDepartments;
+                }
             }
         },
 
@@ -33,18 +35,15 @@ export default createStore({
 
                 state.my.socket.onmessage = (event) => {
                     const data = JSON.parse(event.data);
-                    console.log(data)
                     state.my.currentUser.notes = parseInt(data.notes.length);
                     state.my.noteName = data.name;
                     state.my.notes = data.notes;
-                    console.log(data.vac)
                     let vac = data.vac;
                     vac.surname = state.admin.users.find(q => q.id === data.vac.userId).surname;
                     vac.first_name = state.admin.users.find(q => q.id === data.vac.userId).first_name;
                     vac.last_name = state.admin.users.find(q => q.id === data.vac.userId).last_name;
                     vac.start = dateReverseFormat(data.vac.start);
                     vac.end = dateReverseFormat(data.vac.end);
-                    console.log(vac)
                     state.admin.vacations.push(vac);
                 }
             }
@@ -52,10 +51,12 @@ export default createStore({
     },
 
     actions: {
-        async createSocket({commit}) {
-            const {data} = await host('user/auth');
-            commit('setCurrentUser', data);
-            commit('setSocket');
+        async createSocket({state, commit}) {
+            if (!state.my.currentUser.director) {
+                const {data} = await host('user/auth');
+                commit('setCurrentUser', data);
+                commit('setSocket');
+            }
         },
     },
 

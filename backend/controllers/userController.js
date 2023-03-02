@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const winston = require('../winston');
 const { Op } = require("sequelize");
 
-const generateJwt = (id, is_admin, department, surname, first_name, last_name, login, percent, password, mail) => {
+const generateJwt = (id, is_admin, department, surname, first_name, last_name, login, percent, password, mail, director) => {
     return jwt.sign(
         {
             id: id,
@@ -18,6 +18,7 @@ const generateJwt = (id, is_admin, department, surname, first_name, last_name, l
             percent: percent,
             password: password,
             mail: mail,
+            director: director,
         },
         process.env.SECRET_KEY,
         {
@@ -53,14 +54,20 @@ class UserController {
             });
             const token = generateJwt(user.id, user.is_admin, department.name,
                 user.surname, user.first_name, user.last_name, user.login,
-                department.percents / 100, password, user.mail);
-            let history = await History.findAll({
+                department.percents / 100, password, user.mail, user.director);
+            const history = await History.findAll({
                 where: {
                     adminId: user.id,
                 }
             })
+
+            let allDepartments;
+            if (user.director) {
+                allDepartments = await Department.findAll();
+            }
+
             history.sort((a, b) => a.id > b.id ? -1 : 1);
-            return res.json({token: token, history: history});
+            return res.json({token: token, history: history, allDepartments: allDepartments});
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));
@@ -79,11 +86,15 @@ class UserController {
                     adminId: user.id,
                 }
             })
+            let allDepartments;
+            if (user.director) {
+                allDepartments = await Department.findAll();
+            }
             history.sort((a, b) => a.id > b.id ? -1 : 1);
             const token = generateJwt(user.id, user.is_admin, user.department,
                 user.surname, user.first_name, user.last_name, user.login,
-                user.percent, user.password, user.mail);
-             return res.json({token: token, history: history});
+                user.percent, user.password, user.mail, user.director);
+             return res.json({token: token, history: history, allDepartments: allDepartments});
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));

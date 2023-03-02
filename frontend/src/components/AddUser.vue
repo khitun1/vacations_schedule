@@ -134,7 +134,6 @@ export default {
         error.value = true;
       }
       if (error.value === false) {
-        console.log(user.value)
         store.dispatch('addUser', user.value);
         clear();
       }

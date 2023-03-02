@@ -1,5 +1,13 @@
 <template >
   <sample-page :choice="'allVacations'">
+    <VueMultiselect class="selectDep"
+                    :options="allDeps"
+                    placeholder="Выберите отдел"
+                    :show-labels="false"
+                    :show-no-results="false"
+                    v-model="selectedDep"
+                    @close="chartClick"
+                    v-if="currentUser.director"/>
     <h2 v-if="vacations.filter(p => p.status === 'Ожидание').length > 0">Запросы на подпись отпуска</h2>
     <signature-table
         :requested="vacations"
@@ -73,6 +81,8 @@ export default {
       clickEvent: 0,
       ranges: ['Год', 'Квартал', 'Месяц'],
       selectedRange: '',
+      selectedDep: 'Все сотрудники',
+      showVacations: [],
     }
   },
   components: {
@@ -83,7 +93,6 @@ export default {
 
   computed: {
     ...mapState ({
-      selectedDep: state => state.admin.selectedDep,
       year: state => state.admin.year,
       department: state => state.admin.department,
       users: state => state.admin.users,
@@ -94,12 +103,21 @@ export default {
       month: state => state.admin.month,
       quarter: state => state.admin.quarter,
       socket: state => state.my.socket,
+      departments: state => state.admin.departments,
+      currentUser: state => state.my.currentUser,
     }),
+
+    allDeps() {
+      let deps = ['Все сотрудники'];
+      this.departments.forEach(p => deps.push(p.name));
+      return deps;
+    },
+
     height: function (){
-      return this.vacations.filter(p => p.department === this.selectedDep).length * 50 + 125;
+      return this.showVacations.length * 50 + 125;
     },
     top: function(){
-      return this.vacations.length === 0? '-250px': 0;
+      return this.showVacations.length === 0? '-250px': 0;
     },
 
     rangeChart() {
@@ -190,27 +208,32 @@ export default {
       this.prev();
       this.setRangeInChart();
     },
+
     nextRange() {
       this.next();
       this.setRangeInChart();
     },
+
     getDates(number){ // get vacation range
       if (number === -1) {
         return ['0001-01-01', '0000-01-01'];
       }
       let dates = [];
-      dates.push(dateChartFormat(dateUsualFormat(this.vacations[number].start)));
-      dates.push(dateChartFormat(dateUsualFormat(this.vacations[number].end)));
+      dates.push(dateChartFormat(dateUsualFormat(this.showVacations[number].start)));
+      dates.push(dateChartFormat(dateUsualFormat(this.showVacations[number].end)));
       return dates;
     },
+
     getId(name){ // find name for add record, if number of vacation > 1
       return this.myChart.data.labels.indexOf(name);
     },
+
     getLabels(){  // get unique names
       let labels = [];
-      this.vacations.forEach(p => labels.push(p.surname + ' ' + p.first_name + ' ' + p.last_name));
+      this.showVacations.forEach(p => labels.push(p.surname + ' ' + p.first_name + ' ' + p.last_name));
       return [...new Set(labels)];
     },
+
     findSet(n){ // create dataset for nonexistent number of vacation
       let check = 0;
       let label = 'Отпуск ' + n;
@@ -239,20 +262,20 @@ export default {
       let start;
       let end;
       for(let j = 0; j < i; j++){
-        start = dateUsualFormat(this.vacations[j].start);
-        end = dateUsualFormat(this.vacations[j].end);
+        start = dateUsualFormat(this.showVacations[j].start);
+        end = dateUsualFormat(this.showVacations[j].end);
         if(lastStart <= amountDays(end) &&
             lastStart >= amountDays(start))
         {
-          inters.push(this.vacations[j].start);
-          this.vacations[j].intersections = 'Да';
+          inters.push(this.showVacations[j].start);
+          this.showVacations[j].intersections = 'Да';
         }
-        else this.vacations[j].intersections = 'Нет';
+        else this.showVacations[j].intersections = 'Нет';
       }
       if(inters.length !== 0 && inters.length >= quarter)
       {
-        inters.push(this.vacations[i].start);
-        this.vacations[i].intersections = 'Да';
+        inters.push(this.showVacations[i].start);
+        this.showVacations[i].intersections = 'Да';
         let last = inters[this.getLastDate(inters)];
         if(this.intersections.indexOf(last) === -1)
         {
@@ -261,7 +284,7 @@ export default {
         }
         else return;
         let line = [];
-        for(let q = 0; q < this.vacations.length; q++)  line.push(dateChartFormat(dateUsualFormat(last)));
+        for(let q = 0; q < this.showVacations.length; q++)  line.push(dateChartFormat(dateUsualFormat(last)));
         this.myChart.data.datasets.unshift({
           label: 'Пересечение ' + last,
           type: 'line',
@@ -274,15 +297,18 @@ export default {
         });
         this.amount++;
       }
-      else this.vacations[i].intersections = 'Нет';
+      else this.showVacations[i].intersections = 'Нет';
     },
+
     intersection(i){ // find intersection
       let quarter = Math.floor(this.percent * this.users.length);
       let lastStart;
-      if (i === 0)  this.vacations[i].intersections = 'Нет';
-      for (let j = 0; j < i; j++){
-        if(!findIntersection(this.vacations[i], this.vacations[j])) {
-          lastStart = getLastStart(this.vacations[i].start, this.vacations[j].start);
+      if (i === 0)  this.showVacations[i].intersections = 'Нет';
+      for (let j = 0; j < i; j++) {
+        if(!findIntersection(this.showVacations[i], this.showVacations[j])
+            && this.users.find(p => p.id === this.showVacations[i].userId).departmentId ===
+            this.users.find(p => p.id === this.showVacations[j].userId).departmentId) {
+          lastStart = getLastStart(this.showVacations[i].start, this.showVacations[j].start);
           this.draw(i, lastStart, quarter);
         }
       }
@@ -292,10 +318,24 @@ export default {
       this.intersections = [];
       this.amount = 0;
       let counter = 0;
+      this.showVacations = [];
+      if (this.selectedDep !== 'Все сотрудники') {
+        this.vacations.forEach(p => {
+              if (this.departments.find(q => q.id === this.users.find(h => h.id === p.userId).departmentId).name
+                  === this.selectedDep) {
+                this.showVacations.push(p);
+              }
+        }
+        )
+      }
+      else {
+        this.showVacations = this.vacations;
+      }
       this.myChart.data.labels = this.getLabels();
-      this.vacations.forEach(p => {
+      this.showVacations.forEach(p => {
         if (p.status === 'none')  counter++;
       })
+
       if (counter === this.users.length) {
         this.myChart.data.datasets.splice(0, 0,{
           label: 'Отпуска отсутствуют',
@@ -304,15 +344,15 @@ export default {
         })
       }
       else {
-        for(let i = 0; i < this.vacations.length; i++) {
-          let n = this.vacations[i].number;
-          if (this.vacations[i].status !== 'Отказ' &&
-              this.vacations[i].status !== 'none') {
-            this.findSet(n);
+        for(let i = 0; i < this.showVacations.length; i++) {
+          const n = this.showVacations[i].number;
+          this.findSet(n);
+          if (this.showVacations[i].status !== 'Отказ' &&
+              this.showVacations[i].status !== 'none') {
             if(n === 1) this.myChart.data.datasets[this.amount].data.push(this.getDates(i));
             else {
-              let name = this.vacations[i].surname + ' ' + this.vacations[i].first_name +
-                  ' ' + this.vacations[i].last_name;
+              let name = this.showVacations[i].surname + ' ' + this.showVacations[i].first_name +
+                  ' ' + this.showVacations[i].last_name;
               this.myChart.data.datasets[n-1+this.amount].data[this.getId(name)] = this.getDates(i);
             }
             this.intersection(i);
@@ -324,6 +364,7 @@ export default {
       }
       this.myChart.update();
     },
+
     explain(){
       let surname = this.vacations.find(p => p.id === this.id).surname;
       let name = this.vacations.find(p => p.id === this.id).first_name;
@@ -343,6 +384,7 @@ export default {
       this.explanation = '';
       this.chartClick();
     },
+
     accept(id){
       const obj = {
         id: id,
@@ -350,11 +392,13 @@ export default {
       }
       this.decisionVacation(obj);
     },
+
     show(id){
       document.querySelector('dialog').showModal();
       this.id = id;
       if(this.vacations.filter(p => p.status === 'Ожидание').length === 1) this.indent = 100;
     },
+
     showRec(){
       this.clickEvent++;
       let clickedIndex = this.myChart.getActiveElements()[0].index;
@@ -480,6 +524,15 @@ textarea
   cursor: pointer;
   margin-top: 5px;
 }
+
+.selectDep {
+  width: 250px;
+  margin-top: 10px;
+  border-width: 0;
+  border-radius: 15px;
+  font-size: 16px;
+}
+
 @media screen and (max-width: 800px) {
   .changeYear {
     margin-bottom: 0;

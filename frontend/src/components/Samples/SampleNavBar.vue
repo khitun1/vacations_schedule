@@ -11,7 +11,7 @@
           <p>Мои отпуска</p>
         </button>
       </router-link>
-      <router-link to="allVacations" v-if="currentUser.is_admin" class="link">
+      <router-link to="allVacations" v-if="currentUser.is_admin || currentUser.director" class="link">
         <button class="pick all" title="Отпуска сотрудников">
           <img src="@/images/CalendarIcon.png"/>
           <p>Отпуска сотрудников</p>

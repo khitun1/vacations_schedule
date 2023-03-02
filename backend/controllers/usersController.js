@@ -76,19 +76,25 @@ class UsersController {
     }
     async getList(req, res, next) {
         try {
-            const dep = await Department.findOne({
-                where: {
-                    name: req.user.department,
-                }
-            });
-            let users =  await User.findAll({
-                where: {
-                    departmentId: dep.id,
-                }
-            });
-            users.forEach(p => {
-                p.departmentId = dep.name
-            })
+            let users ;
+            if(!req.user.director) {
+                const dep = await Department.findOne({
+                    where: {
+                        name: req.user.department,
+                    }
+                });
+                users =  await User.findAll({
+                    where: {
+                        departmentId: dep.id,
+                    }
+                });
+            }
+            else {
+                users =  await User.findAll();
+            }
+            // users.forEach(p => {
+            //     p.departmentId = dep.name
+            // })
             return res.send(users);
         } catch (e) {
             winston.error(e.message);
@@ -101,7 +107,6 @@ class UsersController {
 
     async del(req, res, next) {
         try {
-            console.log('here')
             const {id} = req.body;
             await Vacations.destroy({
                 where: {UserId: id}

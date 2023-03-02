@@ -11,6 +11,7 @@ const User = sequelize.define('user', {
     mail: {type: DataTypes.STRING},
     md5password: {type: DataTypes.STRING},
     is_admin: {type: DataTypes.BOOLEAN},
+    director: {type: DataTypes.BOOLEAN}
 })
 
 const Department = sequelize.define('department', {

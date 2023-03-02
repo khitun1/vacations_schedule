@@ -1,5 +1,5 @@
 import {host} from "../http/index";
-import moment from "moment";
+import {dateReverseFormat} from "@/hooks/generalMoment/dateReverseFormat";
 
 export const AdminModule = {
     state: () => ({
@@ -158,8 +158,8 @@ export const AdminModule = {
                 p.surname = state.users.find(q => q.id === p.userId).surname;
                 p.first_name = state.users.find(q => q.id === p.userId).first_name;
                 p.last_name = state.users.find(q => q.id === p.userId).last_name;
-                p.start = moment(p.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
-                p.end = moment(p.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
+                p.start = dateReverseFormat(p.start);
+                p.end = dateReverseFormat(p.end);
             })
             let vacs = data;
             let namesInVacs = new Set();

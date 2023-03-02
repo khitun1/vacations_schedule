@@ -3,7 +3,7 @@ import {MyModule} from "@/store/MyModule";
 import {AdminModule} from "@/store/AdminModule";
 import {host} from "@/http";
 import jwt_decode from "jwt-decode";
-import moment from "moment/moment";
+import {dateReverseFormat} from "@/hooks/generalMoment/dateReverseFormat";
 
 
 export default createStore({
@@ -42,8 +42,8 @@ export default createStore({
                     vac.surname = state.admin.users.find(q => q.id === data.vac.userId).surname;
                     vac.first_name = state.admin.users.find(q => q.id === data.vac.userId).first_name;
                     vac.last_name = state.admin.users.find(q => q.id === data.vac.userId).last_name;
-                    vac.start = moment(data.vac.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
-                    vac.end = moment(data.vac.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
+                    vac.start = dateReverseFormat(data.vac.start);
+                    vac.end = dateReverseFormat(data.vac.end);
                     console.log(vac)
                     state.admin.vacations.push(vac);
                 }

@@ -1,5 +1,7 @@
 import {host, firstHost} from "../http/index";
 import moment from "moment/moment";
+import {dateUsualFormat} from "@/hooks/generalMoment/dateUsualFormat";
+import {dateReverseFormat} from "@/hooks/generalMoment/dateReverseFormat";
 
 export const MyModule = {
     state: () => ({
@@ -22,7 +24,7 @@ export const MyModule = {
             let total = 0;
             let val = state.myVacations.filter(p => p.status !== 'Отказ' && p.status !== 'Удалено');
             val.forEach(p => {
-                total += moment(p.end, 'DD.MM.YYYY').diff(moment(p.start, 'DD.MM.YYYY'), 'days') + 1;
+                total += dateUsualFormat(p.end).diff(dateUsualFormat(p.start), 'days') + 1;
             });
             return state.total - total;
         },
@@ -72,23 +74,23 @@ export const MyModule = {
 
         setVacations(state, vacations) {
             vacations.forEach(p => {
-                p.start = moment(p.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
-                p.end = moment(p.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
+                p.start = dateReverseFormat(p.start);
+                p.end = dateReverseFormat(p.end);
             })
             state.myVacations = vacations
         },
 
         setWishes(state, wishes) {
             wishes.forEach(p => {
-                p.start = moment(p.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
-                p.end = moment(p.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
+                p.start = dateReverseFormat(p.start);
+                p.end = dateReverseFormat(p.end);
             })
             state.wishes = wishes
         },
 
         addWish(state, {wish, data}) {
-            wish.start = moment(wish.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
-            wish.end = moment(wish.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
+            wish.start = dateReverseFormat(wish.start);
+            wish.end = dateReverseFormat(wish.end);
             wish.id = data.id;
             state.wishes.push(wish);
         },
@@ -99,8 +101,8 @@ export const MyModule = {
         },
 
         addVacation(state, {record, data}) {
-            record.start = moment(record.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
-            record.end = moment(record.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
+            record.start = dateReverseFormat(record.start);
+            record.end = dateReverseFormat(record.end);
             record.id = data.id;
             state.myVacations.push(record);
         },
@@ -112,8 +114,8 @@ export const MyModule = {
 
         setDates(state, data) {
             data.dates.forEach(p => {
-                p.start = moment(p.start, 'YYYY-MM-DD').format('DD.MM.YYYY');
-                p.end = moment(p.end, 'YYYY-MM-DD').format('DD.MM.YYYY');
+                p.start = dateReverseFormat(p.start);
+                p.end = dateReverseFormat(p.end);
             })
             state.dates = data.dates;
             state.len = data.len;

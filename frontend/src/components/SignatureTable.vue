@@ -13,7 +13,7 @@
             {{ vac.start }} - {{ vac.end }}
           </p>
           <p style="width: 130px">
-            кол-во дней: {{totalDays(vac.start, vac.end)}}
+            кол-во дней: {{ totalDays()(vac.start, vac.end) }}
           </p>
           <p style="width: 130px">
             {{vac.paid ? 'Оплачиваемый': 'Не оплачиваемый'}}
@@ -47,9 +47,14 @@
 <script>
 import {computed, ref, watch} from "vue";
 import store from "@/store";
-import {total_days} from "@/hooks/totalDays";
+import {totalDays} from "./Options";
 export default {
   name: "SignatureTable",
+  methods: {
+    totalDays() {
+      return totalDays
+    }
+  },
 
   setup(props) {
     const visible = ref(false);
@@ -81,8 +86,6 @@ export default {
       index.value[2] = vac.start;
     }
 
-    const {totalDays} = total_days();
-
     watch(() => props.clicked, () => {
       if (uniq.value.indexOf(props.clickedName) !== -1)
       {
@@ -113,7 +116,6 @@ export default {
       requested,
       visible,
       showData,
-      totalDays,
     }
   },
   props: {

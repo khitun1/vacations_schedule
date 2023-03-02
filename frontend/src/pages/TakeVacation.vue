@@ -63,7 +63,13 @@ import {calendar} from "@/hooks/calendar";
 import {computed, onMounted, ref} from "vue";
 import moment from "moment";
 import {useStore} from "vuex";
-import {total_days} from "@/hooks/totalDays";
+import {totalDays} from "@/components/Options";
+import {dateUsualFormat} from "@/hooks/generalMoment/dateUsualFormat";
+import {dateChartFormat} from "@/hooks/generalMoment/dateChartFormat";
+import {dateReverseFormat} from "@/hooks/generalMoment/dateReverseFormat";
+import {getLastStart} from "@/hooks/intersections/getLastStart";
+import {amountDays} from "@/hooks/generalMoment/amountDays";
+import {findIntersection} from "@/hooks/intersections/findIntersection";
 
 export default {
   name: "TakeVacation",
@@ -97,7 +103,7 @@ export default {
         for (let i = 0; i < intersInUsersDep.value.length; i++) {
           for (let j = 0; j < i; j++){
             if(findIntersection(intersInUsersDep.value[i], intersInUsersDep.value[j])) {
-              lastStart = getLastStart(i,j);
+              lastStart = getLastStart(intersInUsersDep.value[i].start, intersInUsersDep.value[j].start);
               draw(i, lastStart, quarter);
             }
           }
@@ -105,37 +111,18 @@ export default {
       }
     }
 
-    const getLastStart = (i,j) => {
-      let iStart = moment(intersInUsersDep.value[i].start, 'DD.MM.YYYY');
-      let jStart = moment(intersInUsersDep.value[j].start, 'DD.MM.YYYY');
-      if(iStart.diff('01.01.2022', 'days') > jStart.diff('01.01.2022', 'days'))
-        return iStart.diff('01.01.2022', 'days');
-      return jStart.diff('01.01.2022', 'days');
-    }
-
-    const findIntersection = (first, second) => {
-      let iStart = moment(first.start, 'DD.MM.YYYY');
-      let jStart = moment(second.start, 'DD.MM.YYYY');
-      let iEnd = moment(first.end, 'DD.MM.YYYY');
-      let jEnd = moment(second.end, 'DD.MM.YYYY');
-      return iStart.isBetween(jStart, jEnd) || iEnd.isBetween(jStart, jEnd);
-    }
-
     const draw = (i, lastStart, quarter) => {
       let start;
       let end;
       for(let j = 0; j < i; j++){
-        start = moment(intersInUsersDep.value[j].start, 'DD.MM.YYYY')
-            .diff('01.01.2022', 'days');
-        end = moment(intersInUsersDep.value[j].end, 'DD.MM.YYYY')
-            .diff('01.01.2022', 'days');
+        start = amountDays(dateUsualFormat(intersInUsersDep.value[j].start));
+        end = amountDays(dateUsualFormat(intersInUsersDep.value[j].end));
         if(lastStart <= end &&
             lastStart >= start)
         {
           let range = {};
           range.start = intersInUsersDep.value[i].start;
-          const earlierEnd = moment(intersInUsersDep.value[i].end, 'DD.MM.YYYY')
-              .diff('01.01.2022', 'days');
+          const earlierEnd = amountDays(dateUsualFormat(intersInUsersDep.value[i].end));
           range.end = earlierEnd < end ? intersInUsersDep.value[i].end
               : intersInUsersDep.value[j].end;
           range.status = 'inters';
@@ -170,13 +157,13 @@ export default {
 
     const showWish = () => {
       if (date.value !== null){
-        const start =  moment(date.value.start).format('YYYY-MM-DD');
-        const end = moment(date.value.end).format('YYYY-MM-DD');
-        if (totalDays(moment(start).format('DD.MM.YYYY'), moment(end).format('DD.MM.YYYY')) >
+        const start =  dateChartFormat(date.value.start);
+        const end = dateChartFormat(date.value.end);
+        if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) >
             store.state.admin.department.max) {
           alert('Выбрано больше дней, чем максимум за один отпуск!');
         }
-        else if (totalDays(moment(start).format('DD.MM.YYYY'), moment(end).format('DD.MM.YYYY')) <
+        else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) <
             store.state.admin.department.min) {
           alert('Выбрано меньше дней, чем минимум за один отпуск!');
         }
@@ -198,8 +185,8 @@ export default {
     const send = async (wish) => {
       let flag = 0;
       let record = {
-        start: moment(wish.start, 'DD.MM.YYYY').format('YYYY-MM-DD'),
-        end: moment(wish.end, 'DD.MM.YYYY').format('YYYY-MM-DD'),
+        start: dateChartFormat(dateUsualFormat(wish.start)),
+        end: dateChartFormat(dateUsualFormat(wish.end)),
         number: last.value,
         requested_date: moment(),
         paid: paid.value[wishes.value.indexOf(wish)] ? 1 : 0,
@@ -212,7 +199,7 @@ export default {
         }
       })
       if (flag === 1) alert('Выбранные даты вызовут пересечение');
-      else if (totalDays(moment(record.start).format('DD.MM.YYYY'), moment(record.end).format('DD.MM.YYYY')) <= left.value){
+      else if (totalDays(dateReverseFormat(record.start), dateReverseFormat(record.end)) <= left.value){
         await store.dispatch('addVacation', record);
         socket.value.send(JSON.stringify({
           method: 'message',
@@ -227,15 +214,15 @@ export default {
       let record = {};
       let total = 0;
       wishes.value.forEach(p => {
-        const start = moment(p.start, 'DD.MM.YYYY');
-        const end = moment(p.end, 'DD.MM.YYYY');
+        const start = dateUsualFormat(p.start);
+        const end = dateUsualFormat(p.end);
         total += totalDays(start, end);
       });
       if (total <= left.value){
         wishes.value.forEach(async (p, index) => {
           record = {
-            start: moment(p.start, 'DD.MM.YYYY').format('YYYY-MM-DD'),
-            end: moment(p.end, 'DD.MM.YYYY').format('YYYY-MM-DD'),
+            start: dateChartFormat(dateUsualFormat(p.start)),
+            end: dateChartFormat(dateUsualFormat(p.end)),
             requested_date: moment(),
             paid: paid.value[wishes.value.indexOf(p)] ? 1 : 0,
             status: 'Ожидание',
@@ -252,8 +239,6 @@ export default {
       }
       else (alert('Выбрано больше дней, чем доступно!'));
     }
-
-    const {totalDays} = total_days();
 
     return {
       findIntersection,

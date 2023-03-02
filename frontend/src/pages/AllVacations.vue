@@ -52,6 +52,12 @@ import SignatureTable from "@/components/SignatureTable";
 import SamplePage from "@/components/Samples/SamplePage";
 import {mapActions, mapMutations, mapState} from "vuex";
 import VueMultiselect from "vue-multiselect";
+import {dateUsualFormat} from "@/hooks/generalMoment/dateUsualFormat";
+import {dateChartFormat} from "@/hooks/generalMoment/dateChartFormat";
+import {amountDays} from "@/hooks/generalMoment/amountDays";
+import {getLastStart} from "@/hooks/intersections/getLastStart";
+import {findIntersection} from "@/hooks/intersections/findIntersection";
+
 export default {
   name: "AllVacations",
   data() {
@@ -193,8 +199,8 @@ export default {
         return ['0001-01-01', '0000-01-01'];
       }
       let dates = [];
-      dates.push(moment(this.vacations[number].start, 'DD.MM.YYYY').format('YYYY-MM-DD'));
-      dates.push(moment(this.vacations[number].end, 'DD.MM.YYYY').format('YYYY-MM-DD'));
+      dates.push(dateChartFormat(dateUsualFormat(this.vacations[number].start)));
+      dates.push(dateChartFormat(dateUsualFormat(this.vacations[number].end)));
       return dates;
     },
     getId(name){ // find name for add record, if number of vacation > 1
@@ -223,34 +229,20 @@ export default {
     getLastDate(inter){ // get last date in date set of intersections
       let help = [];
       inter.forEach(p => {
-        help.push(moment(p, 'DD.MM.YYYY').diff('01.01.2022', 'days'));
+        help.push(amountDays(dateUsualFormat(p)));
       });
       return help.indexOf(Math.max(...help));
     },
-    findIntersection(i, j){
-      let iStart = moment(this.vacations[i].start, 'DD.MM.YYYY');
-      let jStart = moment(this.vacations[j].start, 'DD.MM.YYYY');
-      let iEnd = moment(this.vacations[i].end, 'DD.MM.YYYY');
-      let jEnd = moment(this.vacations[j].end, 'DD.MM.YYYY');
-      return (iEnd.diff('01.01.2022', 'days') <= jStart.diff('01.01.2022', 'days')) ||
-          iStart.diff('01.01.2022', 'days') >= jEnd.diff('01.01.2022', 'days');
-    },
-    getRange(i,j){
-      let iStart = moment(this.vacations[i].start, 'DD.MM.YYYY');
-      let jStart = moment(this.vacations[j].start, 'DD.MM.YYYY');
-      if(iStart.diff('01.01.2022', 'days') > jStart.diff('01.01.2022', 'days'))
-        return iStart.diff('01.01.2022', 'days');
-      return jStart.diff('01.01.2022', 'days');
-    },
-    draw(i,range, quarter){
+
+    draw(i,lastStart, quarter){
       let inters = [];
       let start;
       let end;
       for(let j = 0; j < i; j++){
-        start = moment(this.vacations[j].start, 'DD.MM.YYYY');
-        end = moment(this.vacations[j].end, 'DD.MM.YYYY');
-        if(range <= end.diff('01.01.2022', 'days') &&
-            range >= start.diff('01.01.2022', 'days'))
+        start = dateUsualFormat(this.vacations[j].start);
+        end = dateUsualFormat(this.vacations[j].end);
+        if(lastStart <= amountDays(end) &&
+            lastStart >= amountDays(start))
         {
           inters.push(this.vacations[j].start);
           this.vacations[j].intersections = 'Да';
@@ -265,13 +257,13 @@ export default {
         if(this.intersections.indexOf(last) === -1)
         {
           this.intersections.push(last);
-          last = moment(last, 'DD.MM.YYYY')
+          last = dateUsualFormat(last)
         }
         else return;
         let line = [];
-        for(let q = 0; q < this.vacations.length; q++)  line.push(moment(last, 'DD.MM.YYYY').format('YYYY-MM-DD'));
+        for(let q = 0; q < this.vacations.length; q++)  line.push(dateChartFormat(dateUsualFormat(last)));
         this.myChart.data.datasets.unshift({
-          label: 'Пересечение ' + moment(last).format('DD.MM.YYYY'),
+          label: 'Пересечение ' + last,
           type: 'line',
           data: line,
           pointBackgroundColor: 'transparent',
@@ -286,12 +278,12 @@ export default {
     },
     intersection(i){ // find intersection
       let quarter = Math.floor(this.percent * this.users.length);
-      let range;
+      let lastStart;
       if (i === 0)  this.vacations[i].intersections = 'Нет';
       for (let j = 0; j < i; j++){
-        if(!this.findIntersection(i,j)) {
-          range = this.getRange(i,j);
-          this.draw(i, range, quarter);
+        if(!findIntersection(this.vacations[i], this.vacations[j])) {
+          lastStart = getLastStart(this.vacations[i].start, this.vacations[j].start);
+          this.draw(i, lastStart, quarter);
         }
       }
     },
@@ -369,6 +361,7 @@ export default {
       this.clickedName = this.myChart.data.labels[clickedIndex];
       this.clickedNumber = this.myChart.getActiveElements()[0].datasetIndex;
     },
+
     showData(index){
       this.myChart.setActiveElements([
         {datasetIndex: index[1], index: this.myChart.data.labels.indexOf(index[0])},

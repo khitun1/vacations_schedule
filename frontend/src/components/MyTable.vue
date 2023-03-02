@@ -31,10 +31,11 @@
 <script>
 import {ref} from "vue";
 import {useStore} from "vuex";
-import {total_days} from "@/hooks/totalDays";
+import {totalDays} from "@/components/Options";
 
 export default {
   name: "MyTable",
+  methods: {totalDays},
   props: {
     records: {
       type: Array,
@@ -85,15 +86,12 @@ export default {
       if(status !== 'Утверждено' && status !== 'Использовано') return true;
     }
 
-    const {totalDays} = total_days();
-
     return {
       visible,
       visibleExplanation,
       explanation,
       Del,
       checkDel,
-      totalDays,
       setColor,
       setBorder}
   },

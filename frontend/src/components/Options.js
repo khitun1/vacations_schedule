@@ -70,7 +70,8 @@ export function viewDate(date) // collect date in view 'dd.mm.yy'
     return view
 }
 
-const totalDays = (start,end) => {
+export function totalDays(start,end) {
+    console.log('here')
     const s = moment(start, 'DD.MM.YYYY');
     const e = moment(end, 'DD.MM.YYYY');
     let total = moment(e).diff((s), 'days') + 1;

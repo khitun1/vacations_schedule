@@ -21,7 +21,7 @@
         </div>
       </button-icon>
       <router-link to="/">
-        <button-icon class="btn">
+        <button-icon class="btn" @click="exit">
           <img src="@/images/ExitIcon.png">
         </button-icon>
       </router-link>
@@ -56,6 +56,10 @@ export default {
     const onClickAway = () => {
       showAllNotes.value = false;
     }
+    const exit = () => {
+      localStorage.removeItem('token');
+      store.commit('clear');
+    }
     const seeAll = () => {
       showAllNotes.value = false;
       router.push('/allVacations');
@@ -80,6 +84,7 @@ export default {
       onClickAway,
       getTime,
       seeAll,
+      exit,
     }
   },
 

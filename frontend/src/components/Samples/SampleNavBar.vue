@@ -17,7 +17,7 @@
           <p>Отпуска сотрудников</p>
         </button>
       </router-link>
-      <router-link to="admin" v-if="currentUser.is_admin" class="link">
+      <router-link to="admin" v-if="currentUser.is_admin && !currentUser.director" class="link">
         <button class="pick admin" title="Админ">
           <img src="@/images/LetterIcon.png"/>
           <p>Админ</p>

@@ -48,6 +48,10 @@ export default createStore({
                 }
             }
         },
+
+        clear(state) {
+            state.my.currentUser = {};
+        },
     },
 
     actions: {

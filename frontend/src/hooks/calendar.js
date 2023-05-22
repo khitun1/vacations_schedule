@@ -13,7 +13,7 @@ export function calendar(inters, flag = 0) {
 
     let attrs = computed(() => {
         let attrs = [];
-        const holidays = computed(() => store.getters.hollidays);
+        const holidays = computed(() => store.getters.holidays);
 
         const daysOff = computed(() => store.getters.daysOff);
 

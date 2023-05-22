@@ -2,13 +2,25 @@ const {Vacations, Department, User, History} = require("../models/models");
 const apiError = require("../error/apiError");
 const winston = require('../winston');
 const { Op } = require("sequelize");
+const moment = require("moment");
 
 class vacationController {
     async create(req, res, next) {
         try {
-            const {number, start, end, requested_date, status, paid, explanation, userId, typeId} = req.body;
-            const vac = await Vacations.create({number, start, end, requested_date
-                , status, paid, explanation, userId, typeId});
+            const {vacs, total} = req.body;
+            const user = await User.findOne({
+                where: {id: req.user.id}
+            })
+            vacs.forEach(async(p) => {
+                await Vacations.create({number: p.number, start: p.start, end: p.end,
+                    requested_date: p.requested_date, status: p.status, paid: p.paid,
+                    explanation: p.explanation, userId: p.userId});
+                await User.update({actual_days: user.left_days - total}, {
+                    where: {
+                        id: user.id,
+                    }
+                });
+            })
             const vacations = await Vacations.findAll({
                 where: {
                     userId: req.user.id,
@@ -39,7 +51,18 @@ class vacationController {
                 user: req.user.surname + ' ' + req.user.first_name[0] + '.' + req.user.last_name[0] + '.',
                 adminId: admin.id,
             })
-            return res.send({id: vac.id});
+            const actual_days = user.allow && user.accept_all ? user.left_days - total : user.actual_days - total;
+            await User.update({actual_days}, {
+                where: {
+                    id: req.user.id,
+                }
+            })
+            await User.update({allow: 0, accept_all: 0}, {
+                where: {
+                    id: req.user.id,
+                }
+            })
+            return res.send("All is ok!");
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));

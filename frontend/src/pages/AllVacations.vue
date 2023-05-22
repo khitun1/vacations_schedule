@@ -1,5 +1,5 @@
 <template >
-  <sample-page :choice="'allVacations'">
+  <sample-page :choice="'allVacations'" v-if="token">
     <VueMultiselect class="selectDep"
                     :options="allDeps"
                     placeholder="Выберите отдел"
@@ -8,7 +8,7 @@
                     v-model="selectedDep"
                     @close="chartClick"
                     v-if="currentUser.director"/>
-    <h2 v-if="vacations.filter(p => p.status === 'Ожидание').length > 0">Запросы на подпись отпуска</h2>
+    <h2 v-if="vacations.filter(p => p.status === 'Ожидание').length > 0 && !currentUser.director">Запросы на подпись отпуска</h2>
     <signature-table
         :requested="vacations"
         :clickedName="clickedName"
@@ -16,7 +16,8 @@
         :clicked="clickEvent"
         @accepted="accept"
         @showWindow="show"
-        @showRec="showData">
+        @showRec="showData"
+        v-if="!currentUser.director">
     </signature-table>
     <dialog class="failure">
       <form @submit.prevent>
@@ -26,8 +27,8 @@
         <my-button @click="cancelExplain">Отменить</my-button>
       </form>
     </dialog>
-    <h2 v-show="vacations.length > 0">График отпусков</h2>
-    <div class="range">
+    <h2 v-show="vacations.length > 0 && (selectedDep !== '' || !currentUser.director)">График отпусков</h2>
+    <div class="range" v-show=" selectedDep !== '' || !currentUser.director">
       <div class="changeYear" v-show="vacations.length > 0">
         <button @click="prevRange ">&#60;</button>
         <h3 class="year">{{rangeChart}}</h3>
@@ -42,13 +43,13 @@
                       @close="changeRangeInChart(selectedRange)"/>
 
     </div>
-
     <div class="chart">
       <canvas id="myChart"
               :style="{height: height + 'px'}"
               @click="showRec" tabindex="-1"/>
     </div>
   </sample-page>
+  <not-auth v-else/>
 </template>
 
 <script>
@@ -65,6 +66,7 @@ import {dateChartFormat} from "@/hooks/generalMoment/dateChartFormat";
 import {amountDays} from "@/hooks/generalMoment/amountDays";
 import {getLastStart} from "@/hooks/intersections/getLastStart";
 import {findIntersection} from "@/hooks/intersections/findIntersection";
+import NotAuth from "@/components/Samples/NotAuth.vue";
 
 export default {
   name: "AllVacations",
@@ -81,11 +83,12 @@ export default {
       clickEvent: 0,
       ranges: ['Год', 'Квартал', 'Месяц'],
       selectedRange: '',
-      selectedDep: 'Все сотрудники',
+      selectedDep: '',
       showVacations: [],
     }
   },
   components: {
+    NotAuth,
     SamplePage,
     SignatureTable,
     VueMultiselect,
@@ -108,9 +111,13 @@ export default {
     }),
 
     allDeps() {
-      let deps = ['Все сотрудники'];
+      let deps = [];
       this.departments.forEach(p => deps.push(p.name));
       return deps;
+    },
+
+    token() {
+      return localStorage.getItem('token') !== null;
     },
 
     height: function (){
@@ -118,6 +125,21 @@ export default {
     },
     top: function(){
       return this.showVacations.length === 0? '-250px': 0;
+    },
+
+    width_chart() {
+      if (this.selectedDep !== '' || !this.currentUser.director) {
+        return '95%';
+      }
+      return '0';
+    },
+
+    height_chart() {
+      if (this.selectedDep !== '' || !this.currentUser.director) {
+        console.log(!!this.currentUser.director)
+        return 'fit-content';
+      }
+      return '0';
     },
 
     rangeChart() {
@@ -319,17 +341,18 @@ export default {
       this.amount = 0;
       let counter = 0;
       this.showVacations = [];
-      if (this.selectedDep !== 'Все сотрудники') {
+      if (this.currentUser.director) {
         this.vacations.forEach(p => {
-              if (this.departments.find(q => q.id === this.users.find(h => h.id === p.userId).departmentId).name
-                  === this.selectedDep) {
-                this.showVacations.push(p);
-              }
-        }
-        )
+          if (this.departments.find(q => q.id === this.users.find(h => h.id === p.userId).departmentId).name
+              === this.selectedDep) {
+            this.showVacations.push(p);
+          }
+        })
       }
       else {
-        this.showVacations = this.vacations;
+        this.vacations.forEach(p => {
+            this.showVacations.push(p);
+        })
       }
       this.myChart.data.labels = this.getLabels();
       this.showVacations.forEach(p => {
@@ -447,9 +470,9 @@ export default {
 <style scoped>
 .chart
 {
-  width: 95%;
+  width: v-bind(width_chart);
   margin-top: v-bind(indent + 'px');
-  height: fit-content;
+  height: v-bind(height_chart);
   position: relative;
   top: v-bind(top);
 }
@@ -477,7 +500,8 @@ export default {
 {
   height: v-bind(height);
 }
-.failure
+
+. failure
 {
   position: absolute;
   width: 400px;
@@ -490,9 +514,11 @@ export default {
   text-align: center;
   font-weight: lighter;
 }
+
 dialog::backdrop{
   background: rgba(0, 0, 0, 0.6);
 }
+
 textarea
 {
   padding: 10px;
@@ -505,12 +531,14 @@ textarea
   outline: none;
   font-size: 16px;
 }
+
 .failure button
 {
   height: 30px;
   width: 120px;
   font-size: 16px;
 }
+
 .changeYear {
   display: flex;
   flex-direction: row;

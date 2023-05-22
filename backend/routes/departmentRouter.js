@@ -9,5 +9,6 @@ router.get('/getList', authMiddleware,  departmentController.getList);
 router.post('/create', checkRoleMiddleware(),  departmentController.create);
 router.post('/changeConditions', checkRoleMiddleware(),  departmentController.changeCon);
 router.delete('/del', checkRoleMiddleware(),  departmentController.del);
+router.post('/changeRules', checkRoleMiddleware(),  departmentController.changeRules);
 
 module.exports = router;

@@ -13,9 +13,9 @@
     </div>
     <h2>Список пользователей</h2>
     <div class="rec"
-         v-for="user in usersList" :key="user.id">
-      <p>{{user.surname + ' ' + user.first_name + ' ' + user.last_name}}</p>
-      <button-icon @click="deleteUser(user.id)">
+         v-for="userItem in usersList" :key="userItem.id">
+      <p>{{userItem.surname + ' ' + userItem.first_name + ' ' + userItem.last_name}}</p>
+      <button-icon @click="deleteUser(userItem.id)">
         <img src="@/images/DeleteIcon.png">
       </button-icon>
     </div>
@@ -41,8 +41,7 @@ export default {
 
     const usersList = computed(() => {
       if (user.value === '')  return [];
-      let list = users.value.filter(p => (searchUser.value.test(p.name) || p.name === user.value)
-          && p.departmentId === department.value.name);
+      let list = users.value.filter(p => searchUser.value.test(p.name) || p.name === user.value);
       list.splice(list.indexOf(list.find(p => p.id === currentUser.value.id)), 1);
       return list;
     })
@@ -59,6 +58,7 @@ export default {
       department,
       visibleAdminWindow,
       user,
+      users,
       usersList,
       changeVisibleDeleteUser,
       deleteUser,

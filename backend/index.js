@@ -2,9 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const sequelize = require('./db');
 const cors = require('cors');
-const {User, Year, Department, History, Vacations} = require('./models/models');
+const {User, DbDate, Department, History, Vacations} = require('./models/models');
 const router = require('./routes/index');
 const errorHandler = require('./middleware/errorHandleMiddleware');
+const moment = require("moment");
 
 
 const port = process.env.PORT;
@@ -73,11 +74,10 @@ app.use(cors())
 
 const update = async () => {
     const currentYear = new Date().getFullYear();
-    const id = (await Year.findOne()).dataValues.id;
-    const dbYear = (await Year.findOne()).dataValues.year;
+    const dbYear = (await DbDate.findOne()).dataValues.year;
     if (currentYear > dbYear) {
-        await Year.update({year: currentYear}, {
-            where: {id}
+        await DbDate.update({year: currentYear}, {
+            where: {year: dbYear},
         })
         const users = await User.findAll();
         for (let i = 0; i < users.length; i++) {
@@ -87,9 +87,9 @@ const update = async () => {
                 }
             })).dataValues.total;
             const total_days = users[i].dataValues.left_days + update_days;
-            await User.update({left_days: total_days}, {
+            await User.update({left_days: total_days, allow: 1}, {
                 where: {
-                    id: users[i].dataValues.id,
+                    id: users[i].id,
                 }
             })
         }
@@ -100,7 +100,7 @@ const start = async () => {
     try {
         await sequelize.authenticate();
         await sequelize.sync();
-        update();
+        await update();
         app.listen(port, () => console.log('Server is running on port', port));
     } catch (e) {
         console.log(e);

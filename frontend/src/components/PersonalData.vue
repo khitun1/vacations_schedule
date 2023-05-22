@@ -76,7 +76,7 @@ export default {
     //let newLogin = computed(() => currentUser.value.login);
     //let newLogin = ref(currentUser.value.login);
     const changePassword = ref(true) ;
-    const typePassword = ref('text');
+    const typePassword = ref('password');
     const changeLogin = ref(true);
     const changeMail = ref(true);
     const textLogBtn = ref('Изменить логин');

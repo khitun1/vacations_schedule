@@ -22,11 +22,20 @@ export const MyModule = {
     getters: {
         left(state) {
             let total = 0;
-            let val = state.myVacations.filter(p => p.status !== 'Отказ' && p.status !== 'Удалено');
-            val.forEach(p => {
+            state.wishes.forEach(p => {
                 total += dateUsualFormat(p.end).diff(dateUsualFormat(p.start), 'days') + 1;
             });
-            return state.total - total;
+            if (state.currentUser.allow && state.currentUser.acceptAll) {
+                return (state.currentUser.left - total) + ' на ' + (parseInt(state.year) + 1) + ' год';
+            }
+            else if ((!state.currentUser.allow && !state.currentUser.acceptAll) ||
+                (state.currentUser.allow && !state.currentUser.acceptAll)) {
+                return (state.currentUser.actual_days - total) + ' на ' + (parseInt(state.year) + 1) + ' год';
+            }
+            else {
+                return state.currentUser.left + ' на ' + (parseInt(state.year) + 2) + ' год';
+            }
+
         },
 
 
@@ -38,16 +47,16 @@ export const MyModule = {
             return state.dates;
         },
 
-        hollidays(state) {
+        holidays(state) {
             const year = parseInt(state.year);
-            let hollidays = [];
+            let holidays = [];
             for (let i = -1; i < 2; i++) {
-                hollidays.push(moment(year + i + '-02-23')._d,);
-                hollidays.push(moment(year + i + '-03-08')._d,);
-                hollidays.push(moment(year + i + '-05-01')._d,);
-                hollidays.push(moment(year + i + '-05-09')._d,);
+                holidays.push(moment(year + i + '-02-23')._d,);
+                holidays.push(moment(year + i + '-03-08')._d,);
+                holidays.push(moment(year + i + '-05-01')._d,);
+                holidays.push(moment(year + i + '-05-09')._d,);
             }
-            return hollidays
+            return holidays
         },
 
         daysOff(state) {
@@ -100,13 +109,6 @@ export const MyModule = {
             state.wishes.splice(delIndex, 1);
         },
 
-        addVacation(state, {record, data}) {
-            record.start = dateReverseFormat(record.start);
-            record.end = dateReverseFormat(record.end);
-            record.id = data.id;
-            state.myVacations.push(record);
-        },
-
         delVac(state, id) {
             let delIndex = state.myVacations.indexOf(state.myVacations.find(p => p.id === id));
             state.myVacations.splice(delIndex, 1);
@@ -154,7 +156,7 @@ export const MyModule = {
         },
 
         async getVacations({commit}) {
-            let {data} = await host('vacation/getList');
+            const {data} = await host('vacation/getList');
             commit('setVacations', data);
         },
 
@@ -175,9 +177,13 @@ export const MyModule = {
             commit('delWish', id);
         },
 
-        async addVacation({commit}, record) {
-            const {data} = await host.post('vacation/create', record);
-            commit('addVacation', {record, data});
+        async addVacation({commit}, vacs) {
+            await host.post('vacation/create', vacs);
+            const {data} = await host('vacation/getList');
+            commit('setVacations', data);
+            const res = await host('user/auth');
+            commit('setCurrentUser', res.data);
+
         },
 
         async deleteVacation({state, commit}, id) {

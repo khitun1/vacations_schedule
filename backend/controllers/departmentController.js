@@ -5,8 +5,8 @@ const winston = require('../winston');
 class departmentController {
     async create(req, res, next) {
         try {
-            const {name, min, max, total, percents} = req.body;
-            await Department.create({name, min, max, total, percents});
+            const {name, min, total, percents} = req.body;
+            await Department.create({name, min, total, percents});
             return res.send("Department have created!");
         } catch (e) {
             winston.error(e.message);
@@ -18,14 +18,9 @@ class departmentController {
     }
     async getList(req, res, next) {
         try {
-            const currentUser = await User.findOne({
-                where: {
-                    id: req.user.id,
-                }
-            });
             const dep = await Department.findOne({
                 where: {
-                    id: currentUser.dataValues.departmentId,
+                    name: req.user.department,
                 }
             });
             return res.send(dep);
@@ -40,8 +35,8 @@ class departmentController {
 
     async changeCon(req, res, next) {
         try{
-            const {id, min, max, total, percents} = req.body;
-            await Department.update({min, max, total, percents}, {
+            const {id, min, total, percents} = req.body;
+            await Department.update({min, total, percents}, {
                 where: {id}
             });
             return res.send("Conditions have changed!");
@@ -67,6 +62,34 @@ class departmentController {
             return next(apiError.internal(e.message));
         } finally {
             winston.info("Time: " + new Date() + " Action: Delete department"
+                + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
+        }
+    }
+
+    async changeRules(req,res, next) {
+        try {
+            const {value} = req.body;
+            await Department.update({rules: value}, {
+                where: {
+                    name: req.user.department,
+                }
+            })
+            const dep = await Department.findOne({
+                where: {
+                    name: req.user.department,
+                }
+            })
+            await User.update({rules: value}, {
+                where: {
+                    departmentId: dep.id,
+                }
+            })
+            return res.send("Rules have changed!");
+        } catch (e) {
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: Change rules in department"
                 + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
         }
     }

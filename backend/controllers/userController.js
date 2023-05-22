@@ -5,20 +5,26 @@ const bcrypt = require("bcrypt");
 const winston = require('../winston');
 const { Op } = require("sequelize");
 
-const generateJwt = (id, is_admin, department, surname, first_name, last_name, login, percent, password, mail, director) => {
+const generateJwt = (id, is_admin, department, surname, first_name, last_name, login, percent,
+                     password, mail, director, allow, left, actual_days, rules, acceptAll) => {
     return jwt.sign(
         {
-            id: id,
-            surname: surname,
-            first_name: first_name,
-            last_name: last_name,
-            login: login,
-            is_admin: is_admin,
-            department: department,
-            percent: percent,
-            password: password,
-            mail: mail,
-            director: director,
+            id,
+            surname,
+            first_name,
+            last_name,
+            login,
+            is_admin,
+            department,
+            percent,
+            password,
+            mail,
+            director,
+            allow,
+            left,
+            actual_days,
+            rules,
+            acceptAll,
         },
         process.env.SECRET_KEY,
         {
@@ -44,7 +50,6 @@ class UserController {
             }
             let comparePassword =  bcrypt.compareSync(password, user.md5password);
             if (!comparePassword) {
-
                 return res.send('Неверный пароль');
             }
             const department = await Department.findOne({
@@ -54,13 +59,13 @@ class UserController {
             });
             const token = generateJwt(user.id, user.is_admin, department.name,
                 user.surname, user.first_name, user.last_name, user.login,
-                department.percents / 100, password, user.mail, user.director);
+                department.percents / 100, password, user.mail, user.director, user.allow,
+                Math.floor(user.left_days), user.actual_days, user.rules, user.accept_all);
             const history = await History.findAll({
                 where: {
                     adminId: user.id,
                 }
             })
-
             let allDepartments;
             if (user.director) {
                 allDepartments = await Department.findAll();
@@ -90,10 +95,16 @@ class UserController {
             if (user.director) {
                 allDepartments = await Department.findAll();
             }
+            const userDb = await User.findOne({
+                where: {
+                    id: req.user.id,
+                }
+            })
             history.sort((a, b) => a.id > b.id ? -1 : 1);
             const token = generateJwt(user.id, user.is_admin, user.department,
                 user.surname, user.first_name, user.last_name, user.login,
-                user.percent, user.password, user.mail, user.director);
+                user.percent, user.password, user.mail, user.director, userDb.allow,
+                Math.floor(userDb.left_days), userDb.actual_days, userDb.rules, userDb.accept_all);
              return res.json({token: token, history: history, allDepartments: allDepartments});
         } catch (e) {
             winston.error(e.message);
@@ -114,7 +125,7 @@ class UserController {
             const user = req.user;
             const token = generateJwt(user.id, user.is_admin, user.department,
                 user.surname, user.first_name, user.last_name, req.body.login,
-                user.percent, user.password, user.mail);
+                user.percent, user.password, user.mail, user.allow, user.left);
             return res.json({token});
         } catch (e) {
             winston.error(e.message);
@@ -135,7 +146,7 @@ class UserController {
             const user = req.user;
             const token = generateJwt(user.id, user.is_admin, user.department,
                 user.surname, user.first_name, user.last_name, req.body.login,
-                user.percent, user.password, user.mail);
+                user.percent, user.password, user.mail, user.allow, user.left);
             return res.json({token});
         } catch (e) {
             winston.error(e.message);
@@ -157,7 +168,7 @@ class UserController {
             const user = req.user;
             const token = generateJwt(user.id, user.is_admin, user.department,
                 user.surname, user.first_name, user.last_name, user.login,
-                user.percent, req.body.password, user.mail);
+                user.percent, req.body.password, user.mail, user.allow, user.left);
             return res.json({token});
         } catch (e) {
             winston.error(e.message);

@@ -1,6 +1,7 @@
-const {Wishes} = require("../models/models");
+const {Wishes, User} = require("../models/models");
 const apiError = require("../error/apiError");
 const winston = require('../winston');
+const moment = require("moment");
 
 class wishesController {
     async create(req, res, next) {
@@ -40,7 +41,7 @@ class wishesController {
         try {
             const {id} = req.body;
             await Wishes.destroy({
-                where: {id: id}
+                where: {id}
             })
             return res.send("Wishes have deleted!");
         } catch (e) {

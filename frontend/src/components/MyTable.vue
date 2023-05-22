@@ -5,7 +5,8 @@
        @mouseover="visible = rec.id" @mouseleave="visible = false">
       <div class="info" v-bind:style="{background: setColor(rec.status)}">
         <p class="dates">{{rec.start}} - {{rec.end}}</p>
-        <p class="amount">кол-во дней: {{totalDays(rec.start, rec.end)}}          </p>
+        <p class="amount">кол-во дней всего: {{totalDays(rec.start, rec.end)}}</p>
+        <p class="amount">кол-во выходных дней: {{daysOff(rec.start, rec.end)}}</p>
         <div class="status"
              v-bind:style="{
           borderColor: setBorder(rec.status),
@@ -31,11 +32,11 @@
 <script>
 import {ref} from "vue";
 import {useStore} from "vuex";
-import {totalDays} from "@/components/Options";
+import {daysOff, totalDays} from "@/components/Options";
 
 export default {
   name: "MyTable",
-  methods: {totalDays},
+  methods: {daysOff, totalDays},
   props: {
     records: {
       type: Array,
@@ -118,7 +119,7 @@ img
   justify-content: flex-start;
   margin-bottom: 10px;
   margin-right: 50px;
-  width: 50%;
+  width: 80%;
 }
 
 .del
@@ -139,7 +140,7 @@ pre
 }
 
 .amount {
-  width: 130px;
+  width: 180px;
 }
 
 
@@ -192,7 +193,7 @@ pre
 
 @media screen and (max-width: 1400px) {
   .rec {
-    width: 70%;
+    width: 90%;
   }
   .exp {
     right: 5%;

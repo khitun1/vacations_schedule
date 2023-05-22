@@ -1,7 +1,7 @@
 <template>
     <my-button @click="changeVisibleCon"
                v-show="!visibleAdminWindow">
-      Изменить условия
+        Изменить условия
     </my-button>
 
     <div v-show="visibleChangeCon" class="con">
@@ -14,11 +14,6 @@
           <my-button @click="setCon(1)" type="submit">{{minText}}</my-button>
         </form>
         <form @submit.prevent>
-          <p>Максимальное кол-во дней отпуска:</p>
-          <my-input v-model="condition.max" :readonly="changeMax" class="maxDays"/>
-          <my-button @click="setCon(2)" type="submit">{{maxText}}</my-button>
-        </form>
-        <form @submit.prevent>
           <p>Всего дней для отпуска:</p>
           <my-input v-model="condition.total" :readonly="changeTotal" class="totalDays"/>
           <my-button @click="setCon(3)" type="submit">{{totalText}}</my-button>
@@ -28,6 +23,13 @@
           <my-input v-model="condition.percents" :readonly="changePercent" class="percentsDays"/>
           <my-button @click="setCon(4)" type="submit">{{percentText}}</my-button>
         </form>
+        <div class="debt">
+          <p>Возможность брать отпускные дни в долг:</p>
+          <label class="checkbox">
+            <input type="checkbox" class="check_input" :checked="rule" @input="changeRule"/>
+            <div class="check_div"/>
+          </label>
+        </div>
       </div>
       <p class="error" v-show="errorNum"> {{ errorMsg }}</p>
     </div>
@@ -42,12 +44,12 @@ export default {
 
   setup() {
     const store = useStore();
+    const rule = computed(() => store.state.admin.department.rules);
     const changeMin =  ref(true);
     const changeMax =  ref(true);
     const changeTotal =  ref(true);
     const changePercent =  ref(true);
     const minText =  ref('Изменить');
-    const maxText =  ref('Изменить');
     const totalText =  ref('Изменить');
     const percentText =  ref('Изменить');
     const errorNum =  ref(false);
@@ -65,16 +67,9 @@ export default {
           {
             condition.value.min = parseInt(condition.value.min);
             if (validate(condition.value.min)) {
-              if (condition.value.min > condition.value.max)
-              {
-                errorMsg.value = 'Максимальное кол-во дней не может быть меньше минимального';
-                errorNum.value = true;
-              }
-              else {
                 changeMin.value = true;
                 minText.value =  'Изменить';
                 accept = true;
-              }
             }
             else errorMsg.value = 'Минимальное количество дней должно быть целым и положительным числом!';
           }
@@ -83,31 +78,6 @@ export default {
             changeMin.value = false;
             document.getElementsByClassName('minDays')[0].focus();
             minText.value =  'Подтвердить';
-          }
-          break;
-        case 2:
-          if(changeMax.value === false)
-          {
-            condition.value.max = parseInt(condition.value.max);
-            if (validate(condition.value.max)) {
-              if (condition.value.min > condition.value.max)
-              {
-                errorMsg.value = 'Максимальное кол-во дней не может быть меньше минимального';
-                errorNum.value = true;
-              }
-              else{
-                changeMax.value = true;
-                maxText.value =  'Изменить';
-                accept = true;
-              }
-            }
-            else errorMsg.value = 'Максимальное количество дней должно быть целым и положительным числом!';
-          }
-          else
-          {
-            changeMax.value = false;
-            document.getElementsByClassName('maxDays')[0].focus();
-            maxText.value =  'Подтвердить';
           }
           break;
         case 3:
@@ -156,13 +126,17 @@ export default {
       else errorNum.value = true;
     }
     const validate = (con) => con && con > 0 && con % 1 === 0;
+    const changeRule = async(e) => {
+      await store.dispatch('changeRules', e.target.checked);
+      await store.dispatch('getUsers');
+    }
+
     return {
       changeMin,
       changeMax,
       changeTotal,
       changePercent,
       minText,
-      maxText,
       totalText,
       percentText,
       errorNum,
@@ -171,8 +145,10 @@ export default {
       visibleChangeCon,
       visibleAdminWindow,
       condition,
+      rule,
       changeVisibleCon,
       setCon,
+      changeRule,
     }
   }
 }
@@ -249,6 +225,65 @@ form
   height: 80%;
   font-size: 16px;
   font-family: "Times New Roman";
+}
+
+.checkbox
+{
+  position: relative;
+  top: 12px;
+  margin-left: -70px;
+}
+
+.check_div
+{
+  top: -3px;
+  left: 0;
+  width: 60px;
+  height: 30px;
+  border-radius: 100px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  background: #ffffff;
+}
+
+.check_input
+{
+  display: none;
+}
+
+.check_div:before
+{
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  background: #8482FF;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.check_input:checked ~ .check_div
+{
+  background: #8482FF;
+}
+
+.check_input:checked ~ .check_div:before
+{
+  background: white;
+  left: 33px;
+}
+
+.check_div:hover
+{
+  filter: brightness(1.2);
+}
+
+.debt {
+  display: flex;
+  flex-direction: row;
+  padding: 0 0 0 10px;
+  width: fit-content;
 }
 
 </style>

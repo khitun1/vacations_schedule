@@ -16,6 +16,7 @@ export const AdminModule = {
         visibleAddDep: false,
         visibleAddType: false,
         visibleChangeCon: false,
+        visibleUserList: false,
         range: 'Год',
         socket: null,
     }),
@@ -23,7 +24,7 @@ export const AdminModule = {
     getters: {
         visibleAdminWindow(state) {
             return state.visibleAddUser || state.visibleDeleteUser
-                || state.visibleAddDep || state.visibleChangeCon || state.visibleAddType;
+                || state.visibleAddDep || state.visibleChangeCon || state.visibleAddType || state.visibleUserList;
         },
     },
 
@@ -34,6 +35,10 @@ export const AdminModule = {
 
         changeVisibleDeleteUser(state) {
             state.visibleDeleteUser = !state.visibleDeleteUser;
+        },
+
+        changeVisibleUserList(state) {
+            state.visibleUserList = !state.visibleUserList;
         },
 
         changeRange(state, newRange) {
@@ -188,6 +193,10 @@ export const AdminModule = {
             }
             state.vacations = vacs;
         },
+
+        changeRules(state, value) {
+            state.department.rules = value;
+        }
     },
 
     actions: {
@@ -208,7 +217,7 @@ export const AdminModule = {
         },
 
         async deleteUser({commit}, id) {
-            await host.post('users/del', {id: id});
+            await host.post('users/del', {id});
             commit('delUser', id);
         },
 
@@ -230,6 +239,20 @@ export const AdminModule = {
             })
             commit('decision', {id, status, explanation});
         },
-        
+
+        async changeRules({commit}, value) {
+            await host.post('department/changeRules', {value});
+            commit('changeRules', value);
+        },
+
+        async addExtraDays({state}, {id, number}) {
+            await host.post('users/addDays', {id, number});
+            console.log(state.range)
+        },
+
+        async excludeRules({state}, {id, value}) {
+            await host.post('users/excludeRules', {id, value});
+            console.log(state.range);
+        }
     }
 }

@@ -9,5 +9,7 @@ router.get('/clearNotes', checkRoleMiddleware(),  usersController.clearNotes);
 router.post('/create', checkRoleMiddleware(),  usersController.create);
 router.post('/decision', checkRoleMiddleware(),  usersController.decisionVacation);
 router.post('/del', checkRoleMiddleware(), usersController.del);
+router.post('/addDays', checkRoleMiddleware(), usersController.addDays);
+router.post('/excludeRules', checkRoleMiddleware(), usersController.excludeRules);
 
 module.exports = router;

@@ -1,10 +1,7 @@
 <template>
-  <sample-page :choice="'myVacations'">
+  <sample-page :choice="'myVacations'" v-if="token">
     <div v-show="calendarShow">
-      <h2>Осталось отпускных дней: {{left}}</h2>
-      <div class="prog">
-        <div class="progBar"/>
-      </div>
+      <h2>Осталось отпускных дней: {{left}} </h2>
       <my-button class="calendar" @click="calendarShow = false">
         <img src="@/images/CalendarIcon.png"/>
         <p>В режиме календаря</p>
@@ -28,9 +25,6 @@
                        class="vCalendar"/>
         <div class="inside">
           <h2 style="margin-top: -20px">Осталось отпускных дней: {{left}}</h2>
-          <div class="prog">
-            <div class="progBar"/>
-          </div>
         </div>
     </div>
       <div class="colours">
@@ -57,6 +51,7 @@
       </div>
     </div>
   </sample-page>
+  <not-auth v-else/>
 </template>
 
 <script>
@@ -65,17 +60,20 @@ import SamplePage from "@/components/Samples/SamplePage";
 import {calendar} from "@/hooks/calendar";
 import {useStore} from "vuex";
 import {computed} from "vue";
+import NotAuth from "@/components/Samples/NotAuth.vue";
 
 export default {
   name: "MyVacations",
 
   components:{
+    NotAuth,
     MyTable,
     SamplePage,
   },
 
   setup() {
     const store = useStore();
+    const token = localStorage.getItem('token') !== null;
     const {calendarShow, rows, columns, attrs, dis, chooseColor, disDates, myVacations} = calendar([], 1);
     store.dispatch('createSocket');
     const left = computed(() => store.getters.left);
@@ -84,8 +82,10 @@ export default {
 
     return {
       calendarShow,
+      token,
       rows,
       columns,
+      total,
       attrs,
       dis,
       chooseColor,

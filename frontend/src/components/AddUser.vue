@@ -2,7 +2,7 @@
   <my-button @click="changeVisibleAddUser"
              v-show="!visibleAdminWindow"
              class="open">
-    Добавить нового пользователя
+    Добавить нового сотрудника
   </my-button>
     <form @submit.prevent v-show="visibleAddUser">
       <button-back @click="clear"/>

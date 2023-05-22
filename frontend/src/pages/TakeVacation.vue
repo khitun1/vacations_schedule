@@ -1,5 +1,5 @@
 <template>
-  <sample-page :choice="'takeVacation'">
+  <sample-page :choice="'takeVacation'" v-if="token">
     <h2 style="margin-top: 40px">Календарь отпусков</h2>
     <div style="display: flex">
       <v-date-picker is-range :rows="rows" :columns="columns" v-model="date"
@@ -9,10 +9,7 @@
                      class="calendar"
                       :min-date="minDate"/>
       <div class="infoBar">
-        <h2 style="margin-top: -20px">Осталось отпускных дней: {{left}}</h2>
-        <div class="prog">
-          <div class="progBar"/>
-        </div>
+        <h2 style="margin-top: -20px">Осталось отпускных дней: {{leftWishes}}</h2>
       </div>
     </div>
     <div class="wishesInfo">
@@ -26,13 +23,12 @@
             <input type="checkbox" class="check_input" v-model="paid[wishes.indexOf(wish)]"/>
             <div class="check_div"/>
           </label>
-          <my-button @click="send(wish)">Отправить заявку</my-button>
           <my-button @click="del(wish.id)">Удалить</my-button>
         </div>
-        <my-button v-if="wishes.length > 1"
+        <my-button v-if="wishes.length > 0"
                    style="padding: 5px 15px"
                    @click="sendAll">
-          Отправить все
+          Отправить пакет
         </my-button>
       </div>
     </div>
@@ -55,6 +51,7 @@
       </div>
     </div>
   </sample-page>
+  <not-auth v-else/>
 </template>
 
 <script>
@@ -70,6 +67,7 @@ import {dateReverseFormat} from "@/hooks/generalMoment/dateReverseFormat";
 import {getLastStart} from "@/hooks/intersections/getLastStart";
 import {amountDays} from "@/hooks/generalMoment/amountDays";
 import {findIntersection} from "@/hooks/intersections/findIntersection";
+import NotAuth from "@/components/Samples/NotAuth.vue";
 
 export default {
   name: "TakeVacation",
@@ -83,6 +81,8 @@ export default {
     const intersInUsersDep = computed(() => store.state.my.dates);
     const inters = ref([]);
     const currentUser = computed(() => store.state.my.currentUser);
+    const token = localStorage.getItem('token') !== null;
+    const doubleShowAlert = ref(0);
 
     const intersections = () => {
       let quarter = Math.floor(percent.value * len.value);
@@ -145,9 +145,9 @@ export default {
 
 
     const { rows, columns, attrs, dis, minDate } = calendar(inters);
-    const left = computed(() => store.getters.left);
+    const leftWishes = computed(() => store.getters.left);
+    const left = computed(() => store.state.my.currentUser.left);
     const total = computed(() => store.state.my.total);
-    const width = computed(() => 100 - left.value / total.value * 100 + '%');
 
     const date = ref(null);
     const paid = ref([]);
@@ -156,70 +156,78 @@ export default {
     const socket = computed(() => store.state.my.socket);
 
     const showWish = () => {
-      if (date.value !== null){
-        const start =  dateChartFormat(date.value.start);
-        const end = dateChartFormat(date.value.end);
-        if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) >
-            store.state.admin.department.max) {
-          alert('Выбрано больше дней, чем максимум за один отпуск!');
-        }
-        else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) <
-            store.state.admin.department.min) {
-          alert('Выбрано меньше дней, чем минимум за один отпуск!');
-        }
-        else {
-          date.value =
-              {
-                start: start,
-                end: end,
-                userId: currentUser.value.id,
-              }
-          store.dispatch('addWish', date.value);
-        }
-        date.value = null;
+      if (doubleShowAlert.value === 1) {
+        doubleShowAlert.value = 0;
+        return;
       }
+        if (date.value !== null) {
+          if (!currentUser.value.allow) {
+            alert('В этом календарном году вы уже спланировали отпуск!');
+          }
+          else {
+            let wishesAmount = 0;
+            wishes.value.forEach(p => {
+              wishesAmount += totalDays(p.start, p.end);
+            });
+            const start =  dateChartFormat(date.value.start);
+            const end = dateChartFormat(date.value.end);
+            const createDate = moment();
+            const nextYear = createDate.get('year') + 2;
+            const startY = moment(nextYear+'-01-01');
+            if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) <
+                store.state.admin.department.min) {
+              alert('Выбрано меньше дней, чем минимум за один отпуск!');
+            }
+            else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > left.value - wishesAmount +
+                Math.floor(totalDays(dateReverseFormat(start), dateReverseFormat(startY)) * total.value / 365)
+                && currentUser.value.rules)
+            {
+              alert('Выбрано больше дней, чем будет доступно на ' + dateReverseFormat(start));
+            }
+            else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > left.value) {
+              alert('Выбрано больше дней, чем будет доступно на ' + (nextYear - 1) + ' год');
+            }
+            else {
+              date.value =
+                  {
+                    start: start,
+                    end: end,
+                    userId: currentUser.value.id,
+                  }
+              store.dispatch('addWish', date.value);
+            }
+            date.value = null;
+          }
+        }
+        doubleShowAlert.value++;
     }
 
     const del = async (id) => await store.dispatch('deleteWish', id);
 
-    const send = async (wish) => {
-      let flag = 0;
-      let record = {
-        start: dateChartFormat(dateUsualFormat(wish.start)),
-        end: dateChartFormat(dateUsualFormat(wish.end)),
-        number: last.value,
-        requested_date: moment(),
-        paid: paid.value[wishes.value.indexOf(wish)] ? 1 : 0,
-        status: 'Ожидание',
-        userId: currentUser.value.id,
-      }
-      intersInUsersDep.value.forEach(p => {
-        if (findIntersection(record, p)) {
-          flag = 1;
-        }
-      })
-      if (flag === 1) alert('Выбранные даты вызовут пересечение');
-      else if (totalDays(dateReverseFormat(record.start), dateReverseFormat(record.end)) <= left.value){
-        await store.dispatch('addVacation', record);
-        socket.value.send(JSON.stringify({
-          method: 'message',
-          department: currentUser.value.department,
-        }))
-        del(wish.id);
-      }
-      else (alert('Выбрано больше дней, чем доступно!'));
-    }
-
-    const sendAll = () => {
+    const sendAll = async() => {
       let record = {};
       let total = 0;
+      let fourteen = 0;
+      let current = 0;
       wishes.value.forEach(p => {
         const start = dateUsualFormat(p.start);
         const end = dateUsualFormat(p.end);
-        total += totalDays(start, end);
+        current = totalDays(start, end);
+        total += current;
+        if (current >= 14) {
+          fourteen++;
+        }
       });
-      if (total <= left.value){
-        wishes.value.forEach(async (p, index) => {
+      if (total > left.value) {
+        alert('Выбрано больше дней, чем доступно!');
+      }
+      else if (fourteen === 0 && currentUser.value.allow && currentUser.value.acceptAll) {
+        (alert('Хотя бы один отпуск должен быть не менее 14 дней!'));
+      }
+      else {
+        console.log(total)
+        const vacs = [];
+        wishes.value.forEach((p, index) => {
           record = {
             start: dateChartFormat(dateUsualFormat(p.start)),
             end: dateChartFormat(dateUsualFormat(p.end)),
@@ -229,33 +237,34 @@ export default {
             userId: currentUser.value.id,
             number: last.value + index,
           }
-          await store.dispatch('addVacation', record);
+          vacs.push(record);
           socket.value.send(JSON.stringify({
             method: 'message',
             department: currentUser.value.department,
           }))
           del(p.id);
         })
+        const data = {
+          vacs, total,
+        }
+        await store.dispatch('addVacation', data);
       }
-      else (alert('Выбрано больше дней, чем доступно!'));
     }
 
     return {
-      findIntersection,
       len,
       intersInUsersDep,
-      currentUser,
+      token,
       rows,
       columns,
       attrs,
       dis,
       minDate,
-      width,
       date,
       paid,
       wishes,
       left,
-      send,
+      leftWishes,
       sendAll,
       showWish,
       del,
@@ -263,6 +272,7 @@ export default {
   },
 
   components:{
+    NotAuth,
     SamplePage,
   },
 
@@ -293,24 +303,6 @@ h2
   padding: 10px 5px 5px;
 }
 
-.prog
-{
-  width: 300px;
-  height: 20px;
-  margin-left: 50px;
-  margin-bottom: 20px;
-  background: #FFFFFF;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 100px;
-}
-
-.progBar
-{
-  width: v-bind(width);
-  background: #a09fff;
-  height: 100%;
-  border-radius: 100px;
-}
 .checkbox
 {
   position: relative;

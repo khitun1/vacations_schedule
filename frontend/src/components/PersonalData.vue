@@ -73,8 +73,6 @@ export default {
     const newLogin = ref(jwt_decode(localStorage.getItem('token')).login);
     const newPassword = ref(jwt_decode(localStorage.getItem('token')).password);
     const newMail = ref(jwt_decode(localStorage.getItem('token')).mail);
-    //let newLogin = computed(() => currentUser.value.login);
-    //let newLogin = ref(currentUser.value.login);
     const changePassword = ref(true) ;
     const typePassword = ref('password');
     const changeLogin = ref(true);
@@ -89,6 +87,7 @@ export default {
       else
       {
         store.dispatch('changeLogin', newLogin.value);
+        store.dispatch('auth');
         textLogBtn.value = 'Изменить логин';
       }
       changeLogin.value = !changeLogin.value;
@@ -98,6 +97,7 @@ export default {
       if(changePassword.value === true) textPasBtn.value = 'Подтвердить';
       else{
         store.dispatch('changePassword', newPassword.value);
+        store.dispatch('auth');
         textPasBtn.value = 'Изменить пароль';
       }
       changePassword.value = !changePassword.value;
@@ -108,6 +108,7 @@ export default {
       if(changeMail.value === true) textMailBtn.value = 'Подтвердить';
       else{
         store.dispatch('changeMail', newMail.value);
+        store.dispatch('auth');
         textMailBtn.value = 'Изменить почту';
       }
       changeMail.value = !changeMail.value;

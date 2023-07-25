@@ -47,7 +47,7 @@
     <dialog>
       <form @submit.prevent class="extraDays">
         <my-input placeholder="Введите кол-во дней" type="number" v-model="amountExtra"/>
-        <my-button @click="sendExtraDays">
+        <my-button type='submit' @click="sendExtraDays">
           Отправить
         </my-button>
         <my-button @click="closeModal">

@@ -6,7 +6,7 @@ const winston = require('../winston');
 const { Op } = require("sequelize");
 
 const generateJwt = (id, is_admin, department, surname, first_name, last_name, login, percent,
-                     password, mail, director, allow, left, actual_days, rules, acceptAll) => {
+                      mail, director, allow, left, actual_days, rules, acceptAll, total) => {
     return jwt.sign(
         {
             id,
@@ -17,7 +17,6 @@ const generateJwt = (id, is_admin, department, surname, first_name, last_name, l
             is_admin,
             department,
             percent,
-            password,
             mail,
             director,
             allow,
@@ -25,6 +24,7 @@ const generateJwt = (id, is_admin, department, surname, first_name, last_name, l
             actual_days,
             rules,
             acceptAll,
+            total,
         },
         process.env.SECRET_KEY,
         {
@@ -59,8 +59,8 @@ class UserController {
             });
             const token = generateJwt(user.id, user.is_admin, department.name,
                 user.surname, user.first_name, user.last_name, user.login,
-                department.percents / 100, password, user.mail, user.director, user.allow,
-                Math.floor(user.left_days), user.actual_days, user.rules, user.accept_all);
+                department.percents / 100, user.mail, user.director, user.allow,
+                Math.floor(user.left_days), user.actual_days, user.rules, user.accept_all, department.total);
             const history = await History.findAll({
                 where: {
                     adminId: user.id,
@@ -100,11 +100,16 @@ class UserController {
                     id: req.user.id,
                 }
             })
+            const department = await Department.findOne({
+                where: {
+                    name: user.department
+                }
+            });
             history.sort((a, b) => a.id > b.id ? -1 : 1);
             const token = generateJwt(user.id, user.is_admin, user.department,
                 user.surname, user.first_name, user.last_name, user.login,
-                user.percent, user.password, user.mail, user.director, userDb.allow,
-                Math.floor(userDb.left_days), userDb.actual_days, userDb.rules, userDb.accept_all);
+                user.percent, user.mail, user.director, userDb.allow,
+                Math.floor(userDb.left_days), userDb.actual_days, userDb.rules, userDb.accept_all, department.total);
              return res.json({token: token, history: history, allDepartments: allDepartments});
         } catch (e) {
             winston.error(e.message);
@@ -122,11 +127,7 @@ class UserController {
                     id: req.user.id
                 }
             })
-            const user = req.user;
-            const token = generateJwt(user.id, user.is_admin, user.department,
-                user.surname, user.first_name, user.last_name, req.body.login,
-                user.percent, user.password, user.mail, user.allow, user.left);
-            return res.json({token});
+            return res.send('Login has changed');
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));
@@ -143,11 +144,7 @@ class UserController {
                     id: req.user.id
                 }
             })
-            const user = req.user;
-            const token = generateJwt(user.id, user.is_admin, user.department,
-                user.surname, user.first_name, user.last_name, req.body.login,
-                user.percent, user.password, user.mail, user.allow, user.left);
-            return res.json({token});
+            return res.send('Mail has changed');
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));
@@ -165,11 +162,7 @@ class UserController {
                     id: req.user.id
                 }
             })
-            const user = req.user;
-            const token = generateJwt(user.id, user.is_admin, user.department,
-                user.surname, user.first_name, user.last_name, user.login,
-                user.percent, req.body.password, user.mail, user.allow, user.left);
-            return res.json({token});
+            return res.send('Password has changed');
         } catch (e) {
             winston.error(e.message);
             return next(apiError.internal(e.message));

@@ -2,13 +2,12 @@ import {computed, onMounted, ref} from "vue";
 import moment from "moment/moment";
 import store from "@/store";
 
-export function calendar(inters, flag = 0) {
+export function  calendar(inters , flag = 0) {
     const rows = ref('2');
     let columns = ref('3');
     let calendarShow = ref(true);
     let myVacations = computed(() => store.state.my.myVacations);
     let wishes = computed(() => store.state.my.wishes);
-
 
 
     let attrs = computed(() => {

@@ -14,6 +14,7 @@ export default createStore({
                 state.my.errorMsg = '';
                 state.my.percent = jwt_decode(data.token).percent;
                 state.my.currentUser = jwt_decode(data.token);
+                state.my.total = jwt_decode(data.token).total;
                 state.my.notes = data.history;
                 if (data.allDepartments) {
                     state.admin.departments = data.allDepartments;

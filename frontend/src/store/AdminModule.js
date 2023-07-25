@@ -196,6 +196,10 @@ export const AdminModule = {
 
         changeRules(state, value) {
             state.department.rules = value;
+        },
+
+        excludeRules(state, prop) {
+            state.users.find(p => p.id === prop.id).rules = prop.value;
         }
     },
 
@@ -241,18 +245,18 @@ export const AdminModule = {
         },
 
         async changeRules({commit}, value) {
-            await host.post('department/changeRules', {value});
+            await host.post('department/changeRules', {value: !value});
             commit('changeRules', value);
         },
 
-        async addExtraDays({state}, {id, number}) {
+        // eslint-disable-next-line no-empty-pattern
+        async addExtraDays({}, {id, number}) {
             await host.post('users/addDays', {id, number});
-            console.log(state.range)
         },
 
-        async excludeRules({state}, {id, value}) {
+        async excludeRules({commit}, {id, value}) {
             await host.post('users/excludeRules', {id, value});
-            console.log(state.range);
+            commit('excludeRules', {id, value});
         }
     }
 }

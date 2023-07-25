@@ -50,8 +50,8 @@ export function options() // config for chart
                         const start = moment(context.parsed._custom.barStart).format('DD.MM.YYYY');
                         const end = moment(context.parsed._custom.barEnd).format('DD.MM.YYYY');
                         if (label) {
-                            label = label + ': Начало: ' + moment(start).format('DD.MM.YYYY')+
-                                '   Конец: ' + moment(end).format('DD.MM.YYYY') + '    Кол-во дней:  ' + totalDays(start, end);
+                            label = label + ': Начало: ' + start +
+                                '   Конец: ' + end + '    Кол-во дней:  ' + totalDays(start, end);
                         }
                         return label;
                     },

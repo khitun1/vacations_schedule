@@ -92,6 +92,11 @@ class vacationController {
 
     async del(req,res,next) {
         try {
+            const currentVacation = await Vacations.findOne({
+                where: {
+                    id: req.body.id,
+                }
+            })
             await Vacations.destroy({
                 where: {
                     id: req.body.id,
@@ -112,6 +117,18 @@ class vacationController {
                         id: vacations[i].id,
                     }
                 })
+            }
+            if (currentVacation.status === 'Ожидание') {
+                const user = await User.findOne({
+                    where: {
+                        id: req.user.id,
+                    }
+                })
+                await User.update({actual_days: user.actual_days + req.body.days}, {
+                    where: {
+                        id: req.user.id,
+                    }
+                });
             }
             res.send("Vacation have deleted");
         } catch (e) {

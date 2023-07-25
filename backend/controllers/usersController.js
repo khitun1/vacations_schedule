@@ -63,8 +63,8 @@ class UsersController {
             const departmentId = dep.id;
             const createDate = moment();
             const nextYear = createDate.get('year') + 1;
-            const startY = moment('01-01-'+nextYear);
-            const left_days = startY.diff(createDate, 'days') * dep.total / 365 + dep.total;
+            const startY = moment('01-01-' + nextYear);
+            const left_days = startY.diff(createDate, 'days') * dep.total / 365;
             const md5password = await bcrypt.hash(password, 5);
             await User.create({first_name, last_name, surname, left_days, mail,
                 login, md5password, is_admin, departmentId, rules: dep.rules});
@@ -142,7 +142,7 @@ class UsersController {
                 }
             })
             if (status === 'Отказ') {
-                const duration = moment(vacation.end).diff(moment(vacation.start), 'days');
+                const duration = moment(vacation.end).diff(moment(vacation.start), 'days') + 1;
                 await User.update({allow: 1, actual_days: user.actual_days + duration}, {
                     where: {
                         id: user.id,

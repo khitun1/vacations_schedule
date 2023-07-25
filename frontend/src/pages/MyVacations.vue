@@ -1,7 +1,7 @@
 <template>
-  <sample-page :choice="'myVacations'" v-if="token">
+  <sample-page :choice="'myVacations'" v-if="token !== null">
     <div v-show="calendarShow">
-      <h2>Осталось отпускных дней: {{left}} </h2>
+      <h2>Доступно отпускных дней: {{totalLeft}} </h2>
       <my-button class="calendar" @click="calendarShow = false">
         <img src="@/images/CalendarIcon.png"/>
         <p>В режиме календаря</p>
@@ -24,7 +24,7 @@
                        :disabled-dates="dis"
                        class="vCalendar"/>
         <div class="inside">
-          <h2 style="margin-top: -20px">Осталось отпускных дней: {{left}}</h2>
+          <h2 style="margin-top: -20px">Доступно отпускных дней: {{totalLeft}}</h2>
         </div>
     </div>
       <div class="colours">
@@ -51,7 +51,6 @@
       </div>
     </div>
   </sample-page>
-  <not-auth v-else/>
 </template>
 
 <script>
@@ -60,25 +59,23 @@ import SamplePage from "@/components/Samples/SamplePage";
 import {calendar} from "@/hooks/calendar";
 import {useStore} from "vuex";
 import {computed} from "vue";
-import NotAuth from "@/components/Samples/NotAuth.vue";
 
 export default {
   name: "MyVacations",
 
   components:{
-    NotAuth,
     MyTable,
     SamplePage,
   },
 
   setup() {
     const store = useStore();
-    const token = localStorage.getItem('token') !== null;
-    const {calendarShow, rows, columns, attrs, dis, chooseColor, disDates, myVacations} = calendar([], 1);
+    const token = localStorage.getItem('token');
+    const {rows, columns, attrs, dis, calendarShow, myVacations,} = calendar([], 1);
     store.dispatch('createSocket');
-    const left = computed(() => store.getters.left);
+    const totalLeft = computed(() => store.getters.totalLeft);
     const total = computed(() => store.state.my.total);
-    const width = computed(() => 100 - left.value / total.value * 100 + '%');
+    const width = computed(() => 100 - totalLeft.value / total.value * 100 + '%');
 
     return {
       calendarShow,
@@ -88,10 +85,8 @@ export default {
       total,
       attrs,
       dis,
-      chooseColor,
-      disDates,
       width,
-      left,
+      totalLeft,
       myVacations,
     }
   },
@@ -101,25 +96,6 @@ export default {
 <style scoped>
 .Main {
   height: 600px;
-}
-
-.prog
-{
-  width: 300px;
-  height: 20px;
-  margin-left: 30px;
-  margin-bottom: 20px;
-  background: #FFFFFF;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 100px;
-}
-
-.progBar
-{
-  width: v-bind(width);
-  background: #a09fff;
-  height: 100%;
-  border-radius: 100px;
 }
 
 .plan

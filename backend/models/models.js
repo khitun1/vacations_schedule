@@ -14,7 +14,7 @@ const User = sequelize.define('user', {
     director: {type: DataTypes.BOOLEAN},
     allow: {type: DataTypes.BOOLEAN, defaultValue: 1},
     rules: {type: DataTypes.BOOLEAN},
-    actual_days: {type: DataTypes.INTEGER},
+    actual_days: {type: DataTypes.INTEGER, defaultValue: 0},
     actual_date: {type: DataTypes.DATE},
     accept_all: {type: DataTypes.BOOLEAN, defaultValue: 1},
 })

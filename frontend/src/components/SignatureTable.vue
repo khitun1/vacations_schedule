@@ -25,8 +25,8 @@
         </p>
         <div class="btns">
           <button class="dec"
-                  style="color: #36f64a; background: #a19fff"
-                  v-if="vac.intersections !== 'Да'"
+                  style="color: #36f64a"
+                  v-bind:style="vac.intersections === 'Да'? {background: '#ff9e9e'}: {background:'#a19fff'}"
                   @click="$emit('accepted', vac.id)"
                   title="Утвердить">
             &#10004;

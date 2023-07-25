@@ -1,14 +1,14 @@
 import {host, firstHost} from "../http/index";
 import moment from "moment/moment";
-import {dateUsualFormat} from "@/hooks/generalMoment/dateUsualFormat";
 import {dateReverseFormat} from "@/hooks/generalMoment/dateReverseFormat";
+import {totalDays} from "@/components/Options";
 
 export const MyModule = {
     state: () => ({
         currentUser: {},
         myVacations: [],
         wishes: [],
-        total: 100,
+        total: 0,
         dates: [],
         len: 0,
         percent: 0,
@@ -20,24 +20,22 @@ export const MyModule = {
     }),
 
     getters: {
-        left(state) {
+        totalLeft(state) {
             let total = 0;
             state.wishes.forEach(p => {
-                total += dateUsualFormat(p.end).diff(dateUsualFormat(p.start), 'days') + 1;
+                total += totalDays(p.start, p.end)
             });
             if (state.currentUser.allow && state.currentUser.acceptAll) {
-                return (state.currentUser.left - total) + ' на ' + (parseInt(state.year) + 1) + ' год';
+                return (state.currentUser.left - total + state.total) + ' на ' + (parseInt(state.year) + 1) + ' год';
             }
             else if ((!state.currentUser.allow && !state.currentUser.acceptAll) ||
                 (state.currentUser.allow && !state.currentUser.acceptAll)) {
-                return (state.currentUser.actual_days - total) + ' на ' + (parseInt(state.year) + 1) + ' год';
+                return (state.currentUser.actual_days - total + state.total) + ' на ' + (parseInt(state.year) + 1) + ' год';
             }
             else {
-                return state.currentUser.left + ' на ' + (parseInt(state.year) + 2) + ' год';
+                return (state.currentUser.left + state.total) + ' на ' + (parseInt(state.year) + 2) + ' год';
             }
-
         },
-
 
         last(state) {
             return state.myVacations.length + 1;
@@ -109,7 +107,8 @@ export const MyModule = {
             state.wishes.splice(delIndex, 1);
         },
 
-        delVac(state, id) {
+        delVac(state, {id, days}) {
+            state.currentUser.actual_days += days;
             let delIndex = state.myVacations.indexOf(state.myVacations.find(p => p.id === id));
             state.myVacations.splice(delIndex, 1);
         },
@@ -137,6 +136,17 @@ export const MyModule = {
           state.notes = [];
         },
 
+        changeLogin(state, login) {
+          state.currentUser.login = login;
+        },
+
+        changePassword(state, password) {
+          state.currentUser.password = password;
+        },
+
+        changeMail(state, mail) {
+            state.currentUser.mail = mail;
+        }
     },
 
     actions: {
@@ -187,39 +197,35 @@ export const MyModule = {
         },
 
         async deleteVacation({state, commit}, id) {
-            commit('delVac', id);
+            let vac = state.myVacations.find(p => p.id === id);
+            let days = vac.status === 'Ожидание' ? totalDays(vac.start, vac.end): 0;
+            commit('delVac', {id, days});
             let num = 1;
             state.myVacations.forEach(p => {
                 p.number = num++;
             })
-            await host.post('vacation/del', {
-                id: id,
-            })
-
+            await host.post('vacation/del', {id, days});
         },
 
         async changeLogin({commit}, login) {
-            const {data} = await host.post('user/changeLogin', {
+            await host.post('user/changeLogin', {
                 login: login,
             })
-            localStorage.setItem('token', data.token);
-            commit('setCurrentUser', data);
+            commit('changeLogin', login);
         },
 
         async changePassword({commit}, password) {
-            const {data} = await host.post('user/changePassword', {
+            await host.post('user/changePassword', {
                 password: password,
             })
-            localStorage.setItem('token', data.token);
-            commit('setCurrentUser', data);
+            commit('changePassword', password);
         },
 
         async changeMail({commit}, mail) {
-            const {data} = await host.post('user/changeMail', {
+            await host.post('user/changeMail', {
                 mail: mail,
-            })
-            localStorage.setItem('token', data.token);
-            commit('setCurrentUser', data);
+            });
+            commit('changeMail', mail);
         },
 
         async getDates({commit}) {

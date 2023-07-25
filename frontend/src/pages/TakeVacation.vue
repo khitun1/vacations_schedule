@@ -1,5 +1,5 @@
 <template>
-  <sample-page :choice="'takeVacation'" v-if="token">
+  <sample-page :choice="'takeVacation'" v-if="token !== null">
     <h2 style="margin-top: 40px">Календарь отпусков</h2>
     <div style="display: flex">
       <v-date-picker is-range :rows="rows" :columns="columns" v-model="date"
@@ -9,7 +9,8 @@
                      class="calendar"
                       :min-date="minDate"/>
       <div class="infoBar">
-        <h2 style="margin-top: -20px">Осталось отпускных дней: {{leftWishes}}</h2>
+        <h2 style="margin-top: -20px">Доступно отпускных дней: {{totalLeft}}</h2>
+        <h2 style="margin-top: -20px">Доступно дней на начало года: {{left}}</h2>
       </div>
     </div>
     <div class="wishesInfo">
@@ -51,7 +52,6 @@
       </div>
     </div>
   </sample-page>
-  <not-auth v-else/>
 </template>
 
 <script>
@@ -67,10 +67,13 @@ import {dateReverseFormat} from "@/hooks/generalMoment/dateReverseFormat";
 import {getLastStart} from "@/hooks/intersections/getLastStart";
 import {amountDays} from "@/hooks/generalMoment/amountDays";
 import {findIntersection} from "@/hooks/intersections/findIntersection";
-import NotAuth from "@/components/Samples/NotAuth.vue";
 
 export default {
   name: "TakeVacation",
+
+  components:{
+    SamplePage,
+  },
 
   setup() {
     const store = useStore();
@@ -81,7 +84,7 @@ export default {
     const intersInUsersDep = computed(() => store.state.my.dates);
     const inters = ref([]);
     const currentUser = computed(() => store.state.my.currentUser);
-    const token = localStorage.getItem('token') !== null;
+    const token = localStorage.getItem('token');
     const doubleShowAlert = ref(0);
 
     const intersections = () => {
@@ -143,9 +146,8 @@ export default {
       intersections();
     });
 
-
     const { rows, columns, attrs, dis, minDate } = calendar(inters);
-    const leftWishes = computed(() => store.getters.left);
+    const totalLeft = computed(() => store.getters.totalLeft);
     const left = computed(() => store.state.my.currentUser.left);
     const total = computed(() => store.state.my.total);
 
@@ -172,7 +174,7 @@ export default {
             const start =  dateChartFormat(date.value.start);
             const end = dateChartFormat(date.value.end);
             const createDate = moment();
-            const nextYear = createDate.get('year') + 2;
+            const nextYear = createDate.get('year') + 1;
             const startY = moment(nextYear+'-01-01');
             if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) <
                 store.state.admin.department.min) {
@@ -184,9 +186,12 @@ export default {
             {
               alert('Выбрано больше дней, чем будет доступно на ' + dateReverseFormat(start));
             }
-            else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > left.value) {
-              alert('Выбрано больше дней, чем будет доступно на ' + (nextYear - 1) + ' год');
+            else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > totalLeft.value.split(' ')[0]) {
+              alert('Выбрано больше дней, чем доступно');
             }
+            // else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > left.value) {
+            //   alert('Выбрано больше дней, чем будет доступно на ' + (nextYear - 1) + ' год');
+            // }
             else {
               date.value =
                   {
@@ -218,14 +223,13 @@ export default {
           fourteen++;
         }
       });
-      if (total > left.value) {
+      if (total > totalLeft.value.split(' ')[0] || (total > left.value && currentUser.value.rules)) {
         alert('Выбрано больше дней, чем доступно!');
       }
       else if (fourteen === 0 && currentUser.value.allow && currentUser.value.acceptAll) {
         (alert('Хотя бы один отпуск должен быть не менее 14 дней!'));
       }
       else {
-        console.log(total)
         const vacs = [];
         wishes.value.forEach((p, index) => {
           record = {
@@ -264,16 +268,11 @@ export default {
       paid,
       wishes,
       left,
-      leftWishes,
+      totalLeft,
       sendAll,
       showWish,
       del,
     }
-  },
-
-  components:{
-    NotAuth,
-    SamplePage,
   },
 
 }
@@ -410,6 +409,10 @@ h2
 
 .infoBar {
   margin: -20px 0 0 30px;
+}
+
+.infoBar > h2 {
+  margin-bottom: 40px;
 }
 
 .calendar {

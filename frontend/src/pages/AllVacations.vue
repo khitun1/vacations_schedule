@@ -1,5 +1,5 @@
 <template >
-  <sample-page :choice="'allVacations'" v-if="token">
+  <sample-page :choice="'allVacations'" v-if="token !== null && isAdmin">
     <VueMultiselect class="selectDep"
                     :options="allDeps"
                     placeholder="Выберите отдел"
@@ -49,7 +49,7 @@
               @click="showRec" tabindex="-1"/>
     </div>
   </sample-page>
-  <not-auth v-else/>
+  <not-access v-else-if="token !==null"/>
 </template>
 
 <script>
@@ -66,7 +66,8 @@ import {dateChartFormat} from "@/hooks/generalMoment/dateChartFormat";
 import {amountDays} from "@/hooks/generalMoment/amountDays";
 import {getLastStart} from "@/hooks/intersections/getLastStart";
 import {findIntersection} from "@/hooks/intersections/findIntersection";
-import NotAuth from "@/components/Samples/NotAuth.vue";
+import jwt_decode from "jwt-decode";
+import NotAccess from "@/components/Samples/NotAccess.vue";
 
 export default {
   name: "AllVacations",
@@ -88,7 +89,7 @@ export default {
     }
   },
   components: {
-    NotAuth,
+    NotAccess,
     SamplePage,
     SignatureTable,
     VueMultiselect,
@@ -117,7 +118,12 @@ export default {
     },
 
     token() {
-      return localStorage.getItem('token') !== null;
+      return localStorage.getItem('token');
+    },
+
+    isAdmin() {
+      const token = localStorage.getItem('token');
+      return jwt_decode(token).is_admin;
     },
 
     height: function (){
@@ -136,7 +142,6 @@ export default {
 
     height_chart() {
       if (this.selectedDep !== '' || !this.currentUser.director) {
-        console.log(!!this.currentUser.director)
         return 'fit-content';
       }
       return '0';

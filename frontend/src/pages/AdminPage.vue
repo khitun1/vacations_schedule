@@ -1,32 +1,30 @@
 <template>
-  <sample-page :choice="'admin'" v-if="token">
+  <sample-page :choice="'admin'" v-if="token !== null && isAdmin">
     <h1> Панель администратора</h1>
     <div class="buttons">
       <user-list/>
       <add-user/>
-<!--      <delete-user/>-->
       <set-data/>
     </div>
   </sample-page>
-  <not-auth v-else/>
+  <not-access v-else-if="token !== null"/>
 </template>
 
 <script>
 import SamplePage from "@/components/Samples/SamplePage";
 import AddUser from "@/components/AddUser";
 import SetData from "@/components/SetData";
-//import DeleteUser from "@/components/DeleteUser.vue";
 import {useStore} from "vuex";
-import NotAuth from "@/components/Samples/NotAuth.vue";
 import UserList from "@/components/UserList.vue";
+import jwt_decode from "jwt-decode";
+import NotAccess from "@/components/Samples/NotAccess.vue";
 
 export default {
   name: "SetSignature",
 
   components:{
+    NotAccess,
     UserList,
-    NotAuth,
-    //DeleteUser,
     SamplePage,
     AddUser,
     SetData,
@@ -34,12 +32,14 @@ export default {
 
   setup() {
     const store = useStore();
-    const token = localStorage.getItem('token') !== null;
+    const token = localStorage.getItem('token');
+    const isAdmin = jwt_decode(token).is_admin;
     store.dispatch('auth');
     store.dispatch('getDepartment');
     store.dispatch('getUsers');
     return {
       token,
+      isAdmin
     }
   }
 }

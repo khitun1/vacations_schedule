@@ -26,7 +26,7 @@
         <div class="debt">
           <p>Возможность брать отпускные дни в долг:</p>
           <label class="checkbox">
-            <input type="checkbox" class="check_input" :checked="rule" @input="changeRule"/>
+            <input type="checkbox" class="check_input" :checked="!rule" @input="changeRule"/>
             <div class="check_div"/>
           </label>
         </div>

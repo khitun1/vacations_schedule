@@ -1,5 +1,6 @@
 import {host} from "../http/index";
-import {dateReverseFormat} from "@/hooks/generalMoment/dateReverseFormat";
+import {dateReverseFormat} from "../hooks/generalMoment/dateReverseFormat";
+import moment from "moment";
 
 export const AdminModule = {
     state: () => ({
@@ -18,7 +19,6 @@ export const AdminModule = {
         visibleChangeCon: false,
         visibleUserList: false,
         range: 'Год',
-        socket: null,
     }),
 
     getters: {
@@ -206,6 +206,7 @@ export const AdminModule = {
     actions: {
         async addUser({commit}, user) {
             user.is_admin = user.is_admin === 'Админ' ? 1 : 0;
+            user.actual_date = moment();
             await host.post('users/create', user);
             commit('addUser', user);
         },

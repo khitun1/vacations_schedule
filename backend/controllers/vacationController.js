@@ -11,15 +11,10 @@ class vacationController {
             const user = await User.findOne({
                 where: {id: req.user.id}
             })
-            vacs.forEach(async(p) => {
-                await Vacations.create({number: p.number, start: p.start, end: p.end,
+            await vacs.forEach(p => {
+                Vacations.create({number: p.number, start: p.start, end: p.end,
                     requested_date: p.requested_date, status: p.status, paid: p.paid,
                     explanation: p.explanation, userId: p.userId});
-                await User.update({actual_days: user.left_days - total}, {
-                    where: {
-                        id: user.id,
-                    }
-                });
             })
             const vacations = await Vacations.findAll({
                 where: {
@@ -51,8 +46,9 @@ class vacationController {
                 user: req.user.surname + ' ' + req.user.first_name[0] + '.' + req.user.last_name[0] + '.',
                 adminId: admin.id,
             })
-            const actual_days = user.allow && user.accept_all ? user.left_days - total : user.actual_days - total;
-            await User.update({actual_days}, {
+            const actual_date = moment();
+            const actual_days = user.rules ? Math.floor(user.left_days) - total : Math.floor(user.left_days) + req.user.total - total;
+            await User.update({actual_days, actual_date}, {
                 where: {
                     id: req.user.id,
                 }
@@ -137,6 +133,22 @@ class vacationController {
         } finally {
             winston.info("Time: " + new Date() + " Action: Delete vacation"
                 + "   User: " + JSON.stringify(req.user) + "  Body: "  + JSON.stringify(req.body));
+        }
+    }
+
+    async getHolidays(req, res, next) {
+        try {
+            const year = moment().year();
+            let holidays = [];
+            for (let i = -1; i < 3; i++) {
+                holidays.push(moment(year + i + '-02-23')._d);
+                holidays.push(moment(year + i + '-03-08')._d);
+                holidays.push(moment(year + i + '-05-01')._d);
+                holidays.push(moment(year + i + '-05-09')._d);
+            }
+            res.json({holidays});
+        } catch (e) {
+            return next(apiError.internal(e.message));
         }
     }
 }

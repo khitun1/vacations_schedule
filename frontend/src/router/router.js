@@ -1,10 +1,10 @@
-import MyVacations from "@/pages/MyVacations";
+import MyVacations from "../pages/MyVacations.vue";
 import {createRouter, createWebHistory} from "vue-router";
-import TakeVacation from "@/pages/TakeVacation";
-import AllVacations from "@/pages/AllVacations";
-import AdminPage from "@/pages/AdminPage";
-import MySettings from "@/pages/MySettings";
-import StartScreen from "@/pages/StartScreen";
+import TakeVacation from "../pages/TakeVacation.vue";
+import AllVacations from "../pages/AllVacations.vue";
+import AdminPage from "../pages/AdminPage.vue";
+import MySettings from "../pages/MySettings.vue";
+import StartScreen from "../pages/StartScreen.vue";
 
 
 const routes = [

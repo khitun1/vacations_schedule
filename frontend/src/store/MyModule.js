@@ -14,9 +14,9 @@ export const MyModule = {
         percent: 0,
         errorMsg: '',
         year: String(new Date().getFullYear()),
-        socket: null,
         noteName: '',
         notes: [],
+        holidays: [],
     }),
 
     getters: {
@@ -30,7 +30,7 @@ export const MyModule = {
             }
             else if ((!state.currentUser.allow && !state.currentUser.acceptAll) ||
                 (state.currentUser.allow && !state.currentUser.acceptAll)) {
-                return (state.currentUser.actual_days - total + state.total) + ' на ' + (parseInt(state.year) + 1) + ' год';
+                return state.currentUser.actual_days + ' на ' + (parseInt(state.year) + 1) + ' год';
             }
             else {
                 return (state.currentUser.left + state.total) + ' на ' + (parseInt(state.year) + 2) + ' год';
@@ -43,18 +43,6 @@ export const MyModule = {
 
         intersInUsersDep(state) {
             return state.dates;
-        },
-
-        holidays(state) {
-            const year = parseInt(state.year);
-            let holidays = [];
-            for (let i = -1; i < 2; i++) {
-                holidays.push(moment(year + i + '-02-23')._d,);
-                holidays.push(moment(year + i + '-03-08')._d,);
-                holidays.push(moment(year + i + '-05-01')._d,);
-                holidays.push(moment(year + i + '-05-09')._d,);
-            }
-            return holidays
         },
 
         daysOff(state) {
@@ -146,6 +134,10 @@ export const MyModule = {
 
         changeMail(state, mail) {
             state.currentUser.mail = mail;
+        },
+
+        setHolidays(state, holidays) {
+            state.holidays = holidays;
         }
     },
 
@@ -161,8 +153,15 @@ export const MyModule = {
         },
 
         async auth({commit}) {
-            const {data} = await host('user/auth');
-            commit('setCurrentUser', data);
+            try {
+                const res = await host('user/auth');
+                commit('setCurrentUser', res.data);
+            } catch (e) {
+                console.log(e.response.data);
+                localStorage.removeItem('token');
+            }
+
+
         },
 
         async getVacations({commit}) {
@@ -170,7 +169,7 @@ export const MyModule = {
             commit('setVacations', data);
         },
 
-        async addWish({commit},wish) {
+        async addWish({commit}, wish) {
             const {data} = await host.post('wishes/create', wish);
             commit('addWish', {wish, data});
         },
@@ -233,12 +232,16 @@ export const MyModule = {
             commit('setDates', data)
         },
 
-
         async clear({state, commit}) {
             if (!state.currentUser.director) {
                 await host('users/clearNotes');
                 commit('clearNotes');
             }
+        },
+
+        async getHolidays({commit}) {
+          const {data} = await host('vacation/getHolidays');
+          commit('setHolidays', data.holidays);
         },
     }
 }

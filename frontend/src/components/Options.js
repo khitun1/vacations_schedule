@@ -74,7 +74,7 @@ export function totalDays(start,end) {
     const s = moment(start, 'DD.MM.YYYY');
     const e = moment(end, 'DD.MM.YYYY');
     let total = moment(e).diff((s), 'days') + 1;
-    const holidays = ref(store.getters.holidays);
+    const holidays = ref(store.state.my.holidays);
     holidays.value.forEach(p => {
         const holiday = moment(p).format('DD.MM.YYYY');
         if (moment(p).isBetween(s,e) || holiday === s.format('DD.MM.YYYY')

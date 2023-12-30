@@ -1,5 +1,6 @@
 <template>
-  <sample-page :choice="'myVacations'" v-if="token !== null">
+  <div v-show="isLoading">123</div>
+  <sample-page :choice="'myVacations'" v-if="token !== null && !isLoading">
     <div v-show="calendarShow">
       <h2>Доступно отпускных дней: {{totalLeft}} </h2>
       <my-button class="calendar" @click="calendarShow = false">
@@ -58,7 +59,7 @@ import MyTable from "@/components/MyTable";
 import SamplePage from "@/components/Samples/SamplePage";
 import {calendar} from "@/hooks/calendar";
 import {useStore} from "vuex";
-import {computed} from "vue";
+import {computed, onMounted} from "vue";
 
 export default {
   name: "MyVacations",
@@ -70,11 +71,18 @@ export default {
 
   setup() {
     const store = useStore();
-    const token = localStorage.getItem('token');
+    store.commit('setLoading',true);
+    onMounted(async () => {
+      await store.dispatch('auth');
+      store.commit('setLoading',false);
+      await store.dispatch('getHolidays');
+      await store.dispatch('getVacations');
+    })
     const {rows, columns, attrs, dis, calendarShow, myVacations,} = calendar([], 1);
-    store.dispatch('createSocket');
+    const token = localStorage.getItem('token');
     const totalLeft = computed(() => store.getters.totalLeft);
     const total = computed(() => store.state.my.total);
+    const isLoading = computed(() => store.state.isLoading);
     const width = computed(() => 100 - totalLeft.value / total.value * 100 + '%');
 
     return {
@@ -88,6 +96,7 @@ export default {
       width,
       totalLeft,
       myVacations,
+      isLoading,
     }
   },
 }

@@ -85,7 +85,11 @@ class UserController {
 
     async check(req, res, next) {
         try {
-             const user = req.user;
+            const user = await User.findOne({
+                where: {
+                    id: req.user.id,
+                }
+            })
             let history = await History.findAll({
                 where: {
                     adminId: user.id,
@@ -95,21 +99,17 @@ class UserController {
             if (user.director) {
                 allDepartments = await Department.findAll();
             }
-            const userDb = await User.findOne({
-                where: {
-                    id: req.user.id,
-                }
-            })
+
             const department = await Department.findOne({
                 where: {
-                    name: user.department
+                    id: user.departmentId
                 }
             });
             history.sort((a, b) => a.id > b.id ? -1 : 1);
-            const token = generateJwt(user.id, user.is_admin, user.department,
+            const token = generateJwt(user.id, user.is_admin, department.name,
                 user.surname, user.first_name, user.last_name, user.login,
-                user.percent, user.mail, user.director, userDb.allow,
-                Math.floor(userDb.left_days), userDb.actual_days, userDb.rules, userDb.accept_all, department.total);
+                user.percent, user.mail, user.director, user.allow,
+                Math.floor(user.left_days), user.actual_days, user.rules, user.accept_all, department.total);
              return res.json({token: token, history: history, allDepartments: allDepartments});
         } catch (e) {
             winston.error(e.message);

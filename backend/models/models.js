@@ -3,19 +3,19 @@ const {DataTypes} = require('sequelize');
 
 const User = sequelize.define('user', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    first_name: {type: DataTypes.STRING},
-    last_name: {type: DataTypes.STRING},
-    surname: {type: DataTypes.STRING},
-    left_days: {type: DataTypes.DOUBLE},
-    login: {type: DataTypes.STRING, unique: true},
-    mail: {type: DataTypes.STRING}, 
-    md5password: {type: DataTypes.STRING},
-    is_admin: {type: DataTypes.BOOLEAN},
+    first_name: {type: DataTypes.STRING, allowNull: false},
+    last_name: {type: DataTypes.STRING, allowNull: false},
+    surname: {type: DataTypes.STRING, allowNull: false},
+    left_days: {type: DataTypes.DOUBLE, allowNull: false},
+    login: {type: DataTypes.STRING, unique: true, allowNull: false},
+    mail: {type: DataTypes.STRING, allowNull: false},
+    md5password: {type: DataTypes.STRING, allowNull: false},
+    is_admin: {type: DataTypes.BOOLEAN, allowNull: false},
     director: {type: DataTypes.BOOLEAN},
     allow: {type: DataTypes.BOOLEAN, defaultValue: 1},
-    rules: {type: DataTypes.BOOLEAN},
+    rules: {type: DataTypes.BOOLEAN, allowNull: false},
     actual_days: {type: DataTypes.INTEGER, defaultValue: 0},
-    actual_date: {type: DataTypes.DATE},
+    actual_date: {type: DataTypes.DATE, allowNull: false},
     accept_all: {type: DataTypes.BOOLEAN, defaultValue: 1},
 })
 
@@ -45,11 +45,6 @@ const Wishes = sequelize.define('wishes', {
     end: {type: DataTypes.DATE},
 })
 
-const DbDate = sequelize.define('date', {
-    year: {type: DataTypes.INTEGER},
-    day: {type: DataTypes.INTEGER},
-})
-
 const History = sequelize.define('history', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     user: {type: DataTypes.STRING},
@@ -66,5 +61,5 @@ User.hasMany(Wishes);
 Wishes.belongsTo(User);
 
 module.exports = {
-    User, Department, Vacations, Wishes, DbDate, History
+    User, Department, Vacations, Wishes, History
 }

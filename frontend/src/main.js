@@ -1,11 +1,11 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import VueClickAway from "vue3-click-away";
-import router from "@/router/router";
+import router from "./router/router";
 import 'v-calendar/dist/style.css';
-import components from "@/components/UI";
+import components from "./components/UI";
 import VCalendar from 'v-calendar';
-import store from "@/store";
+import store from "./store";
 
 
 const app = createApp(App)

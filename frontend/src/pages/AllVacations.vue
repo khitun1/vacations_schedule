@@ -30,7 +30,7 @@
     <h2 v-show="vacations.length > 0 && (selectedDep !== '' || !currentUser.director)">График отпусков</h2>
     <div class="range" v-show=" selectedDep !== '' || !currentUser.director">
       <div class="changeYear" v-show="vacations.length > 0">
-        <button @click="prevRange ">&#60;</button>
+        <button @click="prevRange ">2</button>
         <h3 class="year">{{rangeChart}}</h3>
         <button @click="nextRange">&#62;</button>
       </div>
@@ -49,7 +49,7 @@
               @click="showRec" tabindex="-1"/>
     </div>
   </sample-page>
-  <not-access v-else-if="token !==null"/>
+  <not-access v-else/>
 </template>
 
 <script>
@@ -106,7 +106,6 @@ export default {
       range: state => state.admin.range,
       month: state => state.admin.month,
       quarter: state => state.admin.quarter,
-      socket: state => state.my.socket,
       departments: state => state.admin.departments,
       currentUser: state => state.my.currentUser,
     }),
@@ -169,7 +168,6 @@ export default {
       getEmployeesVacations: 'getEmployeesVacations',
       decisionVacation: 'decisionVacation',
       clear: 'clear',
-      createSocket: 'createSocket',
     }),
     cancelExplain() {
       this.explanation = '';
@@ -446,7 +444,6 @@ export default {
 
   mounted() {
     this.auth();
-    this.createSocket();
     this.clear();
     this.getUsers();
     this.getEmployeesVacations();

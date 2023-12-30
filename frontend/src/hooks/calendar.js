@@ -12,7 +12,7 @@ export function  calendar(inters , flag = 0) {
 
     let attrs = computed(() => {
         let attrs = [];
-        const holidays = computed(() => store.getters.holidays);
+        const holidays = computed(() => store.state.my.holidays);
 
         const daysOff = computed(() => store.getters.daysOff);
 
@@ -102,9 +102,6 @@ export function  calendar(inters , flag = 0) {
 
     onMounted(async () => {
         window.addEventListener('resize', updateColumns);
-        await store.dispatch('auth');
-        await store.dispatch('getVacations');
-
     })
 
     return {

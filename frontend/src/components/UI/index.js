@@ -1,7 +1,7 @@
-import ButtonIcon from "@/components/UI/ButtonIcon";
-import MyButton from "@/components/UI/MyButton";
-import MyInput from "@/components/UI/MyInput";
-import ButtonBack from "@/components/UI/ButtonBack";
+import ButtonIcon from "./ButtonIcon.vue";
+import MyButton from "./MyButton.vue";
+import MyInput from "./MyInput.vue";
+import ButtonBack from "./ButtonBack.vue";
 
 export default [
     ButtonIcon,

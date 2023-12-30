@@ -1,5 +1,6 @@
 <template>
-  <sample-page :choice="'takeVacation'" v-if="token !== null">
+  <div v-show="isLoading">123</div>
+  <sample-page :choice="'takeVacation'" v-if="token !== null && !isLoading">
     <h2 style="margin-top: 40px">Календарь отпусков</h2>
     <div style="display: flex">
       <v-date-picker is-range :rows="rows" :columns="columns" v-model="date"
@@ -77,7 +78,8 @@ export default {
 
   setup() {
     const store = useStore();
-    store.dispatch('createSocket');
+    store.commit('setLoading',true);
+    store.dispatch('getHolidays');
     store.dispatch('getDepartment');
     const percent = computed(() => store.state.my.currentUser.percent);
     const len = computed(() => store.state.my.len);
@@ -86,6 +88,7 @@ export default {
     const currentUser = computed(() => store.state.my.currentUser);
     const token = localStorage.getItem('token');
     const doubleShowAlert = ref(0);
+    const isLoading = computed(() => store.state.isLoading);
 
     const intersections = () => {
       let quarter = Math.floor(percent.value * len.value);
@@ -140,6 +143,7 @@ export default {
 
     onMounted(async () => {
       await store.dispatch('auth');
+      store.commit('setLoading', false);
       await store.dispatch('getDates');
       await store.dispatch('getWishes');
       await store.dispatch('getVacations');
@@ -155,7 +159,6 @@ export default {
     const paid = ref([]);
     const last = computed(() => store.getters.last);
     const wishes = computed(() => store.state.my.wishes);
-    const socket = computed(() => store.state.my.socket);
 
     const showWish = () => {
       if (doubleShowAlert.value === 1) {
@@ -223,7 +226,7 @@ export default {
           fourteen++;
         }
       });
-      if (total > totalLeft.value.split(' ')[0] || (total > left.value && currentUser.value.rules)) {
+      if (totalLeft.value.split(' ')[0] < 0 || (total > left.value && currentUser.value.rules)) {
         alert('Выбрано больше дней, чем доступно!');
       }
       else if (fourteen === 0 && currentUser.value.allow && currentUser.value.acceptAll) {
@@ -242,10 +245,6 @@ export default {
             number: last.value + index,
           }
           vacs.push(record);
-          socket.value.send(JSON.stringify({
-            method: 'message',
-            department: currentUser.value.department,
-          }))
           del(p.id);
         })
         const data = {
@@ -267,6 +266,7 @@ export default {
       date,
       paid,
       wishes,
+      isLoading,
       left,
       totalLeft,
       sendAll,

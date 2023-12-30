@@ -67,7 +67,7 @@ class UsersController {
             const left_days = startY.diff(createDate, 'days') * dep.total / 365;
             const md5password = await bcrypt.hash(password, 5);
             await User.create({first_name, last_name, surname, left_days, mail,
-                login, md5password, is_admin, departmentId, rules: dep.rules});
+                login, md5password, is_admin, departmentId, rules: dep.rules, actual_date: createDate});
             res.send("User have created!");
         } catch (e) {
             winston.error(e.message);

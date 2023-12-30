@@ -1,6 +1,6 @@
 <template>
   <button-icon class="back">
-    <img src="@/images/BackIcon.png">
+    <img src="../../images/BackIcon.png">
   </button-icon>
 </template>
 

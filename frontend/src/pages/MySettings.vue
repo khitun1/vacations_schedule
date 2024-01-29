@@ -24,7 +24,7 @@ export default {
     store.commit('setLoading', true);
     const token = localStorage.getItem('token');
     const isLoading = computed(() => store.state.isLoading);
-    store.dispatch('auth');
+    store.dispatch('createSocket');
     setTimeout(() => {
       store.commit('setLoading', false);
     }, 50);

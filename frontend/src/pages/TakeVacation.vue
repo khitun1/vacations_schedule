@@ -2,6 +2,24 @@
   <div v-show="isLoading">123</div>
   <sample-page :choice="'takeVacation'" v-if="token !== null && !isLoading">
     <h2 style="margin-top: 40px">Календарь отпусков</h2>
+    <div class="colours">
+      <div class="colour">
+        <div style="background: #9deab7"/>
+        <p>Одобрено</p>
+      </div>
+      <div class="colour">
+        <div style="background: #fde1b2"/>
+        <p>Ожидание</p>
+      </div>
+      <div class="colour">
+        <div style="background:#feb2b2"/>
+        <p>Выбран лимит отдела</p>
+      </div>
+      <div class="colour">
+        <div style="background: #e2e8f0"/>
+        <p>Желаемые даты</p>
+      </div>
+    </div>
     <div style="display: flex">
       <v-date-picker is-range :rows="rows" :columns="columns" v-model="date"
                      @click="showWish"
@@ -14,6 +32,7 @@
         <h2 style="margin-top: -20px">Доступно дней на начало года: {{left}}</h2>
       </div>
     </div>
+
     <div class="wishesInfo">
       <h2>Выбранные даты</h2>
       <div class="wishes">
@@ -32,24 +51,6 @@
                    @click="sendAll">
           Отправить пакет
         </my-button>
-      </div>
-    </div>
-    <div class="colours">
-      <div class="colour">
-        <div style="background: #9deab7"/>
-        <p>Одобрено</p>
-      </div>
-      <div class="colour">
-        <div style="background: #fde1b2"/>
-        <p>Ожидание</p>
-      </div>
-      <div class="colour">
-        <div style="background:#feb2b2"/>
-        <p>Выбран лимит отдела</p>
-      </div>
-      <div class="colour">
-        <div style="background: #e2e8f0"/>
-        <p>Желаемые даты</p>
       </div>
     </div>
   </sample-page>
@@ -142,7 +143,7 @@ export default {
     }
 
     onMounted(async () => {
-      await store.dispatch('auth');
+      await store.dispatch('createSocket');
       store.commit('setLoading', false);
       await store.dispatch('getDates');
       await store.dispatch('getWishes');
@@ -159,6 +160,8 @@ export default {
     const paid = ref([]);
     const last = computed(() => store.getters.last);
     const wishes = computed(() => store.state.my.wishes);
+
+    const socket = computed(() => store.state.my.socket);
 
     const showWish = () => {
       if (doubleShowAlert.value === 1) {
@@ -251,6 +254,11 @@ export default {
           vacs, total,
         }
         await store.dispatch('addVacation', data);
+        const obj = {
+          method: 'message',
+          vacs
+        }
+        socket.value.send(JSON.stringify(obj));
       }
     }
 
@@ -381,7 +389,6 @@ h2
   display: flex;
   flex-direction: row;
   flex-flow: row wrap;
-  position: absolute;
   top: 100px;
   left: 30px;
   width: fit-content;
@@ -408,7 +415,7 @@ h2
 }
 
 .infoBar {
-  margin: -20px 0 0 30px;
+  margin: -50px 0 0 68%;
 }
 
 .infoBar > h2 {

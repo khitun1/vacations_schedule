@@ -37,6 +37,7 @@ class UserController {
     async login(req, res, next) {
         try {
             const {login, password} = req.body;
+            console.log(login, password)
             const user = await User.findOne({
                 where: {
                     [Op.or]: [

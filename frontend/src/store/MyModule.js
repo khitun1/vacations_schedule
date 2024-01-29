@@ -17,6 +17,7 @@ export const MyModule = {
         noteName: '',
         notes: [],
         holidays: [],
+        socket: null,
     }),
 
     getters: {
@@ -72,7 +73,7 @@ export const MyModule = {
                 p.start = dateReverseFormat(p.start);
                 p.end = dateReverseFormat(p.end);
             })
-            state.myVacations = vacations
+            state.myVacations = vacations;
         },
 
         setWishes(state, wishes) {
@@ -157,11 +158,8 @@ export const MyModule = {
                 const res = await host('user/auth');
                 commit('setCurrentUser', res.data);
             } catch (e) {
-                console.log(e.response.data);
                 localStorage.removeItem('token');
             }
-
-
         },
 
         async getVacations({commit}) {

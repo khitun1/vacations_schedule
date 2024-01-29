@@ -34,7 +34,7 @@ export default {
     const store = useStore();
     const token = localStorage.getItem('token');
     const isAdmin = jwt_decode(token).is_admin;
-    store.dispatch('auth');
+    store.dispatch('createSocket');
     store.dispatch('getDepartment');
     store.dispatch('getUsers');
     return {

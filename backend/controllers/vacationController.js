@@ -53,11 +53,11 @@ class vacationController {
                     id: req.user.id,
                 }
             })
-            await User.update({allow: 0, accept_all: 0}, {
-                where: {
-                    id: req.user.id,
-                }
-            })
+            // await User.update({allow: 0, accept_all: 0}, {
+            //     where: {
+            //         id: req.user.id,
+            //     }
+            // })
             return res.send("All is ok!");
         } catch (e) {
             winston.error(e.message);

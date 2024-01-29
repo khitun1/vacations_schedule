@@ -7,7 +7,7 @@ export default defineConfig({
   resolve: {
     extensions: ['.js', '.vue'],
     alias: {
-      '@': "D:\\Универ\\Магистратура\\1-ый курс\\Научные исследования\\viteVacation\\src"
+      '@': "/Users/ivankhitun/WebstormProjects/vacations_schedule/frontend/src"
     }
   },
 })

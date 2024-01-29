@@ -30,7 +30,7 @@
     <h2 v-show="vacations.length > 0 && (selectedDep !== '' || !currentUser.director)">График отпусков</h2>
     <div class="range" v-show=" selectedDep !== '' || !currentUser.director">
       <div class="changeYear" v-show="vacations.length > 0">
-        <button @click="prevRange ">2</button>
+        <button @click="prevRange ">&#60;</button>
         <h3 class="year">{{rangeChart}}</h3>
         <button @click="nextRange">&#62;</button>
       </div>
@@ -83,7 +83,7 @@ export default {
       clickedNumber: undefined,
       clickEvent: 0,
       ranges: ['Год', 'Квартал', 'Месяц'],
-      selectedRange: '',
+      selectedRange: 'Год',
       selectedDep: '',
       showVacations: [],
     }
@@ -147,9 +147,10 @@ export default {
     },
 
     rangeChart() {
+      let curMonth = this.month < 10 ? '0' + this.month : this.month;
       return this.range === 'Год' ? this.year + ' г.' :
           this.range === 'Квартал' ? this.quarter + '-й квартал ' + this.year + ' г.' :
-          moment(this.year + '-' + this.month + '-01').lang('ru').format('MMMM') + ' ' + this.year + ' r.';
+          moment(this.year + '-' + curMonth + '-01').format('MMMM') + ' ' + this.year + ' г.';
     },
   },
 
@@ -163,7 +164,7 @@ export default {
       changeRange: 'changeRange',
     }),
     ...mapActions ({
-      auth: 'auth',
+      createSocket: 'createSocket',
       getUsers: 'getUsers',
       getEmployeesVacations: 'getEmployeesVacations',
       decisionVacation: 'decisionVacation',
@@ -187,37 +188,22 @@ export default {
       }
       else if (this.range === 'Квартал') {
         this.myChart.options.scales.x.time.unit = 'week';
-        let min = this.year + '-' + (1 + ( 3 * (this.quarter - 1))) + '-01';
-        if (min.length === 9) {
-          min = min.split('');
-          min.splice(5, 0, '0');
-          min = min.join('');
-        }
-        const days = moment(this.year + '-' + (3 + ( 3 * (this.quarter - 1)))).daysInMonth();
-        let max = this.year + '-' + (3 + ( 3 * (this.quarter - 1))) + '-' + days;
-        if (max.length === 9) {
-          max = max.split('');
-          max.splice(5, 0, '0');
-          max = max.join('');
-        }
+        let startMonth = (1 + ( 3 * (this.quarter - 1)));
+        startMonth = startMonth < 10 ? '0' + startMonth : startMonth;
+        let min = this.year + '-' + startMonth + '-01';
+        let endMonth = (3 + ( 3 * (this.quarter - 1)));
+        endMonth = endMonth < 10 ? '0' + endMonth : endMonth;
+        const days = moment(this.year + '-' + endMonth, 'YYYY-MM').daysInMonth();
+        let max = this.year + '-' + endMonth + '-' + days;
         this.myChart.options.scales.x.min = min;
         this.myChart.options.scales.x.max = max;
       }
       else if (this.range === 'Месяц') {
         this.myChart.options.scales.x.time.unit = 'day';
-        let min = this.year + '-' + this.month + '-01';
-        if (min.length === 9) {
-          min = min.split('');
-          min.splice(5, 0, '0');
-          min = min.join('');
-        }
-        const days = moment(this.year + '-' + this.month).daysInMonth();
-        let max = this.year + '-' + this.month + '-' + days;
-        if (max.length === 9) {
-          max = max.split('');
-          max.splice(5, 0, '0');
-          max = max.join('');
-        }
+        let Month = this.month < 10 ? '0' + this.month : this.month;
+        let min = this.year + '-' + Month + '-01';
+        const days = moment(this.year + '-' + Month).daysInMonth();
+        let max = this.year + '-' + Month + '-' + days;
         this.myChart.options.scales.x.min = min;
         this.myChart.options.scales.x.max = max;
       }
@@ -443,7 +429,7 @@ export default {
   },
 
   mounted() {
-    this.auth();
+    this.createSocket();
     this.clear();
     this.getUsers();
     this.getEmployeesVacations();
@@ -545,7 +531,7 @@ textarea
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 200px;
+  width: 250px;
   cursor: default;
 }
 .changeYear button {

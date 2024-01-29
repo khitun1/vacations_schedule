@@ -67,7 +67,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .link {
   text-decoration: none;
 }
@@ -89,6 +89,7 @@ export default {
 
 .take {
   background: v-bind(take);
+  padding: 0;
 }
 
 .mine {

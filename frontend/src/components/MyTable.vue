@@ -6,7 +6,7 @@
       <div class="info" v-bind:style="{background: setColor(rec.status)}">
         <p class="dates">{{rec.start}} - {{rec.end}}</p>
         <p class="amount">кол-во дней всего: {{totalDays(rec.start, rec.end)}}</p>
-        <p class="amount">кол-во выходных дней: {{daysOff(rec.start, rec.end)}}</p>
+        <p class="amount offs">кол-во выходных дней: {{daysOff(rec.start, rec.end)}}</p>
         <div class="status"
              v-bind:style="{
           borderColor: setBorder(rec.status),
@@ -99,7 +99,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 button-icon
 {
@@ -119,7 +119,8 @@ img
   justify-content: flex-start;
   margin-bottom: 10px;
   margin-right: 50px;
-  width: 80%;
+  height: fit-content;
+  width: 90%;
 }
 
 .del
@@ -140,7 +141,7 @@ pre
 }
 
 .amount {
-  width: 180px;
+  width: 25%;
 }
 
 
@@ -150,6 +151,7 @@ pre
   display: flex;
   justify-content: space-between;
   width: 87%;
+  height: 60px;
   padding: 5px;
   border-radius: 10px;
   cursor: default;

@@ -231,7 +231,7 @@ form
 {
   position: relative;
   top: 12px;
-  margin-left: -70px;
+  margin-left: 420px;
 }
 
 .check_div

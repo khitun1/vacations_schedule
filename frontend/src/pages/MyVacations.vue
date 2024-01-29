@@ -73,7 +73,7 @@ export default {
     const store = useStore();
     store.commit('setLoading',true);
     onMounted(async () => {
-      await store.dispatch('auth');
+      await store.dispatch('createSocket');
       store.commit('setLoading',false);
       await store.dispatch('getHolidays');
       await store.dispatch('getVacations');
@@ -127,7 +127,7 @@ export default {
   position: absolute;
   top: 0;
   right: 0;
-  width: 230px;
+  width: 250px;
   height: 50px;
   background: white;
   border-radius: 40px;
@@ -144,8 +144,8 @@ export default {
 .calendar p
 {
   position: absolute;
-  left: 55px;
-  top: -3px;
+  top: -10px;
+  left: 50px;
   font-size: 18px;
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <sample-page :choice="'settings'" v-if="token !== null && !isLoading">
+  <sample-page :choice="'settings'" v-if="token !== null">
     <personal-data/>
   </sample-page>
 </template>
@@ -21,13 +21,9 @@ export default {
 
   setup() {
     const store = useStore();
-    store.commit('setLoading', true);
     const token = localStorage.getItem('token');
     const isLoading = computed(() => store.state.isLoading);
     store.dispatch('createSocket');
-    setTimeout(() => {
-      store.commit('setLoading', false);
-    }, 50);
 
     return {
       token,

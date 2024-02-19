@@ -37,7 +37,6 @@ class UserController {
     async login(req, res, next) {
         try {
             const {login, password} = req.body;
-            console.log(login, password)
             const user = await User.findOne({
                 where: {
                     [Op.or]: [
@@ -71,7 +70,6 @@ class UserController {
             if (user.director) {
                 allDepartments = await Department.findAll();
             }
-
             history.sort((a, b) => a.id > b.id ? -1 : 1);
             return res.json({token: token, history: history, allDepartments: allDepartments});
         } catch (e) {
@@ -109,7 +107,7 @@ class UserController {
             history.sort((a, b) => a.id > b.id ? -1 : 1);
             const token = generateJwt(user.id, user.is_admin, department.name,
                 user.surname, user.first_name, user.last_name, user.login,
-                user.percent, user.mail, user.director, user.allow,
+                req.user.percent, user.mail, user.director, user.allow,
                 Math.floor(user.left_days), user.actual_days, user.rules, user.accept_all, department.total);
              return res.json({token: token, history: history, allDepartments: allDepartments});
         } catch (e) {

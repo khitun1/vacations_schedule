@@ -1,6 +1,5 @@
 <template>
-  <div v-show="isLoading">123</div>
-  <sample-page :choice="'myVacations'" v-if="token !== null && !isLoading">
+  <sample-page :choice="'myVacations'" v-if="token !== null">
     <div v-show="calendarShow">
       <h2>Доступно отпускных дней: {{totalLeft}} </h2>
       <my-button class="calendar" @click="calendarShow = false">
@@ -71,10 +70,8 @@ export default {
 
   setup() {
     const store = useStore();
-    store.commit('setLoading',true);
     onMounted(async () => {
       await store.dispatch('createSocket');
-      store.commit('setLoading',false);
       await store.dispatch('getHolidays');
       await store.dispatch('getVacations');
     })
@@ -82,7 +79,6 @@ export default {
     const token = localStorage.getItem('token');
     const totalLeft = computed(() => store.getters.totalLeft);
     const total = computed(() => store.state.my.total);
-    const isLoading = computed(() => store.state.isLoading);
     const width = computed(() => 100 - totalLeft.value / total.value * 100 + '%');
 
     return {
@@ -96,7 +92,6 @@ export default {
       width,
       totalLeft,
       myVacations,
-      isLoading,
     }
   },
 }

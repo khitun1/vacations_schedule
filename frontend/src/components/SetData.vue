@@ -214,7 +214,7 @@ form
 
 .conditions button
 {
-  width: 100px;
+  width: 120px;
   height: 30px;
 }
 

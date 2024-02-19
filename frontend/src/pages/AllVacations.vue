@@ -272,7 +272,7 @@ export default {
       let inters = [];
       let start;
       let end;
-      for(let j = 0; j < i; j++){
+      for(let j = 0; j < i; j++) {
         start = dateUsualFormat(this.showVacations[j].start);
         end = dateUsualFormat(this.showVacations[j].end);
         if(lastStart <= amountDays(end) &&

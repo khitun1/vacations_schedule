@@ -1,6 +1,5 @@
 <template>
-  <div v-show="isLoading">123</div>
-  <sample-page :choice="'takeVacation'" v-if="token !== null && !isLoading">
+  <sample-page :choice="'takeVacation'" v-if="token !== null">
     <h2 style="margin-top: 40px">Календарь отпусков</h2>
     <div class="colours">
       <div class="colour">
@@ -79,7 +78,6 @@ export default {
 
   setup() {
     const store = useStore();
-    store.commit('setLoading',true);
     store.dispatch('getHolidays');
     store.dispatch('getDepartment');
     const percent = computed(() => store.state.my.currentUser.percent);
@@ -89,7 +87,6 @@ export default {
     const currentUser = computed(() => store.state.my.currentUser);
     const token = localStorage.getItem('token');
     const doubleShowAlert = ref(0);
-    const isLoading = computed(() => store.state.isLoading);
 
     const intersections = () => {
       let quarter = Math.floor(percent.value * len.value);
@@ -144,7 +141,6 @@ export default {
 
     onMounted(async () => {
       await store.dispatch('createSocket');
-      store.commit('setLoading', false);
       await store.dispatch('getDates');
       await store.dispatch('getWishes');
       await store.dispatch('getVacations');
@@ -274,7 +270,6 @@ export default {
       date,
       paid,
       wishes,
-      isLoading,
       left,
       totalLeft,
       sendAll,

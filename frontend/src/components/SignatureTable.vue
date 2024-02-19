@@ -138,7 +138,7 @@ export default {
   display: flex;
   align-items: center;
   margin: 10px 0 10px 10px;
-  width: 95%;
+  width: 100%;
   background: none;
   border-width: 0;
 }
@@ -161,12 +161,14 @@ export default {
   width: 75%;
   border-width: 0;
 }
+
 p
 {
   margin-right: 30px;
   text-align: left;
   color: #595959;
 }
+
 .inters
 {
   height: fit-content;
@@ -175,7 +177,6 @@ p
   padding-right: 10px;
   text-align: center;
   margin-top: 15px;
-  margin-right: 5px;
 }
 .dec
 {
@@ -206,7 +207,7 @@ textarea
   border-radius: 10px;
   margin-bottom: 10px;
   margin-left: 15px;
-  width: 65%;
+  width: 80%;
 }
 .rec:focus
 {

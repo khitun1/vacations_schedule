@@ -1,5 +1,6 @@
 import moment from "moment";
 
 export function amountDays(date) {
-    return moment(date).diff('01.01.2022', 'days');
+    const dateForDif = moment('01.01.2022', 'dd.mm.yyyy');
+    return date.diff(dateForDif, 'days');
 }

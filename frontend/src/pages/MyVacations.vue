@@ -59,11 +59,15 @@ import SamplePage from "@/components/Samples/SamplePage";
 import {calendar} from "@/hooks/calendar";
 import {useStore} from "vuex";
 import {computed, onMounted} from "vue";
+import MyButton from "@/components/UI/MyButton.vue";
+import ButtonBack from "@/components/UI/ButtonBack.vue";
 
 export default {
   name: "MyVacations",
 
   components:{
+    ButtonBack,
+    MyButton,
     MyTable,
     SamplePage,
   },

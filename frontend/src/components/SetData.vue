@@ -10,17 +10,17 @@
       <div class="conditions">
         <form @submit.prevent>
           <p>Минимальное кол-во дней отпуска:</p>
-          <my-input v-model="condition.min" :readonly="changeMin" class="minDays"/>
+          <my-input v-model="condition.min" :readonly="changeMin" class="minDays" type="number"/>
           <my-button @click="setCon(1)" type="submit">{{minText}}</my-button>
         </form>
         <form @submit.prevent>
           <p>Всего дней для отпуска:</p>
-          <my-input v-model="condition.total" :readonly="changeTotal" class="totalDays"/>
+          <my-input v-model="condition.total" :readonly="changeTotal" class="totalDays" type="number"/>
           <my-button @click="setCon(3)" type="submit">{{totalText}}</my-button>
         </form>
         <form @submit.prevent>
           <p>% максимально допустимых одновременных отпусков:</p>
-          <my-input v-model="condition.percents" :readonly="changePercent" class="percentsDays"/>
+          <my-input v-model="condition.percents" :readonly="changePercent" class="percentsDays" type="number" />
           <my-button @click="setCon(4)" type="submit">{{percentText}}</my-button>
         </form>
         <div class="debt">
@@ -38,9 +38,13 @@
 <script>
 import {computed, ref} from "vue";
 import {useStore} from "vuex";
+import MyInput from "@/components/UI/MyInput.vue";
+import MyButton from "@/components/UI/MyButton.vue";
+import ButtonBack from "@/components/UI/ButtonBack.vue";
 
 export default {
   name: "SetData",
+  components: {ButtonBack, MyButton, MyInput},
 
   setup() {
     const store = useStore();
@@ -65,13 +69,19 @@ export default {
         case 1:
           if(changeMin.value === false)
           {
-            condition.value.min = parseInt(condition.value.min);
             if (validate(condition.value.min)) {
+              if (condition.value.min <= condition.value.total) {
                 changeMin.value = true;
                 minText.value =  'Изменить';
                 accept = true;
+              }
+              else {
+                errorMsg.value = 'Минимальное количество дней должно быть не больше, чем общее количество дней!';
+              }
             }
-            else errorMsg.value = 'Минимальное количество дней должно быть целым и положительным числом!';
+            else {
+              errorMsg.value = 'Минимальное количество дней должно быть целым, положительным числом!';
+            }
           }
           else
           {
@@ -83,13 +93,19 @@ export default {
         case 3:
           if(changeTotal.value === false)
           {
-            condition.value.total = parseInt(condition.value.total);
             if(validate(condition.value.total)) {
-              changeTotal.value = true;
-              totalText.value = 'Изменить';
-              accept = true;
+              if (condition.value.min <= condition.value.total) {
+                changeTotal.value = true;
+                totalText.value = 'Изменить';
+                accept = true;
+              }
+              else {
+                errorMsg.value = 'Общее количество дней должно быть не меньше, чем минимальное количество дней!';
+              }
             }
-            else errorMsg.value = 'Общее количество дней должно быть целым и положительным числом!';
+            else {
+              errorMsg.value = 'Общее количество дней должно быть целым и положительным числом!';
+            }
           }
           else
           {
@@ -101,13 +117,12 @@ export default {
         case 4:
           if(changePercent.value === false)
           {
-            condition.value.percents = parseInt(condition.value.percents);
-            if(validate(condition.value.percents) && condition.value.percents < 100) {
+            if(validate(condition.value.percents) && condition.value.percents <= 100) {
               changePercent.value = true;
               percentText.value = 'Изменить';
               accept = true;
             }
-            else errorMsg.value = '% пересечений должен быть целым, положительным и меньшем, чем 100, числом !';
+            else errorMsg.value = '% пересечений должен быть целым, положительным числом в диапазоне от 0 до 100!';
           }
           else
           {
@@ -125,7 +140,7 @@ export default {
       }
       else errorNum.value = true;
     }
-    const validate = (con) => con && con > 0 && con % 1 === 0;
+    const validate = (con) => con && con >= 0 && con % 1 === 0;
     const changeRule = async(e) => {
       await store.dispatch('changeRules', e.target.checked);
       await store.dispatch('getUsers');
@@ -227,6 +242,7 @@ form
   font-family: "Times New Roman";
 }
 
+
 .checkbox
 {
   position: relative;
@@ -284,6 +300,10 @@ form
   flex-direction: row;
   padding: 0 0 0 10px;
   width: fit-content;
+}
+
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
 }
 
 </style>

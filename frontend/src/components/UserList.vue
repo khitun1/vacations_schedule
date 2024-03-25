@@ -65,11 +65,13 @@ import {computed, ref} from "vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import {dateReverseFormat} from "../hooks/generalMoment/dateReverseFormat";
+import ButtonIcon from "@/components/UI/ButtonIcon.vue";
+import ButtonBack from "@/components/UI/ButtonBack.vue";
 
 export default {
   name: "UserList",
   methods: {dateReverseFormat},
-  components: {MyButton, MyInput},
+  components: {ButtonBack, ButtonIcon, MyButton, MyInput},
 
   setup() {
     const store = useStore();
@@ -77,10 +79,9 @@ export default {
     const amountExtra = ref(null);
     const visibleAdminWindow = computed(() => store.getters.visibleAdminWindow);
     const searchUser = ref('');
-    const reg = computed(() => new RegExp('^' + searchUser.value + '.+'));
     const userList = computed(() => {
       if(searchUser.value === '') return store.state.admin.users;
-      return store.state.admin.users.filter(p => reg.value.test(p.surname) || p.surname === searchUser.value);
+      return store.state.admin.users.filter(p => p.surname.toLowerCase().includes(searchUser.value.toLowerCase()));
     });
     const visibleUserList = computed(() => store.state.admin.visibleUserList);
 

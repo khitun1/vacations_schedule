@@ -68,6 +68,7 @@ import {getLastStart} from "@/hooks/intersections/getLastStart";
 import {findIntersection} from "@/hooks/intersections/findIntersection";
 import jwt_decode from "jwt-decode";
 import NotAccess from "@/components/Samples/NotAccess.vue";
+import MyButton from "@/components/UI/MyButton.vue";
 
 export default {
   name: "AllVacations",
@@ -89,6 +90,7 @@ export default {
     }
   },
   components: {
+    MyButton,
     NotAccess,
     SamplePage,
     SignatureTable,

@@ -31,7 +31,7 @@ export function  calendar(inters , flag = 0) {
                     content: 'red',
                     dates: moment(p).weekday(1)._d,
                     bar: 'red',
-                    status: 'holliday',
+                    status: 'holiday',
                 })
             }
         })

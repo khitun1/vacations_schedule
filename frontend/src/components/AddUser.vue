@@ -10,23 +10,23 @@
       <div>
         <my-input class="in" :placeholder="surname"
                   v-model="user.surname"
-                  v-bind:style="{boxShadow: user.surname === '' && flag? color : ''}"/>
+                  :style="{boxShadow: user.surname === '' && flag? color : ''}"/>
         <my-input class="in" :placeholder="name"
                   v-model="user.first_name"
-                  v-bind:style="{boxShadow: user.first_name === '' && flag? color : ''}"/>
+                  :style="{boxShadow: user.first_name === '' && flag? color : ''}"/>
         <my-input class="in" :placeholder="lastname"
                   v-model="user.last_name"
-                  v-bind:style="{boxShadow: user.last_name === '' && flag? color : ''}"/>
+                  :style="{boxShadow: user.last_name === '' && flag? color : ''}"/>
         <my-input class="in" :placeholder="mail"
                   v-model="user.mail"
-                  v-bind:style="{boxShadow: user.mail === '' && flag? color : ''}"/>
+                  :style="{boxShadow: user.mail === '' && flag? color : ''}"/>
         <my-input class="in" :placeholder="log"
                   v-model="user.login"
-                  v-bind:style="{boxShadow: user.login === '' && flag? color : ''}"/>
+                  :style="{boxShadow: user.login === '' && flag? color : ''}"/>
         <div>
           <my-input class="in" :placeholder="pas" :type="typePassword" style="left: 20px"
                     v-model="user.password"
-                    v-bind:style="{boxShadow: user.password === '' && flag? color : ''}"/>
+                    :style="{boxShadow: user.password === '' && flag? color : ''}"/>
           <button-icon style="top: 8px; left: 15px" @click="typePassword = typePassword === 'text'? 'password': 'text'">
             <img src="@/images/WatchIcon.png" v-show="typePassword === 'text'"/>
             <img src="@/images/closePassword.webp" v-show="typePassword !== 'text'">
@@ -53,11 +53,19 @@
 import VueMultiselect from "vue-multiselect";
 import {computed, ref} from "vue";
 import {useStore} from "vuex";
+import MyButton from "@/components/UI/MyButton.vue";
+import ButtonIcon from "@/components/UI/ButtonIcon.vue";
+import MyInput from "@/components/UI/MyInput.vue";
+import ButtonBack from "@/components/UI/ButtonBack.vue";
 
 export default {
   name: "AddUser",
 
   components: {
+    ButtonBack,
+    MyInput,
+    ButtonIcon,
+    MyButton,
     VueMultiselect,
   },
 

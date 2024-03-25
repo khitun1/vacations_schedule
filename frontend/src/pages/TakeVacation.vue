@@ -68,11 +68,13 @@ import {dateReverseFormat} from "@/hooks/generalMoment/dateReverseFormat";
 import {getLastStart} from "@/hooks/intersections/getLastStart";
 import {amountDays} from "@/hooks/generalMoment/amountDays";
 import {findIntersection} from "@/hooks/intersections/findIntersection";
+import MyButton from "@/components/UI/MyButton.vue";
 
 export default {
   name: "TakeVacation",
 
   components:{
+    MyButton,
     SamplePage,
   },
 
@@ -85,6 +87,7 @@ export default {
     const intersInUsersDep = computed(() => store.state.my.dates);
     const inters = ref([]);
     const currentUser = computed(() => store.state.my.currentUser);
+    console.log(currentUser.value)
     const token = localStorage.getItem('token');
     const doubleShowAlert = ref(0);
 

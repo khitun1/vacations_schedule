@@ -7,7 +7,7 @@
          :key="vac.id"
          @mouseover="visible=vac.id" @mouseleave="visible = false"
          tabindex="-1">
-      <div class="info" v-bind:style="{background: vac.intersections === 'Да'? '#ffd8d1': '#d9ccff'}">
+      <div class="info" :style="{background: vac.intersections === 'Да'? '#ffd8d1': '#d9ccff'}">
         <button class="withOutInter" @click="showData(vac); $emit('showRec', index);">
           <p style="width: 150px">
             {{ vac.start }} - {{ vac.end }}
@@ -20,20 +20,20 @@
           </p>
         </button>
         <p class="inters" style="margin-left: 0"
-           v-bind:style="vac.intersections === 'Да'? {border: '2px solid #d70000', color: '#d70000'}: 'none'">
+           :style="vac.intersections === 'Да'? {border: '2px solid #d70000', color: '#d70000'}: 'none'">
           {{ vac.intersections === 'Да' ? "Перeсечение" : "" }}
         </p>
         <div class="btns">
           <button class="dec"
                   style="color: #36f64a"
-                  v-bind:style="vac.intersections === 'Да'? {background: '#ff9e9e'}: {background:'#a19fff'}"
+                  :style="vac.intersections === 'Да'? {background: '#ff9e9e'}: {background:'#a19fff'}"
                   @click="$emit('accepted', vac.id)"
                   title="Утвердить">
             &#10004;
           </button>
           <button class="dec"
                   style="color: #ff2323"
-                  v-bind:style="vac.intersections === 'Да'? {background: '#ff9e9e'}: {background:'#a19fff'}"
+                  :style="vac.intersections === 'Да'? {background: '#ff9e9e'}: {background:'#a19fff'}"
                   @click="$emit('showWindow', vac.id)"
                   title="Отказать">
             &#10006;

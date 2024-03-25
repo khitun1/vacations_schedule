@@ -8,7 +8,7 @@
         <h3>Авторизация</h3>
         <my-input placeholder="Логин или почта" v-model="login"/>
         <my-input placeholder="Пароль" v-model="password" :type="'password'"/>
-          <my-button class="test" @click="check" type="submit">Войти</my-button>
+        <my-button class="test" @click="check" type="submit">Войти</my-button>
         <p class="error">{{ error }}</p>
       </form>
     </div>
@@ -19,9 +19,12 @@
 import store from "@/store";
 import router from "@/router/router";
 import {computed, ref} from "vue";
+import MyInput from "@/components/UI/MyInput.vue";
+import MyButton from "@/components/UI/MyButton.vue";
 
 export default {
   name: "StartScreen",
+  components: {MyButton, MyInput},
 
   setup() {
     const login = ref('');

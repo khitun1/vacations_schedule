@@ -1,5 +1,6 @@
 <template>
-  <sample-page :choice="'settings'" v-if="token !== null">
+  <sample-page :choice="'settings'"
+               v-if="token !== null">
     <personal-data/>
   </sample-page>
 </template>

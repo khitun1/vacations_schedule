@@ -1,8 +1,9 @@
 <template>
-  <div v-if="isLoading" class="loader"/>
- <div v-else>
+  <div v-if="isLoading"
+       class="loader"/>
+  <div v-else>
    <router-view></router-view>
- </div>
+  </div>
 </template>
 
 <script setup>

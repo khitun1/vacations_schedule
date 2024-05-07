@@ -2,57 +2,92 @@
   <div class="table">
     <h1>Личные данные</h1>
     <div class="info surname">
-      <p>Фамилия:</p>
-      <div class="text"><my-input readonly :value="currentUser.surname"/></div>
+      <p>
+        Фамилия:
+      </p>
+      <div class="text">
+        <my-input readonly
+                  :value="currentUser.surname"/>
+      </div>
     </div>
     <div class="info name">
-      <p>Имя:</p>
-      <div class="text"><my-input readonly :value="currentUser.first_name"/></div>
+      <p>
+        Имя:
+      </p>
+      <div class="text">
+        <my-input readonly
+                  :value="currentUser.first_name"/>
+      </div>
     </div>
     <div class="info lastname">
-      <p>Отчество:</p>
-      <div class="text"><my-input readonly :value="currentUser.last_name"/></div>
+      <p>
+        Отчество:
+      </p>
+      <div class="text">
+        <my-input readonly
+                  :value="currentUser.last_name"/>
+      </div>
     </div>
     <div class="info mail">
-      <p>Почта:</p>
+      <p>
+        Почта:
+      </p>
       <div class="text">
         <my-input :readonly="changeMail"
-                  v-model="newMail" class="inputMail"/>
+                  v-model="newMail"
+                  class="inputMail"/>
       </div>
-      <my-button class="change" @click="change_mail">
+      <my-button class="change"
+                 @click="change_mail">
         {{ textMailBtn }}
       </my-button>
     </div>
     <div class="info login">
-      <p>Логин:</p>
+      <p>
+        Логин:
+      </p>
       <div class="text">
         <my-input :readonly="changeLogin"
-                  v-model="newLogin" class="inputLogin"/>
+                  v-model="newLogin"
+                  class="inputLogin"/>
       </div>
-      <my-button class="change" @click="changeLog">
+      <my-button class="change"
+                 @click="changeLog">
         {{ textLogBtn }}
       </my-button>
     </div>
     <div class="info password">
-      <p>Пароль:</p>
+      <p>
+        Пароль:
+      </p>
       <div class="text">
-        <my-input :readonly="changePassword" :type="typePassword"
-                  v-model="newPassword" class="inputPassword"/>
-        <button-icon class="watch" @click="typePassword = typePassword === 'text'? 'password' : 'text'"  >
-          <img src="@/images/WatchIcon.png" v-show="typePassword === 'text'">
-          <img src="@/images/closePassword.webp" v-show="typePassword !== 'text'">
+        <my-input class="inputPassword"
+            :readonly="changePassword"
+            :type="typePassword"
+            v-model="newPassword"/>
+        <button-icon class="watch"
+                     @click="typePassword = typePassword === 'text'? 'password' : 'text'">
+          <img src="@/images/WatchIcon.png"
+               alt="show password"
+               v-show="typePassword === 'text'">
+          <img src="@/images/closePassword.webp"
+               alt="hide password"
+               v-show="typePassword !== 'text'">
         </button-icon>
       </div>
-      <my-button class="change" @click="changePas">
+      <my-button class="change"
+                 @click="changePas">
         {{ textPasBtn }}
       </my-button>
     </div>
     <div class="info department">
-      <p>Отдел:</p>
+      <p>
+        Отдел:
+      </p>
       <div class="text">
-        <my-input readonly :value="currentUser.department"/>
+        <my-input readonly
+                  :value="currentUser.department"/>
       </div>
-
     </div>
   </div>
 
@@ -63,9 +98,13 @@
 import {computed, ref} from "vue";
 import {useStore} from "vuex";
 import jwt_decode from "jwt-decode";
+import MyInput from "@/components/UI/MyInput.vue";
+import MyButton from "@/components/UI/MyButton.vue";
+import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 
 export default {
   name: "PersonalData",
+  components: {ButtonIcon, MyButton, MyInput},
 
   setup() {
     const store = useStore();

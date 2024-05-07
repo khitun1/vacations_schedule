@@ -1,6 +1,9 @@
 <template>
-  <sample-page :choice="'admin'" v-if="token !== null && isAdmin">
-    <h1> Панель администратора</h1>
+  <sample-page :choice="'admin'"
+               v-if="token !== null && isAdmin">
+    <h1>
+      Панель администратора
+    </h1>
     <div class="buttons">
       <user-list/>
       <add-user/>

@@ -4,7 +4,7 @@
   </h1>
 </template>
 
-<script>
+<script setup>
 export default {
   name: "NotAccess"
 }

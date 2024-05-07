@@ -4,50 +4,80 @@
              class="open">
     Список сотрудников
   </my-button>
-  <div v-show="visibleUserList" class="main">
+  <div v-show="visibleUserList"
+       class="main">
     <button-back @click="changeVisibleUserList"/>
     <div class="input">
-      <my-input class="delete" placeholder="Найти пользователя" v-model="searchUser"/>
+      <my-input class="delete"
+                placeholder="Найти пользователя"
+                v-model="searchUser"/>
     </div>
     <table>
       <tr>
-        <th>Ф.И.О.</th>
-        <th>Остаток дней на дату актуализации</th>
-        <th>Наличие плана на отпуск</th>
-        <th>Проставить ненормированные дни</th>
-        <th>Исключить из правил</th>
-        <th>Удалить сотрудника</th>
+        <th>
+          Ф.И.О.
+        </th>
+        <th>
+          Остаток дней на дату актуализации
+        </th>
+        <th>
+          Наличие плана на отпуск
+        </th>
+        <th>
+          Проставить ненормированные дни
+        </th>
+        <th>
+          Исключить из правил
+        </th>
+        <th>
+          Удалить сотрудника
+        </th>
       </tr>
-      <tr v-for="user in userList" :key="user.id">
-        <td>{{ user.surname + ' ' + user.first_name[0] + '. ' + user.last_name[0] + '.'}}</td>
-        <td>{{user.actual_days}} на {{dateReverseFormat(user.actual_date)}}</td>
+      <tr v-for="user in userList"
+          :key="user.id">
         <td>
-          <div v-bind:style="{color: user.allow ? '#ff2323': '#36f64a'}">
-            {{ user.allow ? '&#10006;' : '&#10004;'}}
+          {{ user.surname + ' ' + user.first_name[0] + '. ' + user.last_name[0] + '.'}}
+        </td>
+        <td>
+          {{user.actual_days}} на {{dateReverseFormat(user.actual_date)}}
+        </td>
+        <td>
+          <div :style="{color: user.allow ? '#ff2323': '#36f64a'}">
+            {{user.allow ? '&#10006;' : '&#10004;'}}
           </div>
         </td>
         <td>
-          <div class="add" @click="showModal(user.id)">
+          <div class="add"
+               @click="showModal(user.id)">
             +
           </div>
         </td>
         <td class="check">
           <label class="checkbox">
-            <input type="checkbox" class="check_input" :checked="!user.rules" @input="e => excludeRules(e, user.id)"/>
+            <input type="checkbox"
+                   class="check_input"
+                   :checked="!user.rules"
+                   @input="e => excludeRules(e, user.id)"/>
             <div class="check_div"/>
           </label>
         </td>
         <td>
-          <button-icon class="delUser" @click="deleteUser(user.id)">
-            <img src="@/images/DeleteIcon.png">
+          <button-icon class="delUser"
+                       @click="deleteUser(user.id)">
+            <img src="@/images/DeleteIcon.png"
+                 alt="delete icon">
           </button-icon>
         </td>
       </tr>
     </table>
     <dialog>
-      <form @submit.prevent class="extraDays">
-        <my-input placeholder="Введите кол-во дней" type="number" v-model="amountExtra"/>
-        <my-button type='submit' @click="sendExtraDays">
+      <form @submit.prevent
+            class="extraDays">
+        <my-input placeholder="Введите кол-во дней"
+                  type="number"
+                  v-model="amountExtra"/>
+        <my-button type='submit'
+                   @click="sendExtraDays">
           Отправить
         </my-button>
         <my-button @click="closeModal">
@@ -56,7 +86,6 @@
       </form>
     </dialog>
   </div>
-
 </template>
 
 <script>

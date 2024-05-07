@@ -1,52 +1,78 @@
 <template>
-  <sample-page :choice="'myVacations'" v-if="token !== null">
+  <sample-page :choice="'myVacations'"
+               v-if="token !== null">
     <div v-show="calendarShow">
-      <h2>Доступно отпускных дней: {{totalLeft}} </h2>
-      <my-button class="calendar" @click="calendarShow = false">
-        <img src="@/images/CalendarIcon.png"/>
-        <p>В режиме календаря</p>
+      <h2>
+        Доступно отпускных дней: {{totalLeft}}
+      </h2>
+      <my-button class="calendar"
+                 @click="calendarShow = false">
+        <img src="@/images/CalendarIcon.png"
+             alt="calendar icon"/>
+        <p>
+          В режиме календаря
+        </p>
       </my-button>
       <div class="plan">
-        <h1 v-show="myVacations.length > 0">Запланированные отпуска</h1>
+        <h1 v-show="myVacations.length > 0">
+          Запланированные отпуска
+        </h1>
         <my-table
             :records="myVacations.filter(p => p.status !== 'Использовано')"/>
-        <h1 style="margin-top: 20px" v-show="myVacations.length > 0">История отпусков</h1>
+        <h1 style="margin-top: 20px"
+            v-show="myVacations.length > 0">
+          История отпусков
+        </h1>
         <my-table
             :records="myVacations.filter(p => p.status === 'Использовано')"/>
       </div>
     </div>
-    <div v-show="!calendarShow"  class="Main">
+    <div v-show="!calendarShow"
+         class="Main">
       <button-back @click="calendarShow = true"
                   class="back"/>
       <div class="calendarShow">
-        <v-calendar :rows="rows" :columns="columns"
-                       :attributes="attrs"
-                       :disabled-dates="dis"
-                       class="vCalendar"/>
+        <v-calendar :rows="rows"
+                    :columns="columns"
+                    :attributes="attrs"
+                    :disabled-dates="dis"
+                    class="vCalendar"/>
         <div class="inside">
-          <h2 style="margin-top: -20px">Доступно отпускных дней: {{totalLeft}}</h2>
+          <h2 style="margin-top: -20px">
+            Доступно отпускных дней: {{totalLeft}}
+          </h2>
         </div>
     </div>
       <div class="colours">
         <div class="colour">
           <div style="background: #d6bcfa"/>
-          <p>Использовано</p>
+          <p>
+            Использовано
+          </p>
         </div>
         <div class="colour">
           <div style="background: #9deab7"/>
-          <p>Одобрено</p>
+          <p>
+            Одобрено
+          </p>
         </div>
         <div class="colour">
           <div style="background: #fde1b2"/>
-          <p>Ожидание</p>
+          <p>
+            Ожидание
+          </p>
         </div>
         <div class="colour">
           <div style="background:#feb2b2"/>
-          <p>Отказ</p>
+          <p>
+            Отказ
+          </p>
         </div>
         <div class="colour">
           <div style="background: #e2e8f0"/>
-          <p>Желаемые даты</p>
+          <p>
+            Желаемые даты
+          </p>
         </div>
       </div>
     </div>

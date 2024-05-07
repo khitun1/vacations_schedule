@@ -1,32 +1,59 @@
 <template>
-      <router-link to="requestVacation" class="link">
-        <button class="pick take" title="Планировщик">
-          <img src="@/images/Plus.png"/>
-          <p>Планировщик отпусков</p>
+      <router-link to="requestVacation"
+          class="link">
+        <button class="pick take"
+            title="Планировщик">
+          <img src="@/images/Plus.png"
+               alt="plus"/>
+          <p>
+            Планировщик отпусков
+          </p>
         </button>
       </router-link>
-      <router-link to="myVacations" class="link">
-        <button class="pick mine" title="Мои отпуска">
-          <img src="@/images/VacationIcon.png"/>
-          <p>Мои отпуска</p>
+      <router-link to="myVacations"
+                   class="link">
+        <button class="pick mine"
+            title="Мои отпуска">
+          <img src="@/images/VacationIcon.png"
+               alt="vacations"/>
+          <p>
+            Мои отпуска
+          </p>
         </button>
       </router-link>
-      <router-link to="allVacations" v-if="currentUser.is_admin || currentUser.director" class="link">
-        <button class="pick all" title="Отпуска сотрудников">
-          <img src="@/images/CalendarIcon.png"/>
-          <p>Отпуска сотрудников</p>
+      <router-link to="allVacations"
+          v-if="currentUser.is_admin || currentUser.director"
+          class="link">
+        <button class="pick all"
+            title="Отпуска сотрудников">
+          <img src="@/images/CalendarIcon.png"
+               alt="calendar icon"/>
+          <p>
+            Отпуска сотрудников
+          </p>
         </button>
       </router-link>
-      <router-link to="admin" v-if="currentUser.is_admin && !currentUser.director" class="link">
-        <button class="pick admin" title="Админ">
-          <img src="@/images/LetterIcon.png"/>
-          <p>Админ</p>
+      <router-link to="admin"
+          v-if="currentUser.is_admin && !currentUser.director"
+          class="link">
+        <button class="pick admin"
+            title="Админ">
+          <img src="@/images/LetterIcon.png"
+               alt="letter icon"/>
+          <p>
+            Админ
+          </p>
         </button>
       </router-link>
-      <router-link to="settings" class="link">
-        <button class="pick settings" title="Настройки">
-          <img src="@/images/SettingsIcon.png"/>
-          <p>Настройки</p>
+      <router-link to="settings"
+          class="link">
+        <button class="pick settings"
+            title="Настройки">
+          <img src="@/images/SettingsIcon.png"
+               alt="settings"/>
+          <p>
+            Настройки
+          </p>
         </button>
       </router-link>
 </template>

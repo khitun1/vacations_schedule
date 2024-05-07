@@ -1,49 +1,76 @@
 <template>
-  <sample-page :choice="'takeVacation'" v-if="token !== null">
-    <h2 style="margin-top: 40px">Календарь отпусков</h2>
+  <sample-page :choice="'takeVacation'"
+               v-if="token !== null">
+    <h2 style="margin-top: 40px">
+      Календарь отпусков
+    </h2>
     <div class="colours">
       <div class="colour">
         <div style="background: #9deab7"/>
-        <p>Одобрено</p>
+        <p>
+          Одобрено
+        </p>
       </div>
       <div class="colour">
         <div style="background: #fde1b2"/>
-        <p>Ожидание</p>
+        <p>
+          Ожидание
+        </p>
       </div>
       <div class="colour">
         <div style="background:#feb2b2"/>
-        <p>Выбран лимит отдела</p>
+        <p>
+          Выбран лимит отдела
+        </p>
       </div>
       <div class="colour">
         <div style="background: #e2e8f0"/>
-        <p>Желаемые даты</p>
+        <p>
+          Желаемые даты
+        </p>
       </div>
     </div>
     <div style="display: flex">
-      <v-date-picker is-range :rows="rows" :columns="columns" v-model="date"
+      <v-date-picker is-range :rows="rows"
+                     :columns="columns"
+                     v-model="date"
                      @click="showWish"
                      :attributes="attrs"
                      :disabled-dates="dis"
                      class="calendar"
-                      :min-date="minDate"/>
+                     :min-date="minDate"/>
       <div class="infoBar">
-        <h2 style="margin-top: -20px">Доступно отпускных дней: {{totalLeft}}</h2>
-        <h2 style="margin-top: -20px">Доступно дней на начало года: {{left}}</h2>
+        <h2 style="margin-top: -20px">
+          Доступно отпускных дней: {{totalLeft}}
+        </h2>
+        <h2 style="margin-top: -20px">
+          Доступно дней на начало года: {{left}}
+        </h2>
       </div>
     </div>
-
     <div class="wishesInfo">
-      <h2>Выбранные даты</h2>
+      <h2>
+        Выбранные даты
+      </h2>
       <div class="wishes">
         <div class="wishesDates"
-             v-for="wish in wishes" :key="wish.id">
-          <p>{{wish.start}} - {{wish.end}}</p>
-          <p class="pay">Оплачиваемость</p>
+             v-for="wish in wishes"
+             :key="wish.id">
+          <p>
+            {{wish.start}} - {{wish.end}}
+          </p>
+          <p class="pay">
+            Оплачиваемость
+          </p>
           <label class="checkbox">
-            <input type="checkbox" class="check_input" v-model="paid[wishes.indexOf(wish)]"/>
+            <input type="checkbox"
+                   class="check_input"
+                   v-model="paid[wishes.indexOf(wish)]"/>
             <div class="check_div"/>
           </label>
-          <my-button @click="del(wish.id)">Удалить</my-button>
+          <my-button @click="del(wish.id)">
+            Удалить
+          </my-button>
         </div>
         <my-button v-if="wishes.length > 0"
                    style="padding: 5px 15px"

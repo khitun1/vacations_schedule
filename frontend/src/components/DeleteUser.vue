@@ -4,19 +4,29 @@
              class="open">
     Удалить пользователя
   </my-button>
-  <div v-show="visibleDeleteUser" class="main">
+  <div v-show="visibleDeleteUser"
+      class="main">
     <button-back @click="changeVisibleDeleteUser"/>
-    <h2>Удаление пользователя</h2>
+    <h2>
+      Удаление пользователя
+    </h2>
     <div class="inputs">
-      <my-input class="delete" placeholder="Найти пользователя"
+      <my-input class="delete"
+                placeholder="Найти пользователя"
                 v-model="user"/>
     </div>
-    <h2>Список пользователей</h2>
+    <h2>
+      Список пользователей
+    </h2>
     <div class="rec"
-         v-for="userItem in usersList" :key="userItem.id">
-      <p>{{userItem.surname + ' ' + userItem.first_name + ' ' + userItem.last_name}}</p>
+         v-for="userItem in usersList"
+         :key="userItem.id">
+      <p>
+        {{userItem.surname + ' ' + userItem.first_name + ' ' + userItem.last_name}}
+      </p>
       <button-icon @click="deleteUser(userItem.id)">
-        <img src="@/images/DeleteIcon.png">
+        <img src="@/images/DeleteIcon.png"
+             alt="delete icon">
       </button-icon>
     </div>
   </div>
@@ -25,9 +35,14 @@
 <script>
 import {computed, ref} from "vue";
 import {useStore} from "vuex";
+import MyButton from "@/components/UI/MyButton.vue";
+import ButtonBack from "@/components/UI/ButtonBack.vue";
+import MyInput from "@/components/UI/MyInput.vue";
+import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 
 export default {
   name: "deleteUser",
+  components: {ButtonIcon, MyInput, ButtonBack, MyButton},
 
   setup() {
     const store = useStore();

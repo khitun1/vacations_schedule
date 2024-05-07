@@ -4,32 +4,48 @@
              class="open">
     Добавить нового сотрудника
   </my-button>
-    <form @submit.prevent v-show="visibleAddUser">
+    <form @submit.prevent
+          v-show="visibleAddUser">
       <button-back @click="clear"/>
-      <h2>Новый пользователь</h2>
+      <h2>
+        Новый пользователь
+      </h2>
       <div>
-        <my-input class="in" :placeholder="surname"
+        <my-input class="in"
+                  :placeholder="surname"
                   v-model="user.surname"
                   :style="{boxShadow: user.surname === '' && flag? color : ''}"/>
-        <my-input class="in" :placeholder="name"
+        <my-input class="in"
+                  :placeholder="name"
                   v-model="user.first_name"
                   :style="{boxShadow: user.first_name === '' && flag? color : ''}"/>
-        <my-input class="in" :placeholder="lastname"
+        <my-input class="in"
+                  :placeholder="lastname"
                   v-model="user.last_name"
                   :style="{boxShadow: user.last_name === '' && flag? color : ''}"/>
-        <my-input class="in" :placeholder="mail"
+        <my-input class="in"
+                  :placeholder="mail"
                   v-model="user.mail"
                   :style="{boxShadow: user.mail === '' && flag? color : ''}"/>
-        <my-input class="in" :placeholder="log"
+        <my-input class="in"
+                  :placeholder="log"
                   v-model="user.login"
                   :style="{boxShadow: user.login === '' && flag? color : ''}"/>
         <div>
-          <my-input class="in" :placeholder="pas" :type="typePassword" style="left: 20px"
+          <my-input class="in"
+                    :placeholder="pas"
+                    :type="typePassword"
+                    style="left: 20px"
                     v-model="user.password"
                     :style="{boxShadow: user.password === '' && flag? color : ''}"/>
-          <button-icon style="top: 8px; left: 15px" @click="typePassword = typePassword === 'text'? 'password': 'text'">
-            <img src="@/images/WatchIcon.png" v-show="typePassword === 'text'"/>
-            <img src="@/images/closePassword.webp" v-show="typePassword !== 'text'">
+          <button-icon style="top: 8px; left: 15px"
+              @click="typePassword = typePassword === 'text'? 'password': 'text'">
+            <img src="@/images/WatchIcon.png"
+                 alt="show password"
+                 v-show="typePassword === 'text'"/>
+            <img src="@/images/closePassword.webp"
+                 alt="hide password"
+                 v-show="typePassword !== 'text'">
           </button-icon>
         </div>
         <VueMultiselect class="selectDep"
@@ -38,14 +54,17 @@
                         :show-no-results="false"
                         placeholder="Укажите права"
                         :show-labels="false"/>
-        <p class="error" v-show="error">{{ errorMsg }}</p>
+        <p class="error"
+            v-show="error">
+          {{ errorMsg }}
+        </p>
         <div class="pair">
-          <my-button class="create" @click="createUser">
+          <my-button class="create"
+              @click="createUser">
             Добавить
           </my-button>
         </div>
       </div>
-
     </form>
 </template>
 

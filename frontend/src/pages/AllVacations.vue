@@ -1,5 +1,6 @@
 <template >
-  <sample-page :choice="'allVacations'" v-if="token !== null && isAdmin">
+  <sample-page :choice="'allVacations'"
+               v-if="token !== null && isAdmin">
     <VueMultiselect class="selectDep"
                     :options="allDeps"
                     placeholder="Выберите отдел"
@@ -8,7 +9,9 @@
                     v-model="selectedDep"
                     @close="chartClick"
                     v-if="currentUser.director"/>
-    <h2 v-if="vacations.filter(p => p.status === 'Ожидание').length > 0 && !currentUser.director">Запросы на подпись отпуска</h2>
+    <h2 v-if="vacations.filter(p => p.status === 'Ожидание').length > 0 && !currentUser.director">
+      Запросы на подпись отпуска
+    </h2>
     <signature-table
         :requested="vacations"
         :clickedName="clickedName"
@@ -21,18 +24,34 @@
     </signature-table>
     <dialog class="failure">
       <form @submit.prevent>
-        <h2>Укажите причину отказа</h2>
-        <textarea v-model="explanation"></textarea>
-        <my-button @click="explain(id)">Отправить</my-button>
-        <my-button @click="cancelExplain">Отменить</my-button>
+        <h2>
+          Укажите причину отказа
+        </h2>
+        <textarea v-model="explanation"/>
+        <my-button @click="explain(id)">
+          Отправить
+        </my-button>
+        <my-button @click="cancelExplain">
+          Отменить
+        </my-button>
       </form>
     </dialog>
-    <h2 v-show="vacations.length > 0 && (selectedDep !== '' || !currentUser.director)">График отпусков</h2>
-    <div class="range" v-show=" selectedDep !== '' || !currentUser.director">
-      <div class="changeYear" v-show="vacations.length > 0">
-        <button @click="prevRange ">&#60;</button>
-        <h3 class="year">{{rangeChart}}</h3>
-        <button @click="nextRange">&#62;</button>
+    <h2 v-show="vacations.length > 0 && (selectedDep !== '' || !currentUser.director)">
+      График отпусков
+    </h2>
+    <div class="range"
+         v-show=" selectedDep !== '' || !currentUser.director">
+      <div class="changeYear"
+           v-show="vacations.length > 0">
+        <button @click="prevRange ">
+          &#60;
+        </button>
+        <h3 class="year">
+          {{rangeChart}}
+        </h3>
+        <button @click="nextRange">
+          &#62;
+        </button>
       </div>
       <VueMultiselect class="selectRange"
                       :options="ranges"
@@ -41,17 +60,16 @@
                       :show-no-results="false"
                       v-model="selectedRange"
                       @close="changeRangeInChart(selectedRange)"/>
-
     </div>
     <div class="chart">
       <canvas id="myChart"
               :style="{height: height + 'px'}"
-              @click="showRec" tabindex="-1"/>
+              @click="showRec"
+              tabindex="-1"/>
     </div>
   </sample-page>
   <not-access v-else/>
 </template>
-
 <script>
 import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';

@@ -1,12 +1,16 @@
 <template>
   <button-icon class="back">
-    <img src="../../images/BackIcon.png">
+    <img src="../../images/BackIcon.png"
+         alt="back icon">
   </button-icon>
 </template>
 
 <script>
+import ButtonIcon from "@/components/UI/ButtonIcon.vue";
+
 export default {
-  name: "ButtonBack"
+  name: "ButtonBack",
+  components: {ButtonIcon}
 }
 </script>
 

@@ -1,14 +1,19 @@
 <template>
-  <div class="person" v-for="u in uniq" :key="u">
+  <div class="person"
+       v-for="u in uniq"
+       :key="u">
     {{u}}
     <div class="rec"
          v-for="vac in requested.filter(p => p.status === 'Ожидание'
          && (p.surname + ' ' + p.first_name + ' ' + p.last_name) === u)"
          :key="vac.id"
-         @mouseover="visible=vac.id" @mouseleave="visible = false"
+         @mouseover="visible=vac.id"
+         @mouseleave="visible = false"
          tabindex="-1">
-      <div class="info" :style="{background: vac.intersections === 'Да'? '#ffd8d1': '#d9ccff'}">
-        <button class="withOutInter" @click="showData(vac); $emit('showRec', index);">
+      <div class="info"
+           :style="{background: vac.intersections === 'Да'? '#ffd8d1': '#d9ccff'}">
+        <button class="withOutInter"
+                @click="showData(vac); $emit('showRec', index);">
           <p style="width: 150px">
             {{ vac.start }} - {{ vac.end }}
           </p>
@@ -19,7 +24,8 @@
             {{vac.paid ? 'Оплачиваемый': 'Не оплачиваемый'}}
           </p>
         </button>
-        <p class="inters" style="margin-left: 0"
+        <p class="inters"
+           style="margin-left: 0"
            :style="vac.intersections === 'Да'? {border: '2px solid #d70000', color: '#d70000'}: 'none'">
           {{ vac.intersections === 'Да' ? "Перeсечение" : "" }}
         </p>

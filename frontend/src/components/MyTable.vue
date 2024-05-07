@@ -2,29 +2,42 @@
   <div class="rec"
        v-for="rec in records.filter(p => p.status !== 'Удалено')"
        :key="rec.id"
-       @mouseover="visible = rec.id" @mouseleave="visible = false">
-      <div class="info" v-bind:style="{background: setColor(rec.status)}">
-        <p class="dates">{{rec.start}} - {{rec.end}}</p>
-        <p class="amount">кол-во дней всего: {{totalDays(rec.start, rec.end)}}</p>
-        <p class="amount offs">кол-во выходных дней: {{daysOff(rec.start, rec.end)}}</p>
+       @mouseover="visible = rec.id"
+       @mouseleave="visible = false">
+      <div class="info"
+           :style="{background: setColor(rec.status)}">
+        <p class="dates">
+          {{rec.start}} - {{rec.end}}
+        </p>
+        <p class="amount">
+          кол-во дней всего: {{totalDays(rec.start, rec.end)}}
+        </p>
+        <p class="amount offs">
+          кол-во выходных дней: {{daysOff(rec.start, rec.end)}}
+        </p>
         <div class="status"
-             v-bind:style="{
-          borderColor: setBorder(rec.status),
-          color: setBorder(rec.status)
-        }"
-             @mouseover="visibleExplanation =  rec.status === 'Отказ';
+             :style="{
+              borderColor: setBorder(rec.status),
+              color: setBorder(rec.status)
+              }"
+             @mouseover="visibleExplanation = rec.status === 'Отказ';
              explanation = rec.explanation;"
              @mouseleave="visibleExplanation = false">
           {{rec.status}}
         </div>
       </div>
-      <button-icon class="del" v-if="checkDel(rec.status, rec.id)" @click="Del(rec.id)">
-        <img src="@/images/DeleteIcon.png">
+      <button-icon class="del"
+          v-if="checkDel(rec.status, rec.id)"
+          @click="Del(rec.id)">
+        <img src="@/images/DeleteIcon.png"
+             alt="delete icon">
       </button-icon>
   </div>
   <div class="exp"
        v-if="visibleExplanation">
-    <h4>Причина отказа:</h4>
+    <h4>
+      Причина отказа:
+    </h4>
     {{ explanation }}
   </div>
 </template>
@@ -33,9 +46,11 @@
 import {ref} from "vue";
 import {useStore} from "vuex";
 import {daysOff, totalDays} from "@/components/Options";
+import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 
 export default {
   name: "MyTable",
+  components: {ButtonIcon},
   methods: {daysOff, totalDays},
   props: {
     records: {

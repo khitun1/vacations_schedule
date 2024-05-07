@@ -3,35 +3,69 @@
                v-show="!visibleAdminWindow">
         Изменить условия
     </my-button>
-
-    <div v-show="visibleChangeCon" class="con">
+    <div v-show="visibleChangeCon"
+         class="con">
       <button-back @click="changeVisibleCon"/>
-      <h2>Назначить условия</h2>
+      <h2>
+        Назначить условия
+      </h2>
       <div class="conditions">
         <form @submit.prevent>
-          <p>Минимальное кол-во дней отпуска:</p>
-          <my-input v-model="condition.min" :readonly="changeMin" class="minDays" type="number"/>
-          <my-button @click="setCon(1)" type="submit">{{minText}}</my-button>
+          <p>
+            Минимальное кол-во дней отпуска:
+          </p>
+          <my-input v-model="condition.min"
+                    :readonly="changeMin"
+                    class="minDays"
+                    type="number"/>
+          <my-button @click="setCon(1)"
+                     type="submit">
+            {{minText}}
+          </my-button>
         </form>
         <form @submit.prevent>
-          <p>Всего дней для отпуска:</p>
-          <my-input v-model="condition.total" :readonly="changeTotal" class="totalDays" type="number"/>
-          <my-button @click="setCon(3)" type="submit">{{totalText}}</my-button>
+          <p>
+            Всего дней для отпуска:
+          </p>
+          <my-input v-model="condition.total"
+                    :readonly="changeTotal"
+                    class="totalDays"
+                    type="number"/>
+          <my-button @click="setCon(3)"
+                     type="submit">
+            {{totalText}}
+          </my-button>
         </form>
         <form @submit.prevent>
-          <p>% максимально допустимых одновременных отпусков:</p>
-          <my-input v-model="condition.percents" :readonly="changePercent" class="percentsDays" type="number" />
-          <my-button @click="setCon(4)" type="submit">{{percentText}}</my-button>
+          <p>
+            % максимально допустимых одновременных отпусков:
+          </p>
+          <my-input v-model="condition.percents"
+                    :readonly="changePercent"
+                    class="percentsDays"
+                    type="number" />
+          <my-button @click="setCon(4)"
+                     type="submit">
+            {{percentText}}
+          </my-button>
         </form>
         <div class="debt">
-          <p>Возможность брать отпускные дни в долг:</p>
+          <p>
+            Возможность брать отпускные дни в долг:
+          </p>
           <label class="checkbox">
-            <input type="checkbox" class="check_input" :checked="!rule" @input="changeRule"/>
+            <input type="checkbox"
+                   class="check_input"
+                   :checked="!rule"
+                   @input="changeRule"/>
             <div class="check_div"/>
           </label>
         </div>
       </div>
-      <p class="error" v-show="errorNum"> {{ errorMsg }}</p>
+      <p class="error"
+         v-show="errorNum">
+        {{ errorMsg }}
+      </p>
     </div>
 </template>
 

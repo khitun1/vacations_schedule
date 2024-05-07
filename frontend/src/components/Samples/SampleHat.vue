@@ -1,38 +1,57 @@
 <template>
-  <div class="notesList" v-click-away="onClickAway" v-if="showAllNotes">
-    <div class="recInList" v-for="note in notes.filter((p, index) => index < 3)" :key="note.id" >
+  <div class="notesList"
+       v-click-away="onClickAway"
+       v-if="showAllNotes">
+    <div class="recInList"
+         v-for="note in notes.filter((p, index) => index < 3)"
+         :key="note.id">
       Пользователь {{note.user}} отправил заявку на отпуск
       {{getTime(note.createdAt)}}
     </div>
-    <p v-if="notes.length > 3" class="etc">И ещё {{notes.length - 3}}...</p>
-    <my-button class="showAll" v-if="notes.length > 0" @click="seeAll">
+    <p v-if="notes.length > 3"
+       class="etc">
+      И ещё {{notes.length - 3}}...
+    </p>
+    <my-button class="showAll"
+        v-if="notes.length > 0"
+        @click="seeAll">
       Просмотреть все
     </my-button>
   </div>
   <div class="hat">
-    <h1>Планирование отпусков</h1>
+    <h1>
+      Планирование отпусков
+    </h1>
     <div class="panel">
-      <p>{{currentUser.surname + ' ' + currentUser.first_name + ' '
-      + currentUser.last_name}}</p>
-      <button-icon class="btn" v-if="currentUser.is_admin" @click="showAllNotes = true">
-        <img src="@/images/NoticeIcon.png">
-        <div class="notes" v-if="notes.length > 0">
+      <p>
+        {{currentUser.surname + ' ' + currentUser.first_name + ' '
+        + currentUser.last_name}}
+      </p>
+      <button-icon class="btn"
+          v-if="currentUser.is_admin"
+          @click="showAllNotes = true">
+        <img src="@/images/NoticeIcon.png"
+             alt="notice icon">
+        <div class="notes"
+            v-if="notes.length > 0">
           {{notes.length}}
         </div>
       </button-icon>
       <router-link to="/">
-        <button-icon class="btn" @click="exit">
-          <img src="@/images/ExitIcon.png">
+        <button-icon class="btn"
+                     @click="exit">
+          <img src="@/images/ExitIcon.png"
+               alt="exit icon">
         </button-icon>
       </router-link>
     </div>
   </div>
   <transition name="note">
-    <div class="newNote" v-if="showNote && currentUser.is_admin">
+    <div class="newNote"
+        v-if="showNote && currentUser.is_admin">
       Пользователь {{noteName}} отправил заявку на отпуск
     </div>
   </transition>
-
 </template>
 
 <script>
@@ -40,8 +59,11 @@ import {computed, ref, watch} from "vue";
 import moment from "moment";
 import router from "@/router/router";
 import {useStore} from "vuex";
+import MyButton from "@/components/UI/MyButton.vue";
+import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 
 export default {
+  components: {ButtonIcon, MyButton},
 
   setup() {
     const store = useStore();

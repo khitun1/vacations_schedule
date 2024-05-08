@@ -5,9 +5,7 @@
 </template>
 
 <script setup>
-export default {
-  name: "NotAccess"
-}
+
 </script>
 
 <style scoped>

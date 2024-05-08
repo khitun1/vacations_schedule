@@ -88,7 +88,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import {useStore} from "vuex";
 import {computed, ref} from "vue";
 import MyInput from "@/components/UI/MyInput.vue";
@@ -97,65 +97,37 @@ import {dateReverseFormat} from "../hooks/generalMoment/dateReverseFormat";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 import ButtonBack from "@/components/UI/ButtonBack.vue";
 
-export default {
-  name: "UserList",
-  methods: {dateReverseFormat},
-  components: {ButtonBack, ButtonIcon, MyButton, MyInput},
-
-  setup() {
-    const store = useStore();
-    const userId = ref(null);
-    const amountExtra = ref(null);
-    const visibleAdminWindow = computed(() => store.getters.visibleAdminWindow);
-    const searchUser = ref('');
-    const userList = computed(() => {
+const store = useStore();
+const userId = ref(null);
+const amountExtra = ref(null);
+const visibleAdminWindow = computed(() => store.getters.visibleAdminWindow);
+const searchUser = ref('');
+const userList = computed(() => {
       if(searchUser.value === '') return store.state.admin.users;
-      return store.state.admin.users.filter(p => p.surname.toLowerCase().includes(searchUser.value.toLowerCase()));
-    });
-    const visibleUserList = computed(() => store.state.admin.visibleUserList);
-
-    const changeVisibleUserList = () => {
-      store.commit('changeVisibleUserList');
-    }
-
-    const showModal = (id) => {
-      userId.value = id;
-      document.querySelector('dialog').showModal();
-    }
-
-    const closeModal = () => {
-      document.querySelector('dialog').close();
-    }
-
-    const excludeRules = (e, id) => {
-      store.dispatch('excludeRules', {id: id, value: !e.target.checked})
-    }
-
-    const sendExtraDays = async () => {
-      await store.dispatch('addExtraDays', {id: userId.value, number: amountExtra.value})
-      await store.dispatch('getUsers');
-      closeModal();
-    }
-
-    const deleteUser = async (id) => {
-      await store.dispatch('deleteUser', id);
-      await store.dispatch('getUsers');
-    }
-
-    return {
-      visibleAdminWindow,
-      userList,
-      visibleUserList,
-      amountExtra,
-      searchUser,
-      changeVisibleUserList,
-      showModal,
-      closeModal,
-      sendExtraDays,
-      excludeRules,
-      deleteUser,
-    }
-  }
+  return store.state.admin.users.filter(p => p.surname.toLowerCase().includes(searchUser.value.toLowerCase()));
+});
+const visibleUserList = computed(() => store.state.admin.visibleUserList);
+const changeVisibleUserList = () => {
+  store.commit('changeVisibleUserList');
+}
+const showModal = (id) => {
+  userId.value = id;
+  document.querySelector('dialog').showModal();
+}
+const closeModal = () => {
+  document.querySelector('dialog').close();
+}
+const excludeRules = (e, id) => {
+  store.dispatch('excludeRules', {id: id, value: !e.target.checked})
+}
+const sendExtraDays = async () => {
+  await store.dispatch('addExtraDays', {id: userId.value, number: amountExtra.value})
+  await store.dispatch('getUsers');
+  closeModal();
+}
+const deleteUser = async (id) => {
+  await store.dispatch('deleteUser', id);
+  await store.dispatch('getUsers');
 }
 </script>
 

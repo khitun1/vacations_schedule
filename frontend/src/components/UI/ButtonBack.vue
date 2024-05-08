@@ -5,13 +5,9 @@
   </button-icon>
 </template>
 
-<script>
+<script setup>
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 
-export default {
-  name: "ButtonBack",
-  components: {ButtonIcon}
-}
 </script>
 
 <style scoped>

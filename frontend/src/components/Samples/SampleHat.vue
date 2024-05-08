@@ -54,7 +54,7 @@
   </transition>
 </template>
 
-<script>
+<script setup>
 import {computed, ref, watch} from "vue";
 import moment from "moment";
 import router from "@/router/router";
@@ -62,32 +62,27 @@ import {useStore} from "vuex";
 import MyButton from "@/components/UI/MyButton.vue";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 
-export default {
-  components: {ButtonIcon, MyButton},
+const store = useStore();
+const showNote = ref(false);
+const showAllNotes = ref(false);
+const currentUser = computed(() => store.state.my.currentUser);
+const noteName = computed(() => store.state.my.noteName);
+const notes = computed(() => store.state.my.notes);
 
-  setup() {
-    const store = useStore();
-    const showNote = ref(false);
-    const showAllNotes = ref(false);
-    const currentUser = computed(() => store.state.my.currentUser);
-    const noteName = computed(() => store.state.my.noteName);
-    const notes = computed(() => store.state.my.notes);
-    const getTime = (time) => {
-      return moment(time).format('HH:mm:ss');
-    }
-    const onClickAway = () => {
+const getTime = time => moment(time).format('HH:mm:ss');
+const onClickAway = () => {
       showAllNotes.value = false;
     }
-    const exit = () => {
+const exit = () => {
       localStorage.removeItem('token');
       store.commit('clear');
     }
-    const seeAll = () => {
+const seeAll = () => {
       showAllNotes.value = false;
       router.push('/allVacations');
       store.dispatch('clear');
     }
-    watch (noteName, () => {
+watch (noteName, () => {
       if (noteName.value !== '') {
         showNote.value = true;
         setTimeout(() => {
@@ -96,21 +91,6 @@ export default {
         }, 2000)
       }
     })
-    return {
-      showNote,
-      currentUser,
-      notes,
-      store,
-      noteName,
-      showAllNotes,
-      onClickAway,
-      getTime,
-      seeAll,
-      exit,
-    }
-  },
-
-}
 </script>
 
 <style scoped>

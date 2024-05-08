@@ -82,7 +82,7 @@
   </sample-page>
 </template>
 
-<script>
+<script setup>
 import SamplePage from "@/components/Samples/SamplePage";
 import {calendar} from "@/hooks/calendar";
 import {computed, onMounted, ref} from "vue";
@@ -97,217 +97,182 @@ import {amountDays} from "@/hooks/generalMoment/amountDays";
 import {findIntersection} from "@/hooks/intersections/findIntersection";
 import MyButton from "@/components/UI/MyButton.vue";
 
-export default {
-  name: "TakeVacation",
-
-  components:{
-    MyButton,
-    SamplePage,
-  },
-
-  setup() {
-    const store = useStore();
-    store.dispatch('getHolidays');
-    store.dispatch('getDepartment');
-    const percent = computed(() => store.state.my.currentUser.percent);
-    const len = computed(() => store.state.my.len);
-    const intersInUsersDep = computed(() => store.state.my.dates);
-    const inters = ref([]);
-    const currentUser = computed(() => store.state.my.currentUser);
-    console.log(currentUser.value)
-    const token = localStorage.getItem('token');
-    const doubleShowAlert = ref(0);
-
-    const intersections = () => {
-      let quarter = Math.floor(percent.value * len.value);
-      if (quarter <= 1) {
-        intersInUsersDep.value.forEach(p => {
-          if (p.userId !== currentUser.value.id) {
-            const vac = {
-              start: p.start,
-              end: p.end,
-              status: 'inters',
-            }
-            inters.value.push(vac);
-          }
-        })
+const store = useStore();
+store.dispatch('getHolidays');
+store.dispatch('getDepartment');
+const percent = computed(() => store.state.my.currentUser.percent);
+const len = computed(() => store.state.my.len);
+const intersInUsersDep = computed(() => store.state.my.dates);
+const inters = ref([]);
+const currentUser = computed(() => store.state.my.currentUser);
+console.log(currentUser.value)
+const token = localStorage.getItem('token');
+const doubleShowAlert = ref(0);
+const intersections = () => {
+  let quarter = Math.floor(percent.value * len.value);
+  if (quarter <= 1) {
+    intersInUsersDep.value.forEach(p => {
+      if (p.userId !== currentUser.value.id) {
+        const vac = {
+          start: p.start,
+          end: p.end,
+          status: 'inters',
+        }
+        inters.value.push(vac);
       }
-      else {
-        let lastStart;
-        for (let i = 0; i < intersInUsersDep.value.length; i++) {
-          for (let j = 0; j < i; j++){
-            if(findIntersection(intersInUsersDep.value[i], intersInUsersDep.value[j])) {
-              lastStart = getLastStart(intersInUsersDep.value[i].start, intersInUsersDep.value[j].start);
-              draw(i, lastStart, quarter);
-            }
-          }
+    })
+  }
+  else {
+    let lastStart;
+    for (let i = 0; i < intersInUsersDep.value.length; i++) {
+      for (let j = 0; j < i; j++){
+        if(findIntersection(intersInUsersDep.value[i], intersInUsersDep.value[j])) {
+          lastStart = getLastStart(intersInUsersDep.value[i].start, intersInUsersDep.value[j].start);
+          draw(i, lastStart, quarter);
         }
       }
     }
-
-    const draw = (i, lastStart, quarter) => {
-      let start;
-      let end;
-      for(let j = 0; j < i; j++){
-        start = amountDays(dateUsualFormat(intersInUsersDep.value[j].start));
-        end = amountDays(dateUsualFormat(intersInUsersDep.value[j].end));
-        if(lastStart <= end &&
-            lastStart >= start)
-        {
-          let range = {};
-          range.start = intersInUsersDep.value[i].start;
-          const earlierEnd = amountDays(dateUsualFormat(intersInUsersDep.value[i].end));
-          range.end = earlierEnd < end ? intersInUsersDep.value[i].end
-              : intersInUsersDep.value[j].end;
-          range.status = 'inters';
-          inters.value.push(range);
-        }
-      }
-
-      if (inters.value.length < quarter) {
-        inters.value = [];
-      }
+  }
+}
+const draw = (i, lastStart, quarter) => {
+  let start;
+  let end;
+  for(let j = 0; j < i; j++){
+    start = amountDays(dateUsualFormat(intersInUsersDep.value[j].start));
+    end = amountDays(dateUsualFormat(intersInUsersDep.value[j].end));
+    if(lastStart <= end &&
+        lastStart >= start)
+    {
+      let range = {};
+      range.start = intersInUsersDep.value[i].start;
+      const earlierEnd = amountDays(dateUsualFormat(intersInUsersDep.value[i].end));
+      range.end = earlierEnd < end ? intersInUsersDep.value[i].end
+          : intersInUsersDep.value[j].end;
+      range.status = 'inters';
+      inters.value.push(range);
     }
+  }
+  if (inters.value.length < quarter) {
+    inters.value = [];
+  }
+}
 
-    onMounted(async () => {
-      await store.dispatch('createSocket');
-      await store.dispatch('getDates');
-      await store.dispatch('getWishes');
-      await store.dispatch('getVacations');
-      intersections();
-    });
+onMounted(async () => {
+  await store.dispatch('createSocket');
+  await store.dispatch('getDates');
+  await store.dispatch('getWishes');
+  await store.dispatch('getVacations');
+  intersections();
+});
 
-    const { rows, columns, attrs, dis, minDate } = calendar(inters);
-    const totalLeft = computed(() => store.getters.totalLeft);
-    const left = computed(() => store.state.my.currentUser.left);
-    const total = computed(() => store.state.my.total);
+const { rows, columns, attrs, dis, minDate } = calendar(inters);
+const totalLeft = computed(() => store.getters.totalLeft);
+const left = computed(() => store.state.my.currentUser.left);
+const total = computed(() => store.state.my.total);
 
-    const date = ref(null);
-    const paid = ref([]);
-    const last = computed(() => store.getters.last);
-    const wishes = computed(() => store.state.my.wishes);
+const date = ref(null);
+const paid = ref([]);
+const last = computed(() => store.getters.last);
+const wishes = computed(() => store.state.my.wishes);
 
-    const socket = computed(() => store.state.my.socket);
+const socket = computed(() => store.state.my.socket);
 
-    const showWish = () => {
-      if (doubleShowAlert.value === 1) {
-        doubleShowAlert.value = 0;
-        return;
-      }
-        if (date.value !== null) {
-          if (!currentUser.value.allow) {
-            alert('В этом календарном году вы уже спланировали отпуск!');
-          }
-          else {
-            let wishesAmount = 0;
-            wishes.value.forEach(p => {
-              wishesAmount += totalDays(p.start, p.end);
-            });
-            const start =  dateChartFormat(date.value.start);
-            const end = dateChartFormat(date.value.end);
-            const createDate = moment();
-            const nextYear = createDate.get('year') + 1;
-            const startY = moment(nextYear+'-01-01');
-            if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) <
-                store.state.admin.department.min) {
-              alert('Выбрано меньше дней, чем минимум за один отпуск!');
-            }
-            else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > left.value - wishesAmount +
-                Math.floor(totalDays(dateReverseFormat(start), dateReverseFormat(startY)) * total.value / 365)
-                && currentUser.value.rules)
-            {
-              alert('Выбрано больше дней, чем будет доступно на ' + dateReverseFormat(start));
-            }
-            else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > totalLeft.value.split(' ')[0]) {
-              alert('Выбрано больше дней, чем доступно');
-            }
-            // else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > left.value) {
-            //   alert('Выбрано больше дней, чем будет доступно на ' + (nextYear - 1) + ' год');
-            // }
-            else {
-              date.value =
-                  {
-                    start: start,
-                    end: end,
-                    userId: currentUser.value.id,
-                  }
-              store.dispatch('addWish', date.value);
-            }
-            date.value = null;
-          }
-        }
-        doubleShowAlert.value++;
+const showWish = () => {
+  if (doubleShowAlert.value === 1) {
+    doubleShowAlert.value = 0;
+    return;
+  }
+  if (date.value !== null) {
+    if (!currentUser.value.allow) {
+      alert('В этом календарном году вы уже спланировали отпуск!');
     }
-
-    const del = async (id) => await store.dispatch('deleteWish', id);
-
-    const sendAll = async() => {
-      let record = {};
-      let total = 0;
-      let fourteen = 0;
-      let current = 0;
+    else {
+      let wishesAmount = 0;
       wishes.value.forEach(p => {
-        const start = dateUsualFormat(p.start);
-        const end = dateUsualFormat(p.end);
-        current = totalDays(start, end);
-        total += current;
-        if (current >= 14) {
-          fourteen++;
-        }
+        wishesAmount += totalDays(p.start, p.end);
       });
-      if (totalLeft.value.split(' ')[0] < 0 || (total > left.value && currentUser.value.rules)) {
-        alert('Выбрано больше дней, чем доступно!');
+      const start =  dateChartFormat(date.value.start);
+      const end = dateChartFormat(date.value.end);
+      const createDate = moment();
+      const nextYear = createDate.get('year') + 1;
+      const startY = moment(nextYear+'-01-01');
+      if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) <
+          store.state.admin.department.min) {
+        alert('Выбрано меньше дней, чем минимум за один отпуск!');
       }
-      else if (fourteen === 0 && currentUser.value.allow && currentUser.value.acceptAll) {
-        (alert('Хотя бы один отпуск должен быть не менее 14 дней!'));
+      else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > left.value - wishesAmount +
+          Math.floor(totalDays(dateReverseFormat(start), dateReverseFormat(startY)) * total.value / 365)
+          && currentUser.value.rules)
+      {
+        alert('Выбрано больше дней, чем будет доступно на ' + dateReverseFormat(start));
       }
+      else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > totalLeft.value.split(' ')[0]) {
+        alert('Выбрано больше дней, чем доступно');
+      }
+          // else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > left.value) {
+          //   alert('Выбрано больше дней, чем будет доступно на ' + (nextYear - 1) + ' год');
+      // }
       else {
-        const vacs = [];
-        wishes.value.forEach((p, index) => {
-          record = {
-            start: dateChartFormat(dateUsualFormat(p.start)),
-            end: dateChartFormat(dateUsualFormat(p.end)),
-            requested_date: moment(),
-            paid: paid.value[wishes.value.indexOf(p)] ? 1 : 0,
-            status: 'Ожидание',
-            userId: currentUser.value.id,
-            number: last.value + index,
-          }
-          vacs.push(record);
-          del(p.id);
-        })
-        const data = {
-          vacs, total,
-        }
-        await store.dispatch('addVacation', data);
-        const obj = {
-          method: 'message',
-          vacs
-        }
-        socket.value.send(JSON.stringify(obj));
+        date.value =
+            {
+              start: start,
+              end: end,
+              userId: currentUser.value.id,
+            }
+        store.dispatch('addWish', date.value);
       }
+      date.value = null;
     }
+  }
+  doubleShowAlert.value++;
+}
+const del = async (id) => await store.dispatch('deleteWish', id);
 
-    return {
-      len,
-      intersInUsersDep,
-      token,
-      rows,
-      columns,
-      attrs,
-      dis,
-      minDate,
-      date,
-      paid,
-      wishes,
-      left,
-      totalLeft,
-      sendAll,
-      showWish,
-      del,
+const sendAll = async() => {
+  let record = {};
+  let total = 0;
+  let fourteen = 0;
+  let current = 0;
+  wishes.value.forEach(p => {
+    const start = dateUsualFormat(p.start);
+    const end = dateUsualFormat(p.end);
+    current = totalDays(start, end);
+    total += current;
+    if (current >= 14) {
+      fourteen++;
     }
-  },
-
+  });
+  if (totalLeft.value.split(' ')[0] < 0 || (total > left.value && currentUser.value.rules)) {
+    alert('Выбрано больше дней, чем доступно!');
+  }
+  else if (fourteen === 0 && currentUser.value.allow && currentUser.value.acceptAll) {
+    (alert('Хотя бы один отпуск должен быть не менее 14 дней!'));
+  }
+  else {
+    const vacs = [];
+    wishes.value.forEach((p, index) => {
+      record = {
+        start: dateChartFormat(dateUsualFormat(p.start)),
+        end: dateChartFormat(dateUsualFormat(p.end)),
+        requested_date: moment(),
+        paid: paid.value[wishes.value.indexOf(p)] ? 1 : 0,
+        status: 'Ожидание',
+        userId: currentUser.value.id,
+        number: last.value + index,
+      }
+      vacs.push(record);
+      del(p.id);
+    })
+    const data = {
+      vacs, total,
+    }
+    await store.dispatch('addVacation', data);
+    const obj = {
+      method: 'message',
+      vacs
+    }
+    socket.value.send(JSON.stringify(obj));
+  }
 }
 </script>
 

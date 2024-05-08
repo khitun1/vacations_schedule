@@ -93,8 +93,7 @@
 
 </template>
 
-<script>
-
+<script setup>
 import {computed, ref} from "vue";
 import {useStore} from "vuex";
 import jwt_decode from "jwt-decode";
@@ -102,75 +101,48 @@ import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 
-export default {
-  name: "PersonalData",
-  components: {ButtonIcon, MyButton, MyInput},
-
-  setup() {
-    const store = useStore();
-    const currentUser = computed(() => store.state.my.currentUser);
-    const newLogin = ref(jwt_decode(localStorage.getItem('token')).login);
-    const newPassword = ref(jwt_decode(localStorage.getItem('token')).password);
-    const newMail = ref(jwt_decode(localStorage.getItem('token')).mail);
-    const changePassword = ref(true) ;
-    const typePassword = ref('password');
-    const changeLogin = ref(true);
-    const changeMail = ref(true);
-    const textLogBtn = ref('Изменить логин');
-    const textMailBtn = ref('Изменить почту');
-    const textPasBtn = ref('Изменить пароль');
-
-    const changeLog = () => {
-      document.getElementsByClassName('inputLogin')[0].focus();
-      if(changeLogin.value === true)  textLogBtn.value = 'Подтвердить';
-      else
-      {
-        store.dispatch('changeLogin', newLogin.value);
-        store.dispatch('auth');
-        textLogBtn.value = 'Изменить логин';
-      }
-      changeLogin.value = !changeLogin.value;
-    }
-    const changePas = () => {
-      document.getElementsByClassName('inputPassword')[0].focus();
-      if(changePassword.value === true) textPasBtn.value = 'Подтвердить';
-      else{
-        store.dispatch('changePassword', newPassword.value);
-        store.dispatch('auth');
-        textPasBtn.value = 'Изменить пароль';
-      }
-      changePassword.value = !changePassword.value;
-    }
-
-    const change_mail = () => {
-      document.getElementsByClassName('inputMail')[0].focus();
-      if(changeMail.value === true) textMailBtn.value = 'Подтвердить';
-      else{
-        store.dispatch('changeMail', newMail.value);
-        store.dispatch('auth');
-        textMailBtn.value = 'Изменить почту';
-      }
-      changeMail.value = !changeMail.value;
-    }
-
-    return {
-      currentUser,
-      newPassword,
-      newLogin,
-      typePassword,
-      changePassword,
-      changeLogin,
-      textLogBtn,
-      textPasBtn,
-      textMailBtn,
-      newMail,
-      changeMail,
-      change_mail,
-      changePas,
-      changeLog
-    }
-  },
-
+const store = useStore();
+const currentUser = computed(() => store.state.my.currentUser);
+const newLogin = ref(jwt_decode(localStorage.getItem('token')).login);
+const newPassword = ref(jwt_decode(localStorage.getItem('token')).password);
+const newMail = ref(jwt_decode(localStorage.getItem('token')).mail);
+const changePassword = ref(true) ;
+const typePassword = ref('password');
+const changeLogin = ref(true);
+const changeMail = ref(true);
+const textLogBtn = ref('Изменить логин');
+const textMailBtn = ref('Изменить почту');
+const textPasBtn = ref('Изменить пароль');
+const changeLog = () => {
+  document.getElementsByClassName('inputLogin')[0].focus();
+  if(changeLogin.value === true)  textLogBtn.value = 'Подтвердить';
+  else
+  {
+    store.dispatch('changeLogin', newLogin.value);
+    store.dispatch('auth');
+    textLogBtn.value = 'Изменить логин';
+  }
+  changeLogin.value = !changeLogin.value;
+}
+const changePas = () => {
+  document.getElementsByClassName('inputPassword')[0].focus();
+  if(changePassword.value === true) textPasBtn.value = 'Подтвердить';
+  else{
+    store.dispatch('changePassword', newPassword.value);
+    store.dispatch('auth');
+    textPasBtn.value = 'Изменить пароль';
+  }
+  changePassword.value = !changePassword.value;
+}
+const change_mail = () => {
+  document.getElementsByClassName('inputMail')[0].focus();
+  if(changeMail.value === true) textMailBtn.value = 'Подтвердить';
+  else{
+    store.dispatch('changeMail', newMail.value);
+    store.dispatch('auth');
+    textMailBtn.value = 'Изменить почту';
+  }
+  changeMail.value = !changeMail.value;
 }
 </script>
 

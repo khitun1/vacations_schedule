@@ -7,7 +7,6 @@
 </template>
 
 <script setup>
-
 import {computed, onMounted} from "vue";
 import store from "@/store/index.js";
 

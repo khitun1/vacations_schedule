@@ -79,7 +79,7 @@
   </sample-page>
 </template>
 
-<script>
+<script setup>
 import MyTable from "@/components/MyTable";
 import SamplePage from "@/components/Samples/SamplePage";
 import {calendar} from "@/hooks/calendar";
@@ -88,43 +88,17 @@ import {computed, onMounted} from "vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import ButtonBack from "@/components/UI/ButtonBack.vue";
 
-export default {
-  name: "MyVacations",
-
-  components:{
-    ButtonBack,
-    MyButton,
-    MyTable,
-    SamplePage,
-  },
-
-  setup() {
-    const store = useStore();
-    onMounted(async () => {
-      await store.dispatch('createSocket');
-      await store.dispatch('getHolidays');
-      await store.dispatch('getVacations');
-    })
-    const {rows, columns, attrs, dis, calendarShow, myVacations,} = calendar([], 1);
-    const token = localStorage.getItem('token');
-    const totalLeft = computed(() => store.getters.totalLeft);
-    const total = computed(() => store.state.my.total);
-    const width = computed(() => 100 - totalLeft.value / total.value * 100 + '%');
-
-    return {
-      calendarShow,
-      token,
-      rows,
-      columns,
-      total,
-      attrs,
-      dis,
-      width,
-      totalLeft,
-      myVacations,
-    }
-  },
-}
+const store = useStore();
+onMounted(async () => {
+  await store.dispatch('createSocket');
+  await store.dispatch('getHolidays');
+  await store.dispatch('getVacations');
+})
+const {rows, columns, attrs, dis, calendarShow, myVacations,} = calendar([], 1);
+const token = localStorage.getItem('token');
+const totalLeft = computed(() => store.getters.totalLeft);
+const total = computed(() => store.state.my.total);
+const width = computed(() => 100 - totalLeft.value / total.value * 100 + '%');
 </script>
 
 <style scoped>

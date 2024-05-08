@@ -10,26 +10,16 @@
     </div>
 </template>
 
-<script>
-import SampleHat from "@/components/Samples/SampleHat";
-import SampleNavBar from "@/components/Samples/SampleNavBar";
+<script setup>
+import SampleNavBar from "@/components/Samples/SampleNavBar.vue";
+import SampleHat from "@/components/Samples/SampleHat.vue";
 
-export default {
-  name: "SamplePage",
-
-  components:{
-    SampleNavBar,
-    SampleHat,
+defineProps({
+  choice: {
+    type: String,
+    requested: true,
   },
-
-  props: {
-    choice: {
-      type: String,
-      requested: true,
-    },
-  },
-
-}
+})
 </script>
 
 <style>

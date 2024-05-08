@@ -67,7 +67,6 @@ export const MyModule = {
     },
 
     mutations: {
-
         setVacations(state, vacations) {
             vacations.forEach(p => {
                 p.start = dateReverseFormat(p.start);

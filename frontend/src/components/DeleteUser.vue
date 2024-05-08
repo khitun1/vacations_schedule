@@ -32,7 +32,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import {computed, ref} from "vue";
 import {useStore} from "vuex";
 import MyButton from "@/components/UI/MyButton.vue";
@@ -40,46 +40,26 @@ import ButtonBack from "@/components/UI/ButtonBack.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 
-export default {
-  name: "deleteUser",
-  components: {ButtonIcon, MyInput, ButtonBack, MyButton},
+const store = useStore();
+const currentUser = computed(() => store.state.my.currentUser);
+const visibleDeleteUser = computed(() => store.state.admin.visibleDeleteUser);
+const users = computed(() => store.state.admin.users);
+const department = computed(() => store.state.admin.department);
+const visibleAdminWindow = computed(() => store.getters.visibleAdminWindow);
+const user = ref('');
+const searchUser = computed(() => new RegExp('^' + user.value + '.+'));
 
-  setup() {
-    const store = useStore();
-    const currentUser = computed(() => store.state.my.currentUser);
-    const visibleDeleteUser = computed(() => store.state.admin.visibleDeleteUser);
-    const users = computed(() => store.state.admin.users);
-    const department = computed(() => store.state.admin.department);
-    const visibleAdminWindow = computed(() => store.getters.visibleAdminWindow);
-    const user = ref('');
-    const searchUser = computed(() => new RegExp('^' + user.value + '.+'));
-
-    const usersList = computed(() => {
-      if (user.value === '')  return [];
-      let list = users.value.filter(p => searchUser.value.test(p.name) || p.name === user.value);
-      list.splice(list.indexOf(list.find(p => p.id === currentUser.value.id)), 1);
-      return list;
-    })
-
-    const changeVisibleDeleteUser = () => {
-      store.commit('changeVisibleDeleteUser');
-    }
-
-    const deleteUser = (id) => {
-      store.dispatch('deleteUser', id);
-    }
-    return {
-      visibleDeleteUser,
-      department,
-      visibleAdminWindow,
-      user,
-      users,
-      usersList,
-      changeVisibleDeleteUser,
-      deleteUser,
-    }
-  },
-
+const usersList = computed(() => {
+  if (user.value === '')  return [];
+  let list = users.value.filter(p => searchUser.value.test(p.name) || p.name === user.value);
+  list.splice(list.indexOf(list.find(p => p.id === currentUser.value.id)), 1);
+  return list;
+})
+const changeVisibleDeleteUser = () => {
+  store.commit('changeVisibleDeleteUser');
+}
+const deleteUser = (id) => {
+  store.dispatch('deleteUser', id);
 }
 </script>
 

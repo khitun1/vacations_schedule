@@ -9,11 +9,9 @@ export function  calendar(inters , flag = 0) {
     let myVacations = computed(() => store.state.my.myVacations);
     let wishes = computed(() => store.state.my.wishes);
 
-
     let attrs = computed(() => {
         let attrs = [];
         const holidays = computed(() => store.state.my.holidays);
-
         const daysOff = computed(() => store.getters.daysOff);
 
         daysOff.value.forEach(p => {
@@ -35,7 +33,6 @@ export function  calendar(inters , flag = 0) {
                 })
             }
         })
-
 
         myVacations.value.forEach(p => {
             if (flag === 0) {
@@ -71,11 +68,9 @@ export function  calendar(inters , flag = 0) {
         const start = moment().year() + 1 + '-01-01';
         return moment(start)._d;
     });
-
     const updateColumns = () => {
         columns.value = window.innerWidth > 1100? 3 : window.innerWidth > 600 ? 2 : 1;
     }
-
     const chooseColor = (rec) => {
         return {
             id: new Date(),
@@ -90,7 +85,6 @@ export function  calendar(inters , flag = 0) {
             dates: { start: moment(rec.start, 'DD.MM.YYYY')._d, end: moment(rec.end, 'DD.MM.YYYY')._d },
         }
     }
-
     const disDates = (rec) => {
         return {
             id: new Date(),
@@ -98,7 +92,6 @@ export function  calendar(inters , flag = 0) {
             end: moment(rec.end, 'DD.MM.YYYY')._d,
         }
     }
-
 
     onMounted(async () => {
         window.addEventListener('resize', updateColumns);
@@ -113,6 +106,4 @@ export function  calendar(inters , flag = 0) {
         calendarShow,
         myVacations,
     }
-
-
 }

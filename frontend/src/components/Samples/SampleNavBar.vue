@@ -58,40 +58,24 @@
       </router-link>
 </template>
 
-<script>
+<script setup>
 import {computed} from "vue";
 import {useStore} from "vuex";
 
-export default {
-  name: "SampleNavBar",
-
-  props: {
-    choice: {
-      type: String,
-      requested: true,
-    },
+const props = defineProps({
+  choice: {
+    type: String,
+    requested: true,
   },
+});
 
-  setup(props) {
-    const store = useStore();
-    const currentUser =  computed(() => store.state.my.currentUser);
-    const take = computed(() => props.choice === 'takeVacation' ? '#e2e2e2': 'none');
-    const mine = computed(() => props.choice === 'myVacations' ? '#e2e2e2': 'none');
-    const all = computed(() => props.choice === 'allVacations' ? '#e2e2e2': 'none');
-    const admin = computed(() => props.choice === 'admin' ? '#e2e2e2': 'none');
-    const settings = computed(() => props.choice === 'settings' ? '#e2e2e2': 'none');
-
-    return {
-      currentUser,
-      take,
-      mine,
-      all,
-      admin,
-      settings,
-    }
-  },
-
-}
+const store = useStore();
+const currentUser =  computed(() => store.state.my.currentUser);
+const take = computed(() => props.choice === 'takeVacation' ? '#e2e2e2': 'none');
+const mine = computed(() => props.choice === 'myVacations' ? '#e2e2e2': 'none');
+const all = computed(() => props.choice === 'allVacations' ? '#e2e2e2': 'none');
+const admin = computed(() => props.choice === 'admin' ? '#e2e2e2': 'none');
+const settings = computed(() => props.choice === 'settings' ? '#e2e2e2': 'none');
 </script>
 
 <style scoped lang="scss">

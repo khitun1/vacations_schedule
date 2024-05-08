@@ -24,38 +24,24 @@
 
 </template>
 
-<script>
+<script setup>
 import store from "@/store";
 import router from "@/router/router";
 import {computed, ref} from "vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 
-export default {
-  name: "StartScreen",
-  components: {MyButton, MyInput},
-
-  setup() {
-    const login = ref('');
-    const password = ref('');
-    const error = computed(() => store.state.my.errorMsg);
-    const check = async () => {
-      if (login.value === '' || password.value === '') {
-        return
-      }
-      await store.dispatch('login', {login: login.value, password: password.value});
-      if (error.value === '') {
-        const url = '/myVacations';
-        await router.push(url);
-      }
-
-    }
-    return {
-      login,
-      password,
-      error,
-      check,
-    }
+const login = ref('');
+const password = ref('');
+const error = computed(() => store.state.my.errorMsg);
+const check = async () => {
+  if (login.value === '' || password.value === '') {
+    return
+  }
+  await store.dispatch('login', {login: login.value, password: password.value});
+  if (error.value === '') {
+    const url = '/myVacations';
+    await router.push(url);
   }
 }
 </script>

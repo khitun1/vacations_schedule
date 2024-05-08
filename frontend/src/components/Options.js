@@ -6,7 +6,6 @@ import {ref} from "vue";
 export function options() // config for chart
 {
     return {
-
         indexAxis: 'y',
         animation: false,
         barPercentage: 0.5,
@@ -46,7 +45,6 @@ export function options() // config for chart
                 callbacks: {
                     label: function(context) {
                         let label = context.dataset.label || '';
-
                         const start = moment(context.parsed._custom.barStart).format('DD.MM.YYYY');
                         const end = moment(context.parsed._custom.barEnd).format('DD.MM.YYYY');
                         if (label) {

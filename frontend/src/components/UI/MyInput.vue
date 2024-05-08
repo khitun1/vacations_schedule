@@ -3,21 +3,14 @@
      @input="updateInput">
 </template>
 
-<script>
-export default {
-  name: "my-input",
-  props: {
-    modelValue: [String, Number]
-  },
+<script setup>
+defineProps({
+  modelValue: [String, Number]
+});
 
-  setup(props, {emit}) {
-    const updateInput = (event) => {
-      emit('update:modelValue', event.target.value)
-    }
-    return {
-      updateInput,
-    }
-  }
+const emit = defineEmits(['update:modelValue']);
+const updateInput = (event) => {
+  emit('update:modelValue', event.target.value)
 }
 </script>
 

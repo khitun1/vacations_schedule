@@ -69,137 +69,110 @@
     </div>
 </template>
 
-<script>
+<script setup>
 import {computed, ref} from "vue";
 import {useStore} from "vuex";
 import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import ButtonBack from "@/components/UI/ButtonBack.vue";
 
-export default {
-  name: "SetData",
-  components: {ButtonBack, MyButton, MyInput},
-
-  setup() {
-    const store = useStore();
-    const rule = computed(() => store.state.admin.department.rules);
-    const changeMin =  ref(true);
-    const changeMax =  ref(true);
-    const changeTotal =  ref(true);
-    const changePercent =  ref(true);
-    const minText =  ref('Изменить');
-    const totalText =  ref('Изменить');
-    const percentText =  ref('Изменить');
-    const errorNum =  ref(false);
-    const errorMsg =  ref('');
-    const visibleCon =  ref(false);
-    const visibleChangeCon = computed(() => store.state.admin.visibleChangeCon);
-    const visibleAdminWindow = computed(() => store.getters.visibleAdminWindow)
-    const condition = computed(() => store.state.admin.department);
-    const changeVisibleCon = () => store.commit('changeVisibleChangeCon');
-    const setCon = (flag) => {
-      let accept = false;
-      switch (flag){
-        case 1:
-          if(changeMin.value === false)
-          {
-            if (validate(condition.value.min)) {
-              if (condition.value.min <= condition.value.total) {
-                changeMin.value = true;
-                minText.value =  'Изменить';
-                accept = true;
-              }
-              else {
-                errorMsg.value = 'Минимальное количество дней должно быть не больше, чем общее количество дней!';
-              }
-            }
-            else {
-              errorMsg.value = 'Минимальное количество дней должно быть целым, положительным числом!';
-            }
+const store = useStore();
+const rule = computed(() => store.state.admin.department.rules);
+const changeMin =  ref(true);
+const changeMax =  ref(true);
+const changeTotal =  ref(true);
+const changePercent =  ref(true);
+const minText =  ref('Изменить');
+const totalText =  ref('Изменить');
+const percentText =  ref('Изменить');
+const errorNum =  ref(false);
+const errorMsg =  ref('');
+const visibleCon =  ref(false);
+const visibleChangeCon = computed(() => store.state.admin.visibleChangeCon);
+const visibleAdminWindow = computed(() => store.getters.visibleAdminWindow)
+const condition = computed(() => store.state.admin.department);
+const changeVisibleCon = () => store.commit('changeVisibleChangeCon');
+const setCon = (flag) => {
+  let accept = false;
+  switch (flag){
+    case 1:
+      if(changeMin.value === false)
+      {
+        if (validate(condition.value.min)) {
+          if (condition.value.min <= condition.value.total) {
+            changeMin.value = true;
+            minText.value =  'Изменить';
+            accept = true;
           }
-          else
-          {
-            changeMin.value = false;
-            document.getElementsByClassName('minDays')[0].focus();
-            minText.value =  'Подтвердить';
+          else {
+            errorMsg.value = 'Минимальное количество дней должно быть не больше, чем общее количество дней!';
           }
-          break;
-        case 3:
-          if(changeTotal.value === false)
-          {
-            if(validate(condition.value.total)) {
-              if (condition.value.min <= condition.value.total) {
-                changeTotal.value = true;
-                totalText.value = 'Изменить';
-                accept = true;
-              }
-              else {
-                errorMsg.value = 'Общее количество дней должно быть не меньше, чем минимальное количество дней!';
-              }
-            }
-            else {
-              errorMsg.value = 'Общее количество дней должно быть целым и положительным числом!';
-            }
-          }
-          else
-          {
-            changeTotal.value = false;
-            document.getElementsByClassName('totalDays')[0].focus();
-            totalText.value =  'Подтвердить';
-          }
-          break;
-        case 4:
-          if(changePercent.value === false)
-          {
-            if(validate(condition.value.percents) && condition.value.percents <= 100) {
-              changePercent.value = true;
-              percentText.value = 'Изменить';
-              accept = true;
-            }
-            else errorMsg.value = '% пересечений должен быть целым, положительным числом в диапазоне от 0 до 100!';
-          }
-          else
-          {
-            changePercent.value = false;
-            document.getElementsByClassName('percentsDays')[0].focus();
-            percentText.value =  'Подтвердить';
-          }
-          break;
+        }
+        else {
+          errorMsg.value = 'Минимальное количество дней должно быть целым, положительным числом!';
+        }
       }
-
-      if (accept){
-        store.dispatch('changeConditions',condition.value);
-        errorNum.value = false;
-        errorMsg.value = '';
+      else
+      {
+        changeMin.value = false;
+        document.getElementsByClassName('minDays')[0].focus();
+        minText.value =  'Подтвердить';
       }
-      else errorNum.value = true;
-    }
-    const validate = (con) => con && con >= 0 && con % 1 === 0;
-    const changeRule = async(e) => {
-      await store.dispatch('changeRules', e.target.checked);
-      await store.dispatch('getUsers');
-    }
-
-    return {
-      changeMin,
-      changeMax,
-      changeTotal,
-      changePercent,
-      minText,
-      totalText,
-      percentText,
-      errorNum,
-      errorMsg,
-      visibleCon,
-      visibleChangeCon,
-      visibleAdminWindow,
-      condition,
-      rule,
-      changeVisibleCon,
-      setCon,
-      changeRule,
-    }
+      break;
+    case 3:
+      if(changeTotal.value === false)
+      {
+        if(validate(condition.value.total)) {
+          if (condition.value.min <= condition.value.total) {
+            changeTotal.value = true;
+            totalText.value = 'Изменить';
+            accept = true;
+          }
+          else {
+            errorMsg.value = 'Общее количество дней должно быть не меньше, чем минимальное количество дней!';
+          }
+        }
+        else {
+          errorMsg.value = 'Общее количество дней должно быть целым и положительным числом!';
+        }
+      }
+      else
+      {
+        changeTotal.value = false;
+        document.getElementsByClassName('totalDays')[0].focus();
+        totalText.value =  'Подтвердить';
+      }
+      break;
+    case 4:
+      if(changePercent.value === false)
+      {
+        if(validate(condition.value.percents) && condition.value.percents <= 100) {
+          changePercent.value = true;
+          percentText.value = 'Изменить';
+          accept = true;
+        }
+        else errorMsg.value = '% пересечений должен быть целым, положительным числом в диапазоне от 0 до 100!';
+      }
+      else
+      {
+        changePercent.value = false;
+        document.getElementsByClassName('percentsDays')[0].focus();
+        percentText.value =  'Подтвердить';
+      }
+      break;
   }
+
+  if (accept){
+    store.dispatch('changeConditions',condition.value);
+    errorNum.value = false;
+    errorMsg.value = '';
+  }
+  else errorNum.value = true;
+}
+const validate = (con) => con && con >= 0 && con % 1 === 0;
+const changeRule = async(e) => {
+  await store.dispatch('changeRules', e.target.checked);
+  await store.dispatch('getUsers');
 }
 </script>
 

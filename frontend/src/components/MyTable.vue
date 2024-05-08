@@ -42,75 +42,56 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import {ref} from "vue";
 import {useStore} from "vuex";
 import {daysOff, totalDays} from "@/components/Options";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 
-export default {
-  name: "MyTable",
-  components: {ButtonIcon},
-  methods: {daysOff, totalDays},
-  props: {
-    records: {
-      type: Array,
-      required: false,
-    }
-  },
-
-  setup() {
-    const store = useStore();
-    const setColor = (status) => {
-      switch (status){
-        case 'Утверждено':
-          return '#b6faba';
-        case 'Ожидание':
-          return '#ffd7a6';
-        case 'Использовано':
-          return '#b2b0ff';
-        case 'Отказ':
-          return '#ffc4b9';
-        case 'Отменено':
-          return '#c0c0c0';
-      }
-    }
-
-    const setBorder = (status) => {
-      switch (status){
-        case 'Утверждено':
-          return '#01b026';
-        case 'Ожидание':
-          return '#d07100';
-        case 'Использовано':
-          return '#5b30b7';
-        case 'Отказ':
-          return '#d70000';
-        case 'Отменено':
-          return '#606060';
-      }
-    }
-    const visible = ref(false);
-    const visibleExplanation = ref(false);
-    const explanation = ref('');
-    const Del = (id) => {
-      store.dispatch('deleteVacation', id);
-    }
-
-    const checkDel = (status, id) => {
-      if(visible.value !== id) return false;
-      if(status !== 'Утверждено' && status !== 'Использовано') return true;
-    }
-
-    return {
-      visible,
-      visibleExplanation,
-      explanation,
-      Del,
-      checkDel,
-      setColor,
-      setBorder}
-  },
+defineProps({
+  records: {
+    type: Array,
+    required: false,
+  }
+})
+const store = useStore();
+const setColor = (status) => {
+  switch (status){
+    case 'Утверждено':
+      return '#b6faba';
+    case 'Ожидание':
+      return '#ffd7a6';
+    case 'Использовано':
+      return '#b2b0ff';
+    case 'Отказ':
+      return '#ffc4b9';
+    case 'Отменено':
+      return '#c0c0c0';
+  }
+}
+const setBorder = (status) => {
+  switch (status){
+    case 'Утверждено':
+      return '#01b026';
+    case 'Ожидание':
+      return '#d07100';
+    case 'Использовано':
+      return '#5b30b7';
+    case 'Отказ':
+      return '#d70000';
+    case 'Отменено':
+      return '#606060';
+  }
+}
+const visible = ref(false);
+const visibleExplanation = ref(false);
+const explanation = ref('');
+const Del = (id) => {
+  store.dispatch('deleteVacation', id);
+}
+const checkDel = (status, id) => {
+  if(visible.value !== id) return false;
+  if(status !== 'Утверждено' && status !== 'Использовано') return true;
 }
 </script>
 

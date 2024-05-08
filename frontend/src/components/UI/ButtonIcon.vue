@@ -4,10 +4,8 @@
   </button>
 </template>
 
-<script>
-export default {
-  name: "button-icon"
-}
+<script setup>
+
 </script>
 
 <style scoped>

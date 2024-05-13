@@ -52,8 +52,8 @@
 
 <script setup>
 import {computed, ref, watch} from "vue";
-import store from "@/store";
 import {totalDays} from "./Options";
+import {useStore} from "vuex";
 
 const props = defineProps({
   clickedName: {
@@ -66,6 +66,8 @@ const props = defineProps({
     type: Number,
   },
 })
+
+const store = useStore()
 
 const visible = ref(false);
 const requested = computed(() => store.state.admin.vacations)

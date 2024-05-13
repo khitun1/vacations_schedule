@@ -1,6 +1,5 @@
 <template>
-  <sample-page :choice="'takeVacation'"
-               v-if="token !== null">
+  <sample-page choice="takeVacation">
     <h2 style="margin-top: 40px">
       Календарь отпусков
     </h2>
@@ -43,8 +42,9 @@
         <h2 style="margin-top: -20px">
           Доступно отпускных дней: {{totalLeft}}
         </h2>
-        <h2 style="margin-top: -20px">
-          Доступно дней на начало года: {{left}}
+        <h2 style="margin-top: -20px"
+            v-if="daysForChosenDate">
+          Доступно дней на {{ dateForCheckDays }}: {{daysForChosenDate < 0 ? 0 : daysForChosenDate}}
         </h2>
       </div>
     </div>
@@ -87,7 +87,6 @@ import SamplePage from "@/components/Samples/SamplePage";
 import {calendar} from "@/hooks/calendar";
 import {computed, onMounted, ref} from "vue";
 import moment from "moment";
-import {useStore} from "vuex";
 import {totalDays} from "@/components/Options";
 import {dateUsualFormat} from "@/hooks/generalMoment/dateUsualFormat";
 import {dateChartFormat} from "@/hooks/generalMoment/dateChartFormat";
@@ -96,16 +95,19 @@ import {getLastStart} from "@/hooks/intersections/getLastStart";
 import {amountDays} from "@/hooks/generalMoment/amountDays";
 import {findIntersection} from "@/hooks/intersections/findIntersection";
 import MyButton from "@/components/UI/MyButton.vue";
+import store from "@/store";
 
-const store = useStore();
+
 store.dispatch('getHolidays');
 store.dispatch('getDepartment');
 const percent = computed(() => store.state.my.currentUser.percent);
 const len = computed(() => store.state.my.len);
 const intersInUsersDep = computed(() => store.state.my.dates);
 const inters = ref([]);
+const nextYear = moment().get('year') + 1;
+const dateForCheckDays = ref(moment(nextYear + '-01-01').format('DD.MM.YY'));
+
 const currentUser = computed(() => store.state.my.currentUser);
-console.log(currentUser.value)
 const token = localStorage.getItem('token');
 const doubleShowAlert = ref(0);
 const intersections = () => {
@@ -168,7 +170,9 @@ onMounted(async () => {
 const { rows, columns, attrs, dis, minDate } = calendar(inters);
 const totalLeft = computed(() => store.getters.totalLeft);
 const left = computed(() => store.state.my.currentUser.left);
+const leftOnStart = computed(() => store.getters.leftOnStartOfYear)
 const total = computed(() => store.state.my.total);
+const daysForChosenDate = ref(null);
 
 const date = ref(null);
 const paid = ref([]);
@@ -193,15 +197,20 @@ const showWish = () => {
       });
       const start =  dateChartFormat(date.value.start);
       const end = dateChartFormat(date.value.end);
-      const createDate = moment();
-      const nextYear = createDate.get('year') + 1;
-      const startY = moment(nextYear+'-01-01');
-      if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) <
+      const startY = moment(nextYear + '-01-01');
+      const amountInYear = moment().endOf('year')
+          .diff(moment().startOf('year'), 'days') + 1;
+      if (start === end) {
+        dateForCheckDays.value = dateReverseFormat(start);
+        daysForChosenDate.value = leftOnStart.value + Math.floor(
+            totalDays(dateReverseFormat(startY), dateReverseFormat(start)) * total.value / amountInYear);
+      }
+      else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) <
           store.state.admin.department.min) {
         alert('Выбрано меньше дней, чем минимум за один отпуск!');
       }
-      else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > left.value - wishesAmount +
-          Math.floor(totalDays(dateReverseFormat(start), dateReverseFormat(startY)) * total.value / 365)
+      else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > leftOnStart.value +
+          Math.floor(totalDays(dateReverseFormat(startY), dateReverseFormat(start)) * total.value / amountInYear)
           && currentUser.value.rules)
       {
         alert('Выбрано больше дней, чем будет доступно на ' + dateReverseFormat(start));
@@ -213,12 +222,18 @@ const showWish = () => {
           //   alert('Выбрано больше дней, чем будет доступно на ' + (nextYear - 1) + ' год');
       // }
       else {
+
         date.value =
             {
               start: start,
               end: end,
               userId: currentUser.value.id,
             }
+
+        const amount = totalDays(dateReverseFormat(start), dateReverseFormat(end));
+        if (daysForChosenDate) {
+          daysForChosenDate.value -= amount;
+        }
         store.dispatch('addWish', date.value);
       }
       date.value = null;
@@ -226,7 +241,14 @@ const showWish = () => {
   }
   doubleShowAlert.value++;
 }
-const del = async (id) => await store.dispatch('deleteWish', id);
+const del = async (id) => {
+  const wish = wishes.value.find(p => p.id === id);
+  const amount = totalDays(wish.start, wish.end);
+  if (daysForChosenDate) {
+    daysForChosenDate.value += amount;
+  }
+  await store.dispatch('deleteWish', id);
+}
 
 const sendAll = async() => {
   let record = {};

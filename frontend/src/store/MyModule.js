@@ -38,6 +38,14 @@ export const MyModule = {
             }
         },
 
+        leftOnStartOfYear(state) {
+            let total = state.currentUser.left;
+            state.wishes.forEach(p => {
+                total -= totalDays(p.start, p.end)
+            });
+            return total;
+        },
+
         last(state) {
             return state.myVacations.length + 1;
         },

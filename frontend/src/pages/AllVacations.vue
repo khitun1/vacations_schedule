@@ -1,6 +1,5 @@
 <template >
-  <sample-page :choice="'allVacations'"
-               v-if="token !== null && isAdmin">
+  <sample-page choice="allVacations">
     <VueMultiselect class="selectDep"
                     :options="allDeps"
                     placeholder="Выберите отдел"
@@ -68,7 +67,6 @@
               tabindex="-1"/>
     </div>
   </sample-page>
-  <not-access v-else/>
 </template>
 <script>
 import Chart from 'chart.js/auto';
@@ -138,11 +136,6 @@ export default {
 
     token() {
       return localStorage.getItem('token');
-    },
-
-    isAdmin() {
-      const token = localStorage.getItem('token');
-      return jwt_decode(token).is_admin;
     },
 
     height: function (){

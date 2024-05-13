@@ -8,7 +8,9 @@
 
 <script setup>
 import {computed, onMounted} from "vue";
-import store from "@/store/index.js";
+import {useStore} from "vuex";
+
+const store = useStore()
 
 const isLoading = computed(() => store.state.isLoading);
 store.commit('setLoading', true);

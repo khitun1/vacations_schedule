@@ -63,8 +63,11 @@ class UsersController {
             const departmentId = dep.id;
             const createDate = moment();
             const nextYear = createDate.get('year') + 1;
-            const startY = moment('01-01-' + nextYear);
-            const left_days = startY.diff(createDate, 'days') * dep.total / 365;
+            const nextYearStart = moment('01-01-' + nextYear);
+            const amountInYear = moment().endOf('year')
+                .diff(moment().startOf('year'), 'days') + 1;
+            const left_days = (nextYearStart.diff(createDate, 'days') + 1) * dep.total / amountInYear;
+
             const md5password = await bcrypt.hash(password, 5);
             await User.create({first_name, last_name, surname, left_days, mail,
                 login, md5password, is_admin, departmentId, rules: dep.rules, actual_date: createDate});

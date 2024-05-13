@@ -5,7 +5,10 @@ import AllVacations from "../pages/AllVacations.vue";
 import AdminPage from "../pages/AdminPage.vue";
 import MySettings from "../pages/MySettings.vue";
 import StartScreen from "../pages/StartScreen.vue";
+import NotAccess from "@/components/Samples/NotAccess.vue";
+import jwt_decode from "jwt-decode";
 
+const token = localStorage.getItem('token');
 
 const routes = [
     {
@@ -14,23 +17,38 @@ const routes = [
     },
     {
         path: '/myVacations',
-        component: MyVacations,
+        component: () => {
+            return token ? MyVacations : '';
+        },
     },
     {
         path: '/requestVacation',
-        component: TakeVacation,
+        component: () => {
+            return token ? TakeVacation : '';
+        },
     },
     {
         path: '/allVacations',
-        component: AllVacations,
+        component: () => {
+            const isAdmin = jwt_decode(token).is_admin;
+            const director = jwt_decode(token).director;
+            return token ? (isAdmin || director ? AllVacations : NotAccess) : '';
+        },
+
     },
     {
         path: '/admin',
-        component: AdminPage,
+        component: () => {
+            const isAdmin = jwt_decode(token).is_admin;
+            const director = jwt_decode(token).director;
+            return token ? (isAdmin && !director ? AdminPage : NotAccess) : '';
+        },
     },
     {
         path: '/settings',
-        component: MySettings,
+        component: () => {
+            return token ? MySettings : '';
+        },
     },
 ]
 

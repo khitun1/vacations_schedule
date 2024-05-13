@@ -1,8 +1,9 @@
 import {computed, onMounted, ref} from "vue";
 import moment from "moment/moment";
-import store from "@/store";
+import {useStore} from "vuex";
 
 export function  calendar(inters , flag = 0) {
+    const store = useStore()
     const rows = ref('2');
     let columns = ref('3');
     let calendarShow = ref(true);

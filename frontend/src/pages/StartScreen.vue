@@ -25,12 +25,13 @@
 </template>
 
 <script setup>
-import store from "@/store";
 import router from "@/router/router";
 import {computed, ref} from "vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
+import {useStore} from "vuex";
 
+const store = useStore()
 const login = ref('');
 const password = ref('');
 const error = computed(() => store.state.my.errorMsg);

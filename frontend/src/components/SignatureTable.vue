@@ -7,7 +7,7 @@
          v-for="vac in requested.filter(p => p.status === 'Ожидание'
          && (p.surname + ' ' + p.first_name + ' ' + p.last_name) === u)"
          :key="vac.id"
-         @mouseover="visible=vac.id"
+         @mouseover="visible = vac.id"
          @mouseleave="visible = false"
          tabindex="-1">
       <div class="info"
@@ -18,7 +18,7 @@
             {{ vac.start }} - {{ vac.end }}
           </p>
           <p style="width: 130px">
-            кол-во дней: {{ totalDays()(vac.start, vac.end) }}
+            кол-во дней: {{ totalDays(vac.start, vac.end) }}
           </p>
           <p style="width: 130px">
             {{vac.paid ? 'Оплачиваемый': 'Не оплачиваемый'}}
@@ -68,7 +68,6 @@ const props = defineProps({
 })
 
 const store = useStore()
-
 const visible = ref(false);
 const requested = computed(() => store.state.admin.vacations)
 const uniq = computed(() => {

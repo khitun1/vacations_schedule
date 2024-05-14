@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {useStore} from "vuex";
 import {daysOff, totalDays} from "@/components/Options";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
@@ -86,12 +86,14 @@ const setBorder = (status) => {
 const visible = ref(false);
 const visibleExplanation = ref(false);
 const explanation = ref('');
+const currentUser = computed(() => store.state.my.currentUser)
 const Del = (id) => {
   store.dispatch('deleteVacation', id);
 }
 const checkDel = (status, id) => {
   if(visible.value !== id) return false;
-  if(status !== 'Утверждено' && status !== 'Использовано') return true;
+  if((status === 'Утверждено' && currentUser.value.allow && !currentUser.value.acceptAll) ||
+      status === 'Отказ') return true;
 }
 </script>
 

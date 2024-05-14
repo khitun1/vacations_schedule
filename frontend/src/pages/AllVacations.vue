@@ -68,6 +68,8 @@
     </div>
   </sample-page>
 </template>
+
+
 <script>
 import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
@@ -82,7 +84,6 @@ import {dateChartFormat} from "@/hooks/generalMoment/dateChartFormat";
 import {amountDays} from "@/hooks/generalMoment/amountDays";
 import {getLastStart} from "@/hooks/intersections/getLastStart";
 import {findIntersection} from "@/hooks/intersections/findIntersection";
-import jwt_decode from "jwt-decode";
 import NotAccess from "@/components/Samples/NotAccess.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 
@@ -289,7 +290,8 @@ export default {
         start = dateUsualFormat(this.showVacations[j].start);
         end = dateUsualFormat(this.showVacations[j].end);
         if(lastStart <= amountDays(end) &&
-            lastStart >= amountDays(start))
+            lastStart >= amountDays(start) &&
+            inters.length >= quarter)
         {
           inters.push(this.showVacations[j].start);
           this.showVacations[j].intersections = 'Да';

@@ -31,7 +31,8 @@ export const MyModule = {
             }
             else if ((!state.currentUser.allow && !state.currentUser.acceptAll) ||
                 (state.currentUser.allow && !state.currentUser.acceptAll)) {
-                return state.currentUser.actual_days + ' на ' + (parseInt(state.year) + 1) + ' год';
+                return state.currentUser.actual_days + state.currentUser.left -
+                    total + state.total + ' на ' + (parseInt(state.year) + 1) + ' год';
             }
             else {
                 return (state.currentUser.left + state.total) + ' на ' + (parseInt(state.year) + 2) + ' год';
@@ -39,7 +40,7 @@ export const MyModule = {
         },
 
         leftOnStartOfYear(state) {
-            let total = state.currentUser.left;
+            let total = state.currentUser.left + state.currentUser.actual_days;
             state.wishes.forEach(p => {
                 total -= totalDays(p.start, p.end)
             });
@@ -202,7 +203,7 @@ export const MyModule = {
 
         async deleteVacation({state, commit}, id) {
             let vac = state.myVacations.find(p => p.id === id);
-            let days = vac.status === 'Ожидание' ? totalDays(vac.start, vac.end): 0;
+            let days = vac.status === 'Утверждено' ? totalDays(vac.start, vac.end): 0;
             commit('delVac', {id, days});
             let num = 1;
             state.myVacations.forEach(p => {

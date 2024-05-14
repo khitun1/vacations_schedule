@@ -43,7 +43,7 @@
           Доступно отпускных дней: {{totalLeft}}
         </h2>
         <h2 style="margin-top: -20px"
-            v-if="daysForChosenDate">
+            v-if="daysForChosenDate && currentUser.rules">
           Доступно дней на {{ dateForCheckDays }}: {{daysForChosenDate < 0 ? 0 : daysForChosenDate}}
         </h2>
       </div>
@@ -106,6 +106,7 @@ const intersInUsersDep = computed(() => store.state.my.dates);
 const inters = ref([]);
 const nextYear = moment().get('year') + 1;
 const dateForCheckDays = ref(moment(nextYear + '-01-01').format('DD.MM.YY'));
+let myVacations = computed(() => store.state.my.myVacations);
 
 const currentUser = computed(() => store.state.my.currentUser);
 const token = localStorage.getItem('token');
@@ -182,6 +183,10 @@ const wishes = computed(() => store.state.my.wishes);
 const socket = computed(() => store.state.my.socket);
 
 const showWish = () => {
+  console.log(myVacations.value)
+  if (myVacations.value.find(p => p.status === 'Отказ')) {
+    alert('Сначала удалите несогласованный отпуск');
+  }
   if (doubleShowAlert.value === 1) {
     doubleShowAlert.value = 0;
     return;
@@ -264,10 +269,7 @@ const sendAll = async() => {
       fourteen++;
     }
   });
-  if (totalLeft.value.split(' ')[0] < 0 || (total > left.value && currentUser.value.rules)) {
-    alert('Выбрано больше дней, чем доступно!');
-  }
-  else if (fourteen === 0 && currentUser.value.allow && currentUser.value.acceptAll) {
+  if (fourteen === 0 && currentUser.value.allow && currentUser.value.acceptAll) {
     (alert('Хотя бы один отпуск должен быть не менее 14 дней!'));
   }
   else {

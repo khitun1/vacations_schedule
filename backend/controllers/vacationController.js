@@ -47,17 +47,17 @@ class vacationController {
                 adminId: admin.id,
             })
             const actual_date = moment();
-            const actual_days = user.rules ? Math.floor(user.left_days) - total : Math.floor(user.left_days) + req.user.total - total;
+            const actual_days = Math.floor(user.actual_days) - total;
             await User.update({actual_days, actual_date}, {
                 where: {
                     id: req.user.id,
                 }
             })
-            // await User.update({allow: 0, accept_all: 0}, {
-            //     where: {
-            //         id: req.user.id,
-            //     }
-            // })
+            await User.update({allow: 0, accept_all: 0}, {
+                where: {
+                    id: req.user.id,
+                }
+            })
             return res.send("All is ok!");
         } catch (e) {
             winston.error(e.message);
@@ -114,12 +114,12 @@ class vacationController {
                     }
                 })
             }
-            if (currentVacation.status === 'Ожидание') {
+            if (currentVacation.status === 'Утверждено') {
                 const user = await User.findOne({
                     where: {
                         id: req.user.id,
                     }
-                })
+                });
                 await User.update({actual_days: user.actual_days + req.body.days}, {
                     where: {
                         id: req.user.id,

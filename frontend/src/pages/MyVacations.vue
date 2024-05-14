@@ -94,7 +94,7 @@ onMounted(async () => {
   await store.dispatch('getHolidays');
   await store.dispatch('getVacations');
 })
-const {rows, columns, attrs, dis, calendarShow, myVacations,} = calendar([], 1);
+const {rows, columns, attrs, dis, calendarShow, myVacations} = calendar([], 1);
 const token = localStorage.getItem('token');
 const totalLeft = computed(() => store.getters.totalLeft);
 const total = computed(() => store.state.my.total);

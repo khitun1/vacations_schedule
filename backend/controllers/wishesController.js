@@ -25,7 +25,7 @@ class wishesController {
                 where: {
                     userId: req.user.id,
                 }
-            });
+            })
             return res.send(wishes);
         } catch (e) {
             winston.error(e.message);

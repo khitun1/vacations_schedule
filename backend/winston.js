@@ -5,6 +5,6 @@ winston.configure({
         new (winston.transports.File)({
             filename: 'logger.log',})
     ]
-});
+})
 
 module.exports = winston;

@@ -31,7 +31,7 @@ import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import {useStore} from "vuex";
 
-const store = useStore()
+const store = useStore();
 const login = ref('');
 const password = ref('');
 const error = computed(() => store.state.my.errorMsg);

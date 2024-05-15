@@ -42,7 +42,7 @@ export function  calendar(inters , flag = 0) {
             else {
                 if (p.status !== 'inters') attrs.push(chooseColor(p));
             }
-        });
+        })
         wishes.value.forEach(p => attrs.push(chooseColor(p)));
         if (flag === 0) inters.value.forEach(p => attrs.push(chooseColor(p)));
         return attrs;
@@ -60,7 +60,7 @@ export function  calendar(inters , flag = 0) {
             else {
                 if (p.status !== 'inters') dis.push(disDates(p));
             }
-        });
+        })
         wishes.value.forEach(p => dis.push(disDates(p)));
         return dis;
     })
@@ -68,7 +68,7 @@ export function  calendar(inters , flag = 0) {
     let minDate = computed(() => {
         const start = moment().year() + 1 + '-01-01';
         return moment(start)._d;
-    });
+    })
     const updateColumns = () => {
         columns.value = window.innerWidth > 1100? 3 : window.innerWidth > 600 ? 2 : 1;
     }

@@ -67,11 +67,11 @@ const props = defineProps({
     type: String,
     requested: true,
   },
-});
+})
 
 const token = localStorage.getItem('token');
 const store = useStore();
-const currentUser =  computed(() => store.state.my.currentUser);
+const currentUser = computed(() => store.state.my.currentUser);
 const take = computed(() => props.choice === 'takeVacation' ? '#e2e2e2': 'none');
 const mine = computed(() => props.choice === 'myVacations' ? '#e2e2e2': 'none');
 const all = computed(() => props.choice === 'allVacations' ? '#e2e2e2': 'none');

@@ -22,7 +22,7 @@ class departmentController {
                 where: {
                     name: req.user.department,
                 }
-            });
+            })
             return res.send(dep);
         } catch (e) {
             winston.error(e.message);
@@ -38,7 +38,7 @@ class departmentController {
             const {id, min, total, percents} = req.body;
             await Department.update({min, total, percents}, {
                 where: {id}
-            });
+            })
             return res.send("Conditions have changed!");
         } catch (e) {
             winston.error(e.message);

@@ -69,19 +69,21 @@ const currentUser = computed(() => store.state.my.currentUser);
 const noteName = computed(() => store.state.my.noteName);
 const notes = computed(() => store.state.my.notes);
 
-const getTime = time => moment(time).format('HH:mm:ss');
+const getTime = (time) => {
+  return moment(time).format('HH:mm:ss');
+}
 const onClickAway = () => {
       showAllNotes.value = false;
-    }
+}
 const exit = () => {
       localStorage.removeItem('token');
       store.commit('clear');
-    }
+}
 const seeAll = () => {
       showAllNotes.value = false;
       router.push('/allVacations');
       store.dispatch('clear');
-    }
+}
 watch (noteName, () => {
       if (noteName.value !== '') {
         showNote.value = true;
@@ -90,7 +92,7 @@ watch (noteName, () => {
           store.commit('clearNoteName');
         }, 2000)
       }
-    })
+})
 </script>
 
 <style scoped>

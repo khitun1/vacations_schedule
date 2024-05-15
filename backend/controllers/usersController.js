@@ -20,7 +20,7 @@ class UsersController {
                 where: {
                     departmentId: dep.id,
                 }
-            });
+            })
 
             let vacationsEmployees = [];
             for (let i = 0; i < users.length; i++) {
@@ -53,10 +53,10 @@ class UsersController {
                 where: {
                     name: req.user.department,
                 }
-            });
+            })
             const user = await User.findOne({
                 where: {login}
-            });
+            })
             if (user) {
                 return next(apiError.badRequest('Пользователь с таким логином уже есть!'));
             }
@@ -88,12 +88,12 @@ class UsersController {
                     where: {
                         name: req.user.department,
                     }
-                });
+                })
                 users =  await User.findAll({
                     where: {
                         departmentId: dep.id,
                     }
-                });
+                })
             }
             else {
                 users =  await User.findAll();
@@ -136,7 +136,7 @@ class UsersController {
             const {id, status, explanation} = req.body;
             const vacation = await Vacations.findOne({
                 where: {id}
-            });
+            })
             //const statusMsg = status === 'Отказ' ? 'отклонена.' : 'принята.';
 
             const user = await User.findOne({
@@ -223,16 +223,16 @@ class UsersController {
             //
             //
             // let transporter = nodemailer.createTransport({
-            //     host: 'smtp.mail.ru',
-            //     port: 465,
+            //     host: process.env.MAIL_HOST,
+            //     port: process.env.MAIL_PORT,
             //     secure: true,
             //     auth: {
-            //         user: 'vschedule@mail.ru',
-            //         pass: '0xVq3Lj72R7N4W2kwANm',
+            //         user: process.env.MAIL_USER,
+            //         pass: process.env.MAIL_PASSWORD,
             //     },
             // })
             // await transporter.sendMail({
-            //     from: 'Сервис для планирования отпусков сотрудников <vschedule@mail.ru>',
+            //     from: 'Сервис для планирования отпусков сотрудников',
             //     to: user.mail,
             //     subject: 'Решение по отпуску',
             //     text: 'Ваша заявка на отпуск с ' +
@@ -275,7 +275,7 @@ class UsersController {
                 where: {
                     name: req.user.department,
                 }
-            });
+            })
             const amount = number * dep.total / 365;
             const user = await User.findOne({
                 where: {

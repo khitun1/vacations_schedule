@@ -6,7 +6,7 @@
 <script setup>
 defineProps({
   modelValue: [String, Number]
-});
+})
 
 const emit = defineEmits(['update:modelValue']);
 const updateInput = (event) => {

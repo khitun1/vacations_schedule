@@ -105,7 +105,7 @@ const searchUser = ref('');
 const userList = computed(() => {
       if(searchUser.value === '') return store.state.admin.users;
   return store.state.admin.users.filter(p => p.surname.toLowerCase().includes(searchUser.value.toLowerCase()));
-});
+})
 const visibleUserList = computed(() => store.state.admin.visibleUserList);
 const changeVisibleUserList = () => {
   store.commit('changeVisibleUserList');

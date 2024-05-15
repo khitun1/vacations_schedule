@@ -320,7 +320,7 @@ export default {
           borderColor: 'red',
           backgroundColor: 'red',
           borderWidth: 2,
-        });
+        })
         this.amount++;
       }
       else this.showVacations[i].intersections = 'Нет';
@@ -436,7 +436,7 @@ export default {
     showData(index){
       this.myChart.setActiveElements([
         {datasetIndex: index[1], index: this.myChart.data.labels.indexOf(index[0])},
-      ]);
+      ])
       this.setRangeInChart(index[2]);
       this.myChart.update();
       document.getElementById('myChart') .focus();

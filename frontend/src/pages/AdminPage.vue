@@ -20,7 +20,7 @@ import UserList from "@/components/UserList.vue";
 import jwt_decode from "jwt-decode";
 import NotAccess from "@/components/Samples/NotAccess.vue";
 
-const store = useStore()
+const store = useStore();
 const token = localStorage.getItem('token');
 store.dispatch('createSocket');
 store.dispatch('getDepartment');

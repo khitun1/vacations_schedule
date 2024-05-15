@@ -77,7 +77,6 @@ import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import ButtonBack from "@/components/UI/ButtonBack.vue";
 
-
 const store = useStore();
 const users = computed(() => store.state.admin.users);
 const changeVisibleAddUser = () => {
@@ -96,7 +95,7 @@ const user = ref({
   login: '',
   password: '',
   is_admin: '',
-});
+})
 const surname = ref('Фамилия');
 const name = ref('Имя');
 const lastname = ref('Отчество');
@@ -105,11 +104,9 @@ const log = ref('Логин');
 const pas = ref('Пароль');
 const dep = ref('Отдел');
 const error = ref(false);
-const visible = ref(true);
 const errorMsg = ref('');
 const typePassword = ref('text');
 const flag = ref(false);
-const visibleForm = ref(false);
 const createUser = () => {
   error.value = false;
   errorMsg.value = '';

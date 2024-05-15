@@ -26,13 +26,13 @@ app.ws('/', (ws, req) => {
                     where: {
                         name: parsedMsg.userDepartment
                     }
-                });
+                })
                 const admin = await User.findOne({
                     where: {
                         departmentId: department.id,
                         is_admin: 1,
                     }
-                });
+                })
                 ws.id = parsedMsg.userId;
                 ws.adminId = admin.id;
                 break;

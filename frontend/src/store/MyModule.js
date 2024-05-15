@@ -43,7 +43,7 @@ export const MyModule = {
             let total = state.currentUser.left + state.currentUser.actual_days;
             state.wishes.forEach(p => {
                 total -= totalDays(p.start, p.end)
-            });
+            })
             return total;
         },
 
@@ -155,7 +155,7 @@ export const MyModule = {
             const {data} = await firstHost.post('user/login', {
                 login: login,
                 password: password,
-            });
+            })
             if (!data.token) commit('setError', data);
             localStorage.setItem('token', data.token);
             commit('setCurrentUser', data);
@@ -229,7 +229,7 @@ export const MyModule = {
         async changeMail({commit}, mail) {
             await host.post('user/changeMail', {
                 mail: mail,
-            });
+            })
             commit('changeMail', mail);
         },
 

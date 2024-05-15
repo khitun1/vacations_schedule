@@ -166,7 +166,7 @@ onMounted(async () => {
   await store.dispatch('getWishes');
   await store.dispatch('getVacations');
   intersections();
-});
+})
 
 const { rows, columns, attrs, dis, minDate } = calendar(inters);
 const totalLeft = computed(() => store.getters.totalLeft);
@@ -268,7 +268,7 @@ const sendAll = async() => {
     if (current >= 14) {
       fourteen++;
     }
-  });
+  })
   if (fourteen === 0 && currentUser.value.allow && currentUser.value.acceptAll) {
     (alert('Хотя бы один отпуск должен быть не менее 14 дней!'));
   }

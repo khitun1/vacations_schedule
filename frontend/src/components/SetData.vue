@@ -79,7 +79,6 @@ import ButtonBack from "@/components/UI/ButtonBack.vue";
 const store = useStore();
 const rule = computed(() => store.state.admin.department.rules);
 const changeMin =  ref(true);
-const changeMax =  ref(true);
 const changeTotal =  ref(true);
 const changePercent =  ref(true);
 const minText =  ref('Изменить');
@@ -87,7 +86,6 @@ const totalText =  ref('Изменить');
 const percentText =  ref('Изменить');
 const errorNum =  ref(false);
 const errorMsg =  ref('');
-const visibleCon =  ref(false);
 const visibleChangeCon = computed(() => store.state.admin.visibleChangeCon);
 const visibleAdminWindow = computed(() => store.getters.visibleAdminWindow)
 const condition = computed(() => store.state.admin.department);

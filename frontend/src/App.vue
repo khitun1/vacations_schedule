@@ -10,7 +10,7 @@
 import {computed, onMounted} from "vue";
 import {useStore} from "vuex";
 
-const store = useStore()
+const store = useStore();
 
 const isLoading = computed(() => store.state.isLoading);
 store.commit('setLoading', true);
@@ -21,7 +21,7 @@ onMounted(() => {
 
 // setTimeout(() => {
 //   store.commit('setLoading', true)
-// }, 1000);
+// }, 1000)
 </script>
 
 <style>

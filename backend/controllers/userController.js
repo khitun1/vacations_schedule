@@ -44,7 +44,7 @@ class UserController {
                         {mail: login}
                     ]
                 }
-            });
+            })
             if (!user) {
                 return res.send('Неверный логин или почта');
             }
@@ -56,7 +56,7 @@ class UserController {
                 where: {
                     id: user.departmentId
                 }
-            });
+            })
             const token = generateJwt(user.id, user.is_admin, department.name,
                 user.surname, user.first_name, user.last_name, user.login,
                 department.percents / 100, user.mail, user.director, user.allow,
@@ -103,7 +103,7 @@ class UserController {
                 where: {
                     id: user.departmentId
                 }
-            });
+            })
             history.sort((a, b) => a.id > b.id ? -1 : 1);
             const token = generateJwt(user.id, user.is_admin, department.name,
                 user.surname, user.first_name, user.last_name, user.login,
@@ -182,7 +182,7 @@ class UserController {
                 where: {
                     departmentId: dep.id,
                 }
-            });
+            })
 
             let dates = [];
             for (let i = 0; i < users.length; i++) {

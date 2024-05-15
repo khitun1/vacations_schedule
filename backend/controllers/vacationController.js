@@ -75,7 +75,7 @@ class vacationController {
                 where: {
                     userId: req.user.id,
                 }
-            });
+            })
             return res.send(vacations);
         } catch (e) {
             winston.error(e.message);
@@ -119,12 +119,12 @@ class vacationController {
                     where: {
                         id: req.user.id,
                     }
-                });
+                })
                 await User.update({actual_days: user.actual_days + req.body.days}, {
                     where: {
                         id: req.user.id,
                     }
-                });
+                })
             }
             res.send("Vacation have deleted");
         } catch (e) {

@@ -1,5 +1,5 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp } from 'vue';
+import App from './App.vue';
 import VueClickAway from "vue3-click-away";
 import router from "./router/router";
 import 'v-calendar/dist/style.css';
@@ -8,9 +8,9 @@ import VCalendar from 'v-calendar';
 import store from "./store";
 
 
-const app = createApp(App)
+const app = createApp(App);
 
-components.forEach(p => app.component(p.name, p))
+components.forEach(p => app.component(p.name, p));
 
 app
     .use(router)

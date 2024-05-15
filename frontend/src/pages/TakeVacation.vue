@@ -129,7 +129,7 @@ const intersections = () => {
     let lastStart;
     for (let i = 0; i < intersInUsersDep.value.length; i++) {
       for (let j = 0; j < i; j++){
-        if(findIntersection(intersInUsersDep.value[i], intersInUsersDep.value[j])) {
+        if (findIntersection(intersInUsersDep.value[i], intersInUsersDep.value[j])) {
           lastStart = getLastStart(intersInUsersDep.value[i].start, intersInUsersDep.value[j].start);
           draw(i, lastStart, quarter);
         }
@@ -143,9 +143,8 @@ const draw = (i, lastStart, quarter) => {
   for(let j = 0; j < i; j++){
     start = amountDays(dateUsualFormat(intersInUsersDep.value[j].start));
     end = amountDays(dateUsualFormat(intersInUsersDep.value[j].end));
-    if(lastStart <= end &&
-        lastStart >= start)
-    {
+    if (lastStart <= end &&
+        lastStart >= start) {
       let range = {};
       range.start = intersInUsersDep.value[i].start;
       const earlierEnd = amountDays(dateUsualFormat(intersInUsersDep.value[i].end));
@@ -216,8 +215,7 @@ const showWish = () => {
       }
       else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > leftOnStart.value +
           Math.floor(totalDays(dateReverseFormat(startY), dateReverseFormat(start)) * total.value / amountInYear)
-          && currentUser.value.rules)
-      {
+          && currentUser.value.rules) {
         alert('Выбрано больше дней, чем будет доступно на ' + dateReverseFormat(start));
       }
       else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > totalLeft.value.split(' ')[0]) {

@@ -83,7 +83,7 @@ const prevPerson = ref(null);
 const prevRec = ref(null);
 const showData = (vac) => {
   let person;
-  if (prevPerson.value !== null){
+  if (prevPerson.value !== null) {
     person = document.getElementsByClassName('person')[prevPerson.value];
     person.getElementsByClassName('rec')[prevRec.value].style.filter = 'none';
   }
@@ -98,10 +98,9 @@ const showData = (vac) => {
 }
 
 watch(() => props.clicked, () => {
-  if (uniq.value.indexOf(props.clickedName) !== -1)
-  {
+  if (uniq.value.indexOf(props.clickedName) !== -1) {
     let person;
-    if (prevPerson.value !== null){
+    if (prevPerson.value !== null) {
       if (prevRec.value >= 0) {
         person = document.getElementsByClassName('person')[prevPerson.value];
         person.getElementsByClassName('rec')[prevRec.value].style.filter = 'none';

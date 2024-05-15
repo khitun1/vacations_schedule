@@ -76,7 +76,9 @@ export function totalDays(start,end) {
     holidays.value.forEach(p => {
         const holiday = moment(p).format('DD.MM.YYYY');
         if (moment(p).isBetween(s,e) || holiday === s.format('DD.MM.YYYY')
-            || holiday === e.format('DD.MM.YYYY'))   total--;
+            || holiday === e.format('DD.MM.YYYY'))   {
+            total--;
+        }
     })
     return total;
 }

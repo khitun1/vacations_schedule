@@ -38,7 +38,7 @@ app.ws('/', (ws, req) => {
                 break;
             case 'message':
                 aWss.clients.forEach(async (socket) => {
-                    if(socket.id === ws.adminId) {
+                    if (socket.id === ws.adminId) {
                         let notes = await History.findAll({
                             where: {
                                 adminId: socket.id,

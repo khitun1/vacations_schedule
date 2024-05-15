@@ -91,9 +91,13 @@ const Del = (id) => {
   store.dispatch('deleteVacation', id);
 }
 const checkDel = (status, id) => {
-  if(visible.value !== id) return false;
-  if((status === 'Утверждено' && currentUser.value.allow && !currentUser.value.acceptAll) ||
-      status === 'Отказ') return true;
+  if (visible.value !== id) {
+    return false;
+  }
+  if ((status === 'Утверждено' && currentUser.value.allow && !currentUser.value.acceptAll) ||
+      status === 'Отказ') {
+    return true;
+  }
 }
 </script>
 

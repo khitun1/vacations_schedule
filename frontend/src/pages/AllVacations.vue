@@ -263,9 +263,11 @@ export default {
       let check = 0;
       let label = 'Отпуск ' + n;
       this.myChart.data.datasets.forEach(p => {
-        if(p.label === label)  check++;
+        if (p.label === label)  {
+          check++;
+        }
       })
-      if(check === 0)
+      if (check === 0) {
         this.myChart.data.datasets.splice(n-1+this.amount, 0,{
           label: label,
           grouped: false,
@@ -273,6 +275,7 @@ export default {
           backgroundColor: this.color,
           hoverBackgroundColor: '#ffed76',
         })
+      }
     },
     getLastDate(inter){ // get last date in date set of intersections
       let help = [];
@@ -289,22 +292,19 @@ export default {
       for(let j = 0; j < i; j++) {
         start = dateUsualFormat(this.showVacations[j].start);
         end = dateUsualFormat(this.showVacations[j].end);
-        if(lastStart <= amountDays(end) &&
+        if (lastStart <= amountDays(end) &&
             lastStart >= amountDays(start) &&
-            inters.length >= quarter)
-        {
+            inters.length >= quarter) {
           inters.push(this.showVacations[j].start);
           this.showVacations[j].intersections = 'Да';
         }
         else this.showVacations[j].intersections = 'Нет';
       }
-      if(inters.length !== 0 && inters.length >= quarter)
-      {
+      if (inters.length !== 0 && inters.length >= quarter) {
         inters.push(this.showVacations[i].start);
         this.showVacations[i].intersections = 'Да';
         let last = inters[this.getLastDate(inters)];
-        if(this.intersections.indexOf(last) === -1)
-        {
+        if (this.intersections.indexOf(last) === -1) {
           this.intersections.push(last);
           last = dateUsualFormat(last)
         }
@@ -329,9 +329,11 @@ export default {
     intersection(i){ // find intersection
       let quarter = Math.floor(this.percent * this.users.length);
       let lastStart;
-      if (i === 0)  this.showVacations[i].intersections = 'Нет';
+      if (i === 0)  {
+        this.showVacations[i].intersections = 'Нет';
+      }
       for (let j = 0; j < i; j++) {
-        if(!findIntersection(this.showVacations[i], this.showVacations[j])
+        if (!findIntersection(this.showVacations[i], this.showVacations[j])
             && this.users.find(p => p.id === this.showVacations[i].userId).departmentId ===
             this.users.find(p => p.id === this.showVacations[j].userId).departmentId) {
           lastStart = getLastStart(this.showVacations[i].start, this.showVacations[j].start);
@@ -360,7 +362,9 @@ export default {
       }
       this.myChart.data.labels = this.getLabels();
       this.showVacations.forEach(p => {
-        if (p.status === 'none')  counter++;
+        if (p.status === 'none')  {
+          counter++;
+        }
       })
 
       if (counter === this.users.length) {
@@ -376,7 +380,9 @@ export default {
           this.findSet(n);
           if (this.showVacations[i].status !== 'Отказ' &&
               this.showVacations[i].status !== 'none') {
-            if(n === 1) this.myChart.data.datasets[this.amount].data.push(this.getDates(i));
+            if (n === 1) {
+              this.myChart.data.datasets[this.amount].data.push(this.getDates(i));
+            }
             else {
               let name = this.showVacations[i].surname + ' ' + this.showVacations[i].first_name +
                   ' ' + this.showVacations[i].last_name;
@@ -385,7 +391,9 @@ export default {
             this.intersection(i);
           }
           else {
-            if (n === 1) this.myChart.data.datasets[0].data.push(this.getDates(-1))
+            if (n === 1) {
+              this.myChart.data.datasets[0].data.push(this.getDates(-1))
+            }
           }
         }
       }
@@ -423,7 +431,9 @@ export default {
     show(id){
       document.querySelector('dialog').showModal();
       this.id = id;
-      if(this.vacations.filter(p => p.status === 'Ожидание').length === 1) this.indent = 100;
+      if (this.vacations.filter(p => p.status === 'Ожидание').length === 1) {
+        this.indent = 100;
+      }
     },
 
     showRec(){

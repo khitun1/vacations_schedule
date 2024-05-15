@@ -156,7 +156,9 @@ export const MyModule = {
                 login: login,
                 password: password,
             })
-            if (!data.token) commit('setError', data);
+            if (!data.token) {
+                commit('setError', data);
+            }
             localStorage.setItem('token', data.token);
             commit('setCurrentUser', data);
         },

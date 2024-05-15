@@ -50,7 +50,9 @@ const user = ref('');
 const searchUser = computed(() => new RegExp('^' + user.value + '.+'));
 
 const usersList = computed(() => {
-  if (user.value === '')  return [];
+  if (user.value === '')  {
+    return [];
+  }
   let list = users.value.filter(p => searchUser.value.test(p.name) || p.name === user.value);
   list.splice(list.indexOf(list.find(p => p.id === currentUser.value.id)), 1);
   return list;

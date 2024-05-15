@@ -37,14 +37,20 @@ export function  calendar(inters , flag = 0) {
 
         myVacations.value.forEach(p => {
             if (flag === 0) {
-                if (p.status !== 'Отказ' && p.status !== 'Использовано') attrs.push(chooseColor(p));
+                if (p.status !== 'Отказ' && p.status !== 'Использовано') {
+                    attrs.push(chooseColor(p));
+                }
             }
             else {
-                if (p.status !== 'inters') attrs.push(chooseColor(p));
+                if (p.status !== 'inters') {
+                    attrs.push(chooseColor(p));
+                }
             }
         })
         wishes.value.forEach(p => attrs.push(chooseColor(p)));
-        if (flag === 0) inters.value.forEach(p => attrs.push(chooseColor(p)));
+        if (flag === 0) {
+            inters.value.forEach(p => attrs.push(chooseColor(p)));
+        }
         return attrs;
     })
 
@@ -52,13 +58,14 @@ export function  calendar(inters , flag = 0) {
         let dis = [];
         myVacations.value.forEach(p => {
             if (flag === 0) {
-                if (p.status !== 'Отказ' && p.status !== 'Использовано')
-                {
+                if (p.status !== 'Отказ' && p.status !== 'Использовано') {
                     dis.push(disDates(p))
                 }
             }
             else {
-                if (p.status !== 'inters') dis.push(disDates(p));
+                if (p.status !== 'inters') {
+                    dis.push(disDates(p));
+                }
             }
         })
         wishes.value.forEach(p => dis.push(disDates(p)));

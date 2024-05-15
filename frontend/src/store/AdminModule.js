@@ -56,7 +56,7 @@ export const AdminModule = {
         decision(state, {id, status}) {
             const {userId} = state.vacations.find(p => p.id === id);
             const user = state.users.find(p => p.id === userId);
-            if (status === 'Утверждено'){
+            if (status === 'Утверждено') {
                 state.vacations.find(p => p.id === id).status = 'Утверждено';
             }
             else {

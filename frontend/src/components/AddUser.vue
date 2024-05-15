@@ -110,39 +110,40 @@ const flag = ref(false);
 const createUser = () => {
   error.value = false;
   errorMsg.value = '';
-  if(!user.value.surname && !user.value.first_name && !user.value.last_name
-      && !user.value.login && !user.value.password && !user.value.is_admin && !user.value.mail)  return;
-  if(!user.value.surname)  {
+  if (!user.value.surname && !user.value.first_name && !user.value.last_name
+      && !user.value.login && !user.value.password && !user.value.is_admin && !user.value.mail)  {
+    return;
+  }
+  if (!user.value.surname)  {
     error.value = true;
     surname.value = 'Введите фамилию!';
   }
   flag.value = true;
-  if(!user.value.first_name)  {
+  if (!user.value.first_name)  {
     error.value = true;
     name.value = 'Введите имя!';
   }
-  if(!user.value.last_name)  {
+  if (!user.value.last_name)  {
     error.value = true;
     lastname.value = 'Введите отчество!';
   }
-  if(!user.value.mail)  {
+  if (!user.value.mail)  {
     error.value = true;
     mail.value = 'Введите почтовый адрес!';
   }
-  if(!user.value.login)  {
+  if (!user.value.login)  {
     error.value = true;
     log.value = 'Введите логин!';
   }
-  if(!user.value.password)  {
+  if (!user.value.password)  {
     error.value = true;
     pas.value = 'Введите пароль!';
   }
-  if(!user.value.is_admin)  {
+  if (!user.value.is_admin)  {
     error.value = true;
     dep.value = 'Укажите права!';
   }
-  if(users.value.find(p => p.login === user.value.login))
-  {
+  if (users.value.find(p => p.login === user.value.login)) {
     errorMsg.value = 'Пользователь с таким логином уже есть!';
     error.value = true;
   }

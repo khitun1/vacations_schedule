@@ -103,7 +103,9 @@ const amountExtra = ref(null);
 const visibleAdminWindow = computed(() => store.getters.visibleAdminWindow);
 const searchUser = ref('');
 const userList = computed(() => {
-      if(searchUser.value === '') return store.state.admin.users;
+      if (searchUser.value === '') {
+        return store.state.admin.users;
+      }
   return store.state.admin.users.filter(p => p.surname.toLowerCase().includes(searchUser.value.toLowerCase()));
 })
 const visibleUserList = computed(() => store.state.admin.visibleUserList);

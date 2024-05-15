@@ -94,8 +94,7 @@ const setCon = (flag) => {
   let accept = false;
   switch (flag){
     case 1:
-      if(changeMin.value === false)
-      {
+      if(changeMin.value === false) {
         if (validate(condition.value.min)) {
           if (condition.value.min <= condition.value.total) {
             changeMin.value = true;
@@ -118,9 +117,8 @@ const setCon = (flag) => {
       }
       break;
     case 3:
-      if(changeTotal.value === false)
-      {
-        if(validate(condition.value.total)) {
+      if (changeTotal.value === false) {
+        if (validate(condition.value.total)) {
           if (condition.value.min <= condition.value.total) {
             changeTotal.value = true;
             totalText.value = 'Изменить';
@@ -142,9 +140,8 @@ const setCon = (flag) => {
       }
       break;
     case 4:
-      if(changePercent.value === false)
-      {
-        if(validate(condition.value.percents) && condition.value.percents <= 100) {
+      if (changePercent.value === false) {
+        if (validate(condition.value.percents) && condition.value.percents <= 100) {
           changePercent.value = true;
           percentText.value = 'Изменить';
           accept = true;
@@ -160,7 +157,7 @@ const setCon = (flag) => {
       break;
   }
 
-  if (accept){
+  if (accept) {
     store.dispatch('changeConditions',condition.value);
     errorNum.value = false;
     errorMsg.value = '';

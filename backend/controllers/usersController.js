@@ -83,7 +83,7 @@ class UsersController {
     async getList(req, res, next) {
         try {
             let users ;
-            if(!req.user.director) {
+            if (!req.user.director) {
                 const dep = await Department.findOne({
                     where: {
                         name: req.user.department,

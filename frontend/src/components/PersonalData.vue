@@ -115,7 +115,9 @@ const textMailBtn = ref('Изменить почту');
 const textPasBtn = ref('Изменить пароль');
 const changeLog = () => {
   document.getElementsByClassName('inputLogin')[0].focus();
-  if(changeLogin.value === true)  textLogBtn.value = 'Подтвердить';
+  if (changeLogin.value === true)  {
+    textLogBtn.value = 'Подтвердить';
+  }
   else
   {
     store.dispatch('changeLogin', newLogin.value);
@@ -126,7 +128,9 @@ const changeLog = () => {
 }
 const changePas = () => {
   document.getElementsByClassName('inputPassword')[0].focus();
-  if(changePassword.value === true) textPasBtn.value = 'Подтвердить';
+  if (changePassword.value === true) {
+    textPasBtn.value = 'Подтвердить';
+  }
   else{
     store.dispatch('changePassword', newPassword.value);
     store.dispatch('auth');
@@ -136,7 +140,9 @@ const changePas = () => {
 }
 const change_mail = () => {
   document.getElementsByClassName('inputMail')[0].focus();
-  if(changeMail.value === true) textMailBtn.value = 'Подтвердить';
+  if (changeMail.value === true) {
+    textMailBtn.value = 'Подтвердить';
+  }
   else{
     store.dispatch('changeMail', newMail.value);
     store.dispatch('auth');

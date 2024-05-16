@@ -39,7 +39,7 @@
           {{ user.surname + ' ' + user.first_name[0] + '. ' + user.last_name[0] + '.'}}
         </td>
         <td>
-          {{user.actual_days}} на {{dateReverseFormat(user.actual_date)}}
+          {{user.actual_days > 0 ? user.actual_days : 0}} на {{dateReverseFormat(user.actual_date)}}
         </td>
         <td>
           <div :style="{color: user.allow ? '#ff2323': '#36f64a'}">

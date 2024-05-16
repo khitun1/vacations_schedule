@@ -51,10 +51,6 @@ export const MyModule = {
             return state.myVacations.length + 1;
         },
 
-        intersInUsersDep(state) {
-            return state.dates;
-        },
-
         daysOff(state) {
             const year = parseInt(state.year) + 1;
             let dates = [];
@@ -70,7 +66,6 @@ export const MyModule = {
                     status: 'Day off',
                 })
             }
-
             return dates;
         }
     },

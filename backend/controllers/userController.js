@@ -1,9 +1,10 @@
 const apiError = require('../error/apiError');
-const {User, Department, Vacations, History} = require('../models/models');
+const {User, Department, Vacations, History, CurrentYear} = require('../models/models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 const winston = require('../winston');
 const { Op } = require("sequelize");
+const moment = require("moment");
 
 const generateJwt = (id, is_admin, department, surname, first_name, last_name, login, percent,
                       mail, director, allow, left, actual_days, rules, acceptAll, total) => {
@@ -69,6 +70,26 @@ class UserController {
             let allDepartments;
             if (user.director) {
                 allDepartments = await Department.findAll();
+            }
+            const currentDay = moment()
+            const vacations = await Vacations.findAll({
+                where: {
+                    userId: user.id,
+                    status: "Использовано",
+                }
+            })
+            for (let i = 0; i < vacations.length; i++) {
+                const vacEnd = moment(vacations[i].end, "YYYY-MM-DD");
+                if (currentDay.diff(vacEnd) > 0) {
+                    Vacations.update({
+                        status: "Использовано",
+                    },
+                        {
+                            where: {
+                                id: vacations[i].id,
+                            }
+                        })
+                }
             }
             history.sort((a, b) => a.id > b.id ? -1 : 1);
             return res.json({token: token, history: history, allDepartments: allDepartments});
@@ -202,6 +223,83 @@ class UserController {
             return next(apiError.internal(e.message));
         } finally {
             winston.info("Time: " + new Date() + " Action: Get dates of vacations"
+                + "   User: " + JSON.stringify(req.user));
+        }
+    }
+
+    async getYear(req, res, next) {
+        try {
+            let year = await CurrentYear.findOne();
+            year = moment(year.year, "YYYY-MM-DD").year()
+            return res.json({year})
+        } catch (e) {
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: get current year"
+                + "   User: " + JSON.stringify(req.user));
+        }
+    }
+
+    async nextYear(req, res, next) {
+        try {
+            await CurrentYear.update({year: moment().format("YYYY-MM-DD")}, {
+                where: {
+                    id: 1
+                }
+            })
+            const usersWithOutVacations = await User.findAll({
+                where: {
+                    allow: 1,
+                    accept_all: 1,
+                }
+            })
+
+            for (let i = 0; i < usersWithOutVacations.length; i++) {
+                const department = await Department.findOne({
+                    where: {
+                        id: usersWithOutVacations[i].departmentId
+                    }
+                })
+
+
+                const user = await User.findOne({
+                    where: {
+                        id: usersWithOutVacations[i].id,
+                    }
+                })
+
+                await User.update({left_days: user.left_days + department.total}, {
+                    where: {
+                        id: user.id
+                    }
+                })
+            }
+
+            const currentYear = moment().year()
+
+            const vacs = await Vacations.findAll( {
+                where: {
+                    status: "Использовано",
+                }
+            })
+
+            for (let i = 0; i < vacs.length; i++) {
+                if (moment(vacs[i].start, "YYYY-MM-DD").format('YYYY') <= moment().year() - 2) {
+                    await Vacations.destroy({
+                        where: {
+                            id: vacs[i].id,
+                        }
+                    })
+                }
+            }
+
+            return res.send("Year have changed")
+        } catch (e) {
+            winston.error(e.message);
+            return next(apiError.internal(e.message));
+        } finally {
+            winston.info("Time: " + new Date() + " Action: change current year"
                 + "   User: " + JSON.stringify(req.user));
         }
     }

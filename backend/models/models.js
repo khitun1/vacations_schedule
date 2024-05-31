@@ -51,6 +51,11 @@ const History = sequelize.define('history', {
     adminId: {type: DataTypes.INTEGER},
 })
 
+const CurrentYear = sequelize.define('currentYear', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    year: {type: DataTypes.DATEONLY},
+})
+
 User.hasMany(Vacations);
 Vacations.belongsTo(User);
 
@@ -61,5 +66,5 @@ User.hasMany(Wishes);
 Wishes.belongsTo(User);
 
 module.exports = {
-    User, Department, Vacations, Wishes, History
+    User, Department, Vacations, Wishes, History, CurrentYear
 }

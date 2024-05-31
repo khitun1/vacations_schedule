@@ -246,5 +246,14 @@ export const MyModule = {
           const {data} = await host('vacation/getHolidays');
           commit('setHolidays', data.holidays);
         },
+
+        async getYear() {
+            const {data} = await host('user/getYear');
+            return data.year
+        },
+
+        async nextYear() {
+            await host('user/nextYear');
+        }
     }
 }

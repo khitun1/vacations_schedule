@@ -7,10 +7,7 @@ const errorHandler = require('./middleware/errorHandleMiddleware');
 const {Department, User,
     History, Vacations} = require("./models/models");
 
-
 const port = process.env.PORT;
-
-console.log(port)
 
 const app = express();
 

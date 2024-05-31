@@ -30,6 +30,7 @@ import {computed, ref} from "vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import {useStore} from "vuex";
+import moment from "moment";
 
 const store = useStore();
 const login = ref('');
@@ -42,6 +43,11 @@ const check = async () => {
   await store.dispatch('login', {login: login.value, password: password.value});
   if (error.value === '') {
     const url = '/myVacations';
+    const year = await store.dispatch('getYear');
+    const currentYear = moment().year();
+    if (currentYear > year) {
+      await store.dispatch('nextYear');
+    }
     await router.push(url);
   }
 }

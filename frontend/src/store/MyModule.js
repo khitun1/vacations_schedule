@@ -2,6 +2,7 @@ import {host, firstHost} from "../http/index";
 import moment from "moment/moment";
 import {dateReverseFormat} from "@/hooks/generalMoment/dateReverseFormat";
 import {totalDays} from "@/components/Options";
+import {localize} from "@/hooks/localize.js";
 
 export const MyModule = {
     state: () => ({
@@ -27,15 +28,17 @@ export const MyModule = {
                 total += totalDays(p.start, p.end)
             });
             if (state.currentUser.allow && state.currentUser.acceptAll) {
-                return (state.currentUser.left - total + state.total) + ' на ' + (parseInt(state.year) + 1) + ' год';
+                return (state.currentUser.left - total + state.total) + localize('On')
+                    + (parseInt(state.year) + 1) + ' ' + localize('Year').toLowerCase();
             }
             else if ((!state.currentUser.allow && !state.currentUser.acceptAll) ||
                 (state.currentUser.allow && !state.currentUser.acceptAll)) {
                 return state.currentUser.actual_days + state.currentUser.left -
-                    total + state.total + ' на ' + (parseInt(state.year) + 1) + ' год';
+                    total + state.total + localize('On') + (parseInt(state.year) + 1) + ' год';
             }
             else {
-                return (state.currentUser.left + state.total) + ' на ' + (parseInt(state.year) + 2) + ' год';
+                return (state.currentUser.left + state.total) + localize('On')
+                    + (parseInt(state.year) + 2) + ' ' + localize('Year').toLowerCase();
             }
         },
 
@@ -115,7 +118,7 @@ export const MyModule = {
         },
 
         setError(state, data) {
-            state.errorMsg = data;
+            state.errorMsg = localize(data);
         },
 
         clearNoteName(state) {
@@ -200,7 +203,7 @@ export const MyModule = {
 
         async deleteVacation({state, commit}, id) {
             let vac = state.myVacations.find(p => p.id === id);
-            let days = vac.status === 'Утверждено' ? totalDays(vac.start, vac.end): 0;
+            let days = vac.status === 'Accepted' ? totalDays(vac.start, vac.end): 0;
             commit('delVac', {id, days});
             let num = 1;
             state.myVacations.forEach(p => {

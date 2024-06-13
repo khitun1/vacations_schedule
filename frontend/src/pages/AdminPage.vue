@@ -1,7 +1,7 @@
 <template>
   <sample-page choice="admin">
     <h1>
-      Панель администратора
+      {{ localize('AdminPanel') }}
     </h1>
     <div class="buttons">
       <user-list/>
@@ -19,6 +19,7 @@ import {useStore} from "vuex";
 import UserList from "@/components/UserList.vue";
 import jwt_decode from "jwt-decode";
 import NotAccess from "@/components/Samples/NotAccess.vue";
+import {localize} from "../hooks/localize.js";
 
 const store = useStore();
 const token = localStorage.getItem('token');

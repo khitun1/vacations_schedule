@@ -2,14 +2,14 @@
   <sample-page choice="allVacations">
     <VueMultiselect class="selectDep"
                     :options="allDeps"
-                    placeholder="Выберите отдел"
+                    :placeholder="localize('ChooseDepartment')"
                     :show-labels="false"
                     :show-no-results="false"
                     v-model="selectedDep"
                     @close="chartClick"
                     v-if="currentUser.director"/>
-    <h2 v-if="vacations.filter(p => p.status === 'Ожидание').length > 0 && !currentUser.director">
-      Запросы на подпись отпуска
+    <h2 v-if="vacations.filter(p => p.status === 'Waiting').length > 0 && !currentUser.director">
+      {{ localize('SignRequest') }}
     </h2>
     <signature-table
         :requested="vacations"
@@ -24,19 +24,19 @@
     <dialog class="failure">
       <form @submit.prevent>
         <h2>
-          Укажите причину отказа
+          {{ localize('IndicateRefusalReason') }}
         </h2>
         <textarea v-model="explanation"/>
         <my-button @click="explain(id)">
-          Отправить
+          {{ localize('Send') }}
         </my-button>
         <my-button @click="cancelExplain">
-          Отменить
+          {{ localize('Cancel') }}
         </my-button>
       </form>
     </dialog>
     <h2 v-show="vacations.length > 0 && (selectedDep !== '' || !currentUser.director)">
-      График отпусков
+      {{ localize('VacationsChart') }}
     </h2>
     <div class="range"
          v-show=" selectedDep !== '' || !currentUser.director">
@@ -54,7 +54,7 @@
       </div>
       <VueMultiselect class="selectRange"
                       :options="ranges"
-                      placeholder="Диапазон графика"
+                      :placeholder="localize('ChartRange')"
                       :show-labels="false"
                       :show-no-results="false"
                       v-model="selectedRange"
@@ -86,6 +86,7 @@ import {getLastStart} from "@/hooks/intersections/getLastStart";
 import {findIntersection} from "@/hooks/intersections/findIntersection";
 import NotAccess from "@/components/Samples/NotAccess.vue";
 import MyButton from "@/components/UI/MyButton.vue";
+import {localize} from "@/hooks/localize.js";
 
 export default {
   name: "AllVacations",
@@ -100,8 +101,8 @@ export default {
       clickedName: '',
       clickedNumber: undefined,
       clickEvent: 0,
-      ranges: ['Год', 'Квартал', 'Месяц'],
-      selectedRange: 'Год',
+      ranges: [localize('Year'), localize('Quarter'), localize('Month')],
+      selectedRange: localize('Year'),
       selectedDep: '',
       showVacations: [],
     }
@@ -162,13 +163,15 @@ export default {
 
     rangeChart() {
       let curMonth = this.month < 10 ? '0' + this.month : this.month;
-      return this.range === 'Год' ? this.year + ' г.' :
-          this.range === 'Квартал' ? this.quarter + '-й квартал ' + this.year + ' г.' :
-          moment(this.year + '-' + curMonth + '-01').format('MMMM') + ' ' + this.year + ' г.';
+      return this.range === localize('Year') ? this.year + localize('Y') :
+          this.range === localize('Quarter') ? this.quarter + ' ' +
+              localize('Quarter').toLowerCase() + ' ' + this.year + localize('Y') :
+          moment(this.year + '-' + curMonth + '-01').format('MMMM') + ' ' + this.year + localize('Y');
     },
   },
 
   methods:{
+    localize,
     ...mapMutations ({
       prev: 'prevYear',
       next: 'nextYear',
@@ -195,12 +198,12 @@ export default {
         this.changeQuarter(Math.floor((start.split('.')[1] - 1) / 3  + 1));
         this.changeMonth(start.split('.')[1]);
       }
-      if (this.range === 'Год') {
+      if (this.range === localize('Year')) {
         this.myChart.options.scales.x.time.unit = 'month';
         this.myChart.options.scales.x.min = this.year + '-01-01';
         this.myChart.options.scales.x.max = this.year + '-12-31';
       }
-      else if (this.range === 'Квартал') {
+      else if (this.range === localize('Quarter')) {
         this.myChart.options.scales.x.time.unit = 'week';
         let startMonth = (1 + ( 3 * (this.quarter - 1)));
         startMonth = startMonth < 10 ? '0' + startMonth : startMonth;
@@ -212,7 +215,7 @@ export default {
         this.myChart.options.scales.x.min = min;
         this.myChart.options.scales.x.max = max;
       }
-      else if (this.range === 'Месяц') {
+      else if (this.range === localize('Month')) {
         this.myChart.options.scales.x.time.unit = 'day';
         let Month = this.month < 10 ? '0' + this.month : this.month;
         let min = this.year + '-' + Month + '-01';
@@ -261,7 +264,7 @@ export default {
 
     findSet(n){ // create dataset for nonexistent number of vacation
       let check = 0;
-      let label = 'Отпуск ' + n;
+      let label = localize('Vacation') + ' ' + n;
       this.myChart.data.datasets.forEach(p => {
         if (p.label === label)  {
           check++;
@@ -296,13 +299,13 @@ export default {
             lastStart >= amountDays(start) &&
             inters.length >= quarter) {
           inters.push(this.showVacations[j].start);
-          this.showVacations[j].intersections = 'Да';
+          this.showVacations[j].intersections = true;
         }
-        else this.showVacations[j].intersections = 'Нет';
+        else this.showVacations[j].intersections = false;
       }
       if (inters.length !== 0 && inters.length >= quarter) {
         inters.push(this.showVacations[i].start);
-        this.showVacations[i].intersections = 'Да';
+        this.showVacations[i].intersections = true;
         let last = inters[this.getLastDate(inters)];
         if (this.intersections.indexOf(last) === -1) {
           this.intersections.push(last);
@@ -312,7 +315,7 @@ export default {
         let line = [];
         for(let q = 0; q < this.showVacations.length; q++)  line.push(dateChartFormat(dateUsualFormat(last)));
         this.myChart.data.datasets.unshift({
-          label: 'Пересечение ' + last,
+          label: localize('Intersection') + ' ' + last,
           type: 'line',
           data: line,
           pointBackgroundColor: 'transparent',
@@ -323,14 +326,14 @@ export default {
         })
         this.amount++;
       }
-      else this.showVacations[i].intersections = 'Нет';
+      else this.showVacations[i].intersections = false;
     },
 
     intersection(i){ // find intersection
       let quarter = Math.floor(this.percent * this.users.length);
       let lastStart;
       if (i === 0)  {
-        this.showVacations[i].intersections = 'Нет';
+        this.showVacations[i].intersections = false;
       }
       for (let j = 0; j < i; j++) {
         if (!findIntersection(this.showVacations[i], this.showVacations[j])
@@ -369,7 +372,7 @@ export default {
 
       if (counter === this.users.length) {
         this.myChart.data.datasets.splice(0, 0,{
-          label: 'Отпуска отсутствуют',
+          label: localize('EmptyVacations'),
           grouped: false,
           data: [],
         })
@@ -378,7 +381,7 @@ export default {
         for(let i = 0; i < this.showVacations.length; i++) {
           const n = this.showVacations[i].number;
           this.findSet(n);
-          if (this.showVacations[i].status !== 'Отказ' &&
+          if (this.showVacations[i].status !== 'Rejected' &&
               this.showVacations[i].status !== 'none') {
             if (n === 1) {
               this.myChart.data.datasets[this.amount].data.push(this.getDates(i));
@@ -413,7 +416,7 @@ export default {
       const rej = {
         id: this.id,
         explanation: this.explanation,
-        status: 'Отказ'
+        status: 'Rejected'
       }
       this.decisionVacation(rej);
       this.explanation = '';
@@ -423,7 +426,7 @@ export default {
     accept(id){
       const obj = {
         id: id,
-        status: 'Утверждено',
+        status: 'Accepted',
       }
       this.decisionVacation(obj);
     },
@@ -431,7 +434,7 @@ export default {
     show(id){
       document.querySelector('dialog').showModal();
       this.id = id;
-      if (this.vacations.filter(p => p.status === 'Ожидание').length === 1) {
+      if (this.vacations.filter(p => p.status === 'Waiting').length === 1) {
         this.indent = 100;
       }
     },

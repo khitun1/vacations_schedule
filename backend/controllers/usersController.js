@@ -28,7 +28,7 @@ class UsersController {
                     where: {
                         UserId: users[i].id,
                         status: {
-                            [Op.ne]: 'Отказ',
+                            [Op.ne]: 'Rejected',
                         }
                     }
                 })
@@ -144,7 +144,7 @@ class UsersController {
                     id: vacation.userId,
                 }
             })
-            if (status === 'Отказ') {
+            if (status === 'Rejected') {
                 const duration = moment(vacation.end).diff(moment(vacation.start), 'days') + 1;
                 await User.update({allow: 1, actual_days: user.actual_days + duration}, {
                     where: {
@@ -164,7 +164,7 @@ class UsersController {
                 where: {
                     userId: vacation.userId,
                     status: {
-                        [Op.ne] : 'Отказ',
+                        [Op.ne] : 'Rejected',
                     }
                 }
             })
@@ -186,7 +186,7 @@ class UsersController {
             })
 
             allUserVacations.forEach(p => {
-                if (p.status === 'Отказ' || p.status === 'Ожидание') {
+                if (p.status === 'Rejected' || p.status === 'Waiting') {
                     countRejectOrWaiting++;
                 }
             })
@@ -195,7 +195,7 @@ class UsersController {
                 const acceptedVacations = await Vacations.findAll({
                     where: {
                         userId: vacation.userId,
-                        status: 'Утверждено',
+                        status: 'Accepted',
                     }
                 })
                 let sumDays = 0;

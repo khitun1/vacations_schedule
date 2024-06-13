@@ -1,6 +1,7 @@
 import {host} from "../http/index";
 import {dateReverseFormat} from "../hooks/generalMoment/dateReverseFormat";
 import moment from "moment";
+import {localize} from "@/hooks/localize.js";
 
 export const AdminModule = {
     state: () => ({
@@ -18,7 +19,7 @@ export const AdminModule = {
         visibleAddType: false,
         visibleChangeCon: false,
         visibleUserList: false,
-        range: 'Год',
+        range: localize('Year'),
     }),
 
     getters: {
@@ -56,8 +57,8 @@ export const AdminModule = {
         decision(state, {id, status}) {
             const {userId} = state.vacations.find(p => p.id === id);
             const user = state.users.find(p => p.id === userId);
-            if (status === 'Утверждено') {
-                state.vacations.find(p => p.id === id).status = 'Утверждено';
+            if (status === localize('Accepted')) {
+                state.vacations.find(p => p.id === id).status = 'Accepted';
             }
             else {
                 state.vacations.splice(state.vacations.indexOf(state.vacations.find(p => p.id === id)), 1);
@@ -94,10 +95,10 @@ export const AdminModule = {
         },
 
         prevYear(state) {
-            if (state.range === 'Год') {
+            if (state.range === localize('Year')) {
                 state.year--;
             }
-            else if (state.range === 'Квартал') {
+            else if (state.range ===  localize('Quarter')) {
                 if (state.quarter !== 1) {
                     state.quarter--;
                 }
@@ -106,7 +107,7 @@ export const AdminModule = {
                     state.quarter = 4;
                 }
             }
-            else if (state.range === 'Месяц') {
+            else if (state.range === localize('Month')) {
                 if (state.month !== 1) {
                     state.month--;
                 }
@@ -119,10 +120,10 @@ export const AdminModule = {
         },
 
         nextYear(state) {
-            if (state.range === 'Год') {
+            if (state.range === localize('Year')) {
                 state.year++;
             }
-            else if (state.range === 'Квартал') {
+            else if (state.range === localize('Quarter')) {
                 if (state.quarter !== 4) {
                     state.quarter++;
                 }
@@ -131,7 +132,7 @@ export const AdminModule = {
                     state.quarter = 1;
                 }
             }
-            else if (state.range === 'Месяц') {
+            else if (state.range === localize('Month')) {
                 if (state.month !== 12) {
                     state.month++;
                 }
@@ -205,7 +206,7 @@ export const AdminModule = {
 
     actions: {
         async addUser({commit}, user) {
-            user.is_admin = user.is_admin === 'Админ' ? 1 : 0;
+            user.is_admin = user.is_admin === localize('Admin') ? 1 : 0;
             user.actual_date = moment();
             await host.post('users/create', user);
             commit('addUser', user);

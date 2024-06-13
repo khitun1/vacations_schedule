@@ -47,11 +47,11 @@ class UserController {
                 }
             })
             if (!user) {
-                return res.send('Неверный логин или почта');
+                return res.send('WrongLogin');
             }
             let comparePassword =  bcrypt.compareSync(password, user.md5password);
             if (!comparePassword) {
-                return res.send('Неверный пароль');
+                return res.send('WrongPassword');
             }
             const department = await Department.findOne({
                 where: {
@@ -75,14 +75,14 @@ class UserController {
             const vacations = await Vacations.findAll({
                 where: {
                     userId: user.id,
-                    status: "Использовано",
+                    status: "Done",
                 }
             })
             for (let i = 0; i < vacations.length; i++) {
                 const vacEnd = moment(vacations[i].end, "YYYY-MM-DD");
                 if (currentDay.diff(vacEnd) > 0) {
                     Vacations.update({
-                        status: "Использовано",
+                        status: "Done",
                     },
                         {
                             where: {
@@ -211,7 +211,7 @@ class UserController {
                     where: {
                         UserId: users[i].id,
                         status: {
-                            [Op.ne] : 'Отказ',
+                            [Op.ne] : 'Rejected',
                         }
                     }
                 })
@@ -280,7 +280,7 @@ class UserController {
 
             const vacs = await Vacations.findAll( {
                 where: {
-                    status: "Использовано",
+                    status: "Done",
                 }
             })
 

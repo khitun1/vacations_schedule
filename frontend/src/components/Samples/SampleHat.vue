@@ -5,22 +5,22 @@
     <div class="recInList"
          v-for="note in notes.filter((p, index) => index < 3)"
          :key="note.id">
-      Пользователь {{note.user}} отправил заявку на отпуск
+      {{localize('User') + " " + note.user + " " + localize('SentVacationRequest')}}
       {{getTime(note.createdAt)}}
     </div>
     <p v-if="notes.length > 3"
        class="etc">
-      И ещё {{notes.length - 3}}...
+      {{localize('AndMore') + notes.length - 3}}...
     </p>
     <my-button class="showAll"
         v-if="notes.length > 0"
         @click="seeAll">
-      Просмотреть все
+      {{ localize('LookAll') }}
     </my-button>
   </div>
   <div class="hat">
     <h1>
-      Планирование отпусков
+      {{ localize('VacationsPlanning') }}
     </h1>
     <div class="panel">
       <p>
@@ -44,12 +44,13 @@
                alt="exit icon">
         </button-icon>
       </router-link>
+      <my-select/>
     </div>
   </div>
   <transition name="note">
     <div class="newNote"
         v-if="showNote && currentUser.is_admin">
-      Пользователь {{noteName}} отправил заявку на отпуск
+      {{localize('User') + " " + noteName + " " + localize('SentVacationRequest')}}
     </div>
   </transition>
 </template>
@@ -61,6 +62,8 @@ import router from "@/router/router";
 import {useStore} from "vuex";
 import MyButton from "@/components/UI/MyButton.vue";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
+import {localize} from "@/hooks/localize.js";
+import MySelect from "@/components/UI/MySelect.vue";
 
 const store = useStore();
 const showNote = ref(false);

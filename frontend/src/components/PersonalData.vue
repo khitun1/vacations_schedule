@@ -3,7 +3,7 @@
     <h1>Личные данные</h1>
     <div class="info surname">
       <p>
-        Фамилия:
+        {{ localize('Surname') }}:
       </p>
       <div class="text">
         <my-input readonly
@@ -12,7 +12,7 @@
     </div>
     <div class="info name">
       <p>
-        Имя:
+        {{ localize('Name') }}:
       </p>
       <div class="text">
         <my-input readonly
@@ -21,7 +21,7 @@
     </div>
     <div class="info lastname">
       <p>
-        Отчество:
+        {{ localize('Patron') }}:
       </p>
       <div class="text">
         <my-input readonly
@@ -30,7 +30,7 @@
     </div>
     <div class="info mail">
       <p>
-        Почта:
+        {{ localize('Mail') }}:
       </p>
       <div class="text">
         <my-input :readonly="changeMail"
@@ -44,7 +44,7 @@
     </div>
     <div class="info login">
       <p>
-        Логин:
+        {{ localize('Login') }}:
       </p>
       <div class="text">
         <my-input :readonly="changeLogin"
@@ -58,7 +58,7 @@
     </div>
     <div class="info password">
       <p>
-        Пароль:
+        {{localize('Password')}}:
       </p>
       <div class="text">
         <my-input class="inputPassword"
@@ -82,7 +82,7 @@
     </div>
     <div class="info department">
       <p>
-        Отдел:
+        {{ localize('Department') }}:
       </p>
       <div class="text">
         <my-input readonly
@@ -100,6 +100,7 @@ import jwt_decode from "jwt-decode";
 import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
+import {localize} from "../hooks/localize.js";
 
 const store = useStore();
 const currentUser = computed(() => store.state.my.currentUser);
@@ -110,43 +111,43 @@ const changePassword = ref(true) ;
 const typePassword = ref('password');
 const changeLogin = ref(true);
 const changeMail = ref(true);
-const textLogBtn = ref('Изменить логин');
-const textMailBtn = ref('Изменить почту');
-const textPasBtn = ref('Изменить пароль');
+const textLogBtn = ref(localize('ChangeLogin'));
+const textMailBtn = ref(localize('ChangeMail'));
+const textPasBtn = ref(localize('ChangePassword'));
 const changeLog = () => {
   document.getElementsByClassName('inputLogin')[0].focus();
   if (changeLogin.value === true)  {
-    textLogBtn.value = 'Подтвердить';
+    textLogBtn.value = localize('Accept');
   }
   else
   {
     store.dispatch('changeLogin', newLogin.value);
     store.dispatch('auth');
-    textLogBtn.value = 'Изменить логин';
+    textLogBtn.value = localize('ChangeLogin');
   }
   changeLogin.value = !changeLogin.value;
 }
 const changePas = () => {
   document.getElementsByClassName('inputPassword')[0].focus();
   if (changePassword.value === true) {
-    textPasBtn.value = 'Подтвердить';
+    textPasBtn.value = localize('Accept');
   }
   else{
     store.dispatch('changePassword', newPassword.value);
     store.dispatch('auth');
-    textPasBtn.value = 'Изменить пароль';
+    textPasBtn.value = localize('ChangePassword');
   }
   changePassword.value = !changePassword.value;
 }
 const change_mail = () => {
   document.getElementsByClassName('inputMail')[0].focus();
   if (changeMail.value === true) {
-    textMailBtn.value = 'Подтвердить';
+    textMailBtn.value = localize('Accept');
   }
   else{
     store.dispatch('changeMail', newMail.value);
     store.dispatch('auth');
-    textMailBtn.value = 'Изменить почту';
+    textMailBtn.value = localize('ChangeMail');
   }
   changeMail.value = !changeMail.value;
 }

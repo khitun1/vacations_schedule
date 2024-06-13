@@ -2,6 +2,7 @@ import moment from "moment";
 import store from "@/store";
 import {chartDateConverter} from "@/hooks/chartDateConverter";
 import {ref} from "vue";
+import {localize} from "@/hooks/localize.js";
 
 export function options() // config for chart
 {
@@ -24,8 +25,9 @@ export function options() // config for chart
                     stepSize: 1,
                     callback: function (value) {
                             const {converterInYear, converterInQuarter, converterInMonth} = chartDateConverter(value);
-                            return store.state.admin.range === 'Год' ? converterInYear() :
-                                store.state.admin.range === 'Квартал' ? converterInQuarter() : converterInMonth();
+                            return store.state.admin.range === localize('Year') ? converterInYear() :
+                                store.state.admin.range === localize('Quarter') ? converterInQuarter() :
+                                    converterInMonth();
                     }
                 }
             }
@@ -48,8 +50,9 @@ export function options() // config for chart
                         const start = moment(context.parsed._custom.barStart).format('DD.MM.YYYY');
                         const end = moment(context.parsed._custom.barEnd).format('DD.MM.YYYY');
                         if (label) {
-                            label = label + ': Начало: ' + start +
-                                '   Конец: ' + end + '    Кол-во дней:  ' + totalDays(start, end);
+                            label = label + ': ' + localize('Beginning') + ': ' + start +
+                                '   ' + localize('End') + ': ' + end +
+                                '    ' + localize('TotalDays') + ':  ' + totalDays(start, end);
                         }
                         return label;
                     },

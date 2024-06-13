@@ -1,11 +1,12 @@
 <template>
   <h1>
-    Отсутствует доступ, для просмотра данной страницы!
+    {{ localize('NotAccess') }}
   </h1>
 </template>
 
 <script setup>
 
+import {localize} from "@/hooks/localize.js";
 </script>
 
 <style scoped>

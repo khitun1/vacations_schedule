@@ -9,6 +9,7 @@ import {dateReverseFormat} from "@/hooks/generalMoment/dateReverseFormat.js";
 export default createStore({
     state: () => ({
         isLoading: false,
+        lang: "ru",
     }),
 
     mutations: {

@@ -4,44 +4,44 @@
        :key="u">
     {{u}}
     <div class="rec"
-         v-for="vac in requested.filter(p => p.status === 'Ожидание'
+         v-for="vac in requested.filter(p => p.status === 'Waiting'
          && (p.surname + ' ' + p.first_name + ' ' + p.last_name) === u)"
          :key="vac.id"
          @mouseover="visible = vac.id"
          @mouseleave="visible = false"
          tabindex="-1">
       <div class="info"
-           :style="{background: vac.intersections === 'Да'? '#ffd8d1': '#d9ccff'}">
+           :style="{background: vac.intersections? '#ffd8d1': '#d9ccff'}">
         <button class="withOutInter"
                 @click="showData(vac); $emit('showRec', index);">
           <p style="width: 150px">
             {{ vac.start }} - {{ vac.end }}
           </p>
           <p style="width: 130px">
-            кол-во дней: {{ totalDays(vac.start, vac.end) }}
+            {{localize('TotalDays') +  totalDays(vac.start, vac.end) }}
           </p>
           <p style="width: 130px">
-            {{vac.paid ? 'Оплачиваемый': 'Не оплачиваемый'}}
+            {{vac.paid ? localize('Paid'): localize('NotPaid')}}
           </p>
         </button>
         <p class="inters"
            style="margin-left: 0"
-           :style="vac.intersections === 'Да'? {border: '2px solid #d70000', color: '#d70000'}: 'none'">
-          {{ vac.intersections === 'Да' ? "Перeсечение" : "" }}
+           :style="vac.intersections? {border: '2px solid #d70000', color: '#d70000'}: 'none'">
+          {{ vac.intersections? localize('Intersection') : "" }}
         </p>
         <div class="btns">
           <button class="dec"
                   style="color: #36f64a"
-                  :style="vac.intersections === 'Да'? {background: '#ff9e9e'}: {background:'#a19fff'}"
+                  :style="vac.intersections? {background: '#ff9e9e'}: {background:'#a19fff'}"
                   @click="$emit('accepted', vac.id)"
-                  title="Утвердить">
+                  :title="localize('AcceptZ')">
             &#10004;
           </button>
           <button class="dec"
                   style="color: #ff2323"
-                  :style="vac.intersections === 'Да'? {background: '#ff9e9e'}: {background:'#a19fff'}"
+                  :style="vac.intersections? {background: '#ff9e9e'}: {background:'#a19fff'}"
                   @click="$emit('showWindow', vac.id)"
-                  title="Отказать">
+                  :title="localize('Reject')">
             &#10006;
           </button>
         </div>
@@ -54,6 +54,7 @@
 import {computed, ref, watch} from "vue";
 import {totalDays} from "./Options";
 import {useStore} from "vuex";
+import {localize} from "../hooks/localize.js";
 
 const props = defineProps({
   clickedName: {
@@ -72,7 +73,7 @@ const visible = ref(false);
 const requested = computed(() => store.state.admin.vacations)
 const uniq = computed(() => {
   let u = new Set();
-  requested.value.filter(p => p.status === "Ожидание").forEach(p => u.add(p.surname
+  requested.value.filter(p => p.status === 'Waiting').forEach(p => u.add(p.surname
       + ' ' + p.first_name + ' ' + p.last_name));
   u = Array.from(u);
   return u;
@@ -89,7 +90,7 @@ const showData = (vac) => {
   }
   prevPerson.value = uniq.value.indexOf(vac.surname + ' ' + vac.first_name + ' ' + vac.last_name);
   prevRec.value = vac.number - 1 - requested.value.filter(p => (p.userId === vac.userId)
-      && (p.status === 'Использовано' || p.status === 'Утверждено')).length;
+      && (p.status === 'Waiting' || p.status === 'Accepted')).length;
   person = document.getElementsByClassName('person')[prevPerson.value];
   person.getElementsByClassName('rec')[prevRec.value].style.filter = 'drop-shadow(0 2px 12px #7951f5)';
   index.value[0] = vac.surname + ' ' + vac.first_name + ' ' + vac.last_name;
@@ -109,7 +110,7 @@ watch(() => props.clicked, () => {
     prevPerson.value = uniq.value.indexOf(props.clickedName);
     prevRec.value = props.clickedNumber - requested.value.filter(p =>
         (p.surname + ' ' + p.first_name + ' ' + p.last_name === props.clickedName)
-        && (p.status === 'Использовано' || p.status === 'Утверждено')).length;
+        && (p.status === 'Done' || p.status === 'Accepted')).length;
     if (prevRec.value >= 0) {
       person = (document.getElementsByClassName('person')[prevPerson.value]);
       person.getElementsByClassName('rec')[prevRec.value].focus();

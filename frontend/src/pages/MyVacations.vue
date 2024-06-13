@@ -3,28 +3,28 @@
                v-if="token !== null">
     <div v-show="calendarShow">
       <h2>
-        Доступно отпускных дней: {{totalLeft}}
+        {{ localize('AvailableVacationDays') + totalLeft}}
       </h2>
       <my-button class="calendar"
                  @click="calendarShow = false">
         <img src="@/images/CalendarIcon.png"
              alt="calendar icon"/>
         <p>
-          В режиме календаря
+          {{ localize('InCalendarMode') }}
         </p>
       </my-button>
       <div class="plan">
         <h1 v-show="myVacations.length > 0">
-          Запланированные отпуска
+          {{ localize('PlannedVacations') }}
         </h1>
         <my-table
-            :records="myVacations.filter(p => p.status !== 'Использовано')"/>
+            :records="myVacations.filter(p => p.status !== 'Done')"/>
         <h1 style="margin-top: 20px"
             v-show="myVacations.length > 0">
-          История отпусков
+          {{ localize('VacationsHistory') }}
         </h1>
         <my-table
-            :records="myVacations.filter(p => p.status === 'Использовано')"/>
+            :records="myVacations.filter(p => p.status === 'Done')"/>
       </div>
     </div>
     <div v-show="!calendarShow"
@@ -39,7 +39,7 @@
                     class="vCalendar"/>
         <div class="inside">
           <h2 style="margin-top: -20px">
-            Доступно отпускных дней: {{totalLeft}}
+            {{ localize('AvailableVacationDays') + totalLeft}}
           </h2>
         </div>
     </div>
@@ -47,31 +47,31 @@
         <div class="colour">
           <div style="background: #d6bcfa"/>
           <p>
-            Использовано
+            {{ localize('Done') }}
           </p>
         </div>
         <div class="colour">
           <div style="background: #9deab7"/>
           <p>
-            Одобрено
+            {{ localize('Accepted') }}
           </p>
         </div>
         <div class="colour">
           <div style="background: #fde1b2"/>
           <p>
-            Ожидание
+            {{ localize('Waiting') }}
           </p>
         </div>
         <div class="colour">
           <div style="background:#feb2b2"/>
           <p>
-            Отказ
+            {{ localize('Rejected') }}
           </p>
         </div>
         <div class="colour">
           <div style="background: #e2e8f0"/>
           <p>
-            Желаемые даты
+            {{ localize('WishesDates') }}
           </p>
         </div>
       </div>
@@ -87,6 +87,7 @@ import {useStore} from "vuex";
 import {computed, onMounted} from "vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import ButtonBack from "@/components/UI/ButtonBack.vue";
+import {localize} from "../hooks/localize.js";
 
 const store = useStore();
 onMounted(async () => {

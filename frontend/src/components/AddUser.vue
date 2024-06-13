@@ -2,13 +2,13 @@
   <my-button @click="changeVisibleAddUser"
              v-show="!visibleAdminWindow"
              class="open">
-    Добавить нового сотрудника
+    {{localize('AddNewUser')}}
   </my-button>
     <form @submit.prevent
           v-show="visibleAddUser">
       <button-back @click="clear"/>
       <h2>
-        Новый пользователь
+        {{localize('NewUser')}}
       </h2>
       <div>
         <my-input class="in"
@@ -52,7 +52,7 @@
                         v-model="user.is_admin"
                         :options="rights"
                         :show-no-results="false"
-                        placeholder="Укажите права"
+                        :placeholder="rightsPlaceholder"
                         :show-labels="false"/>
         <p class="error"
             v-show="error">
@@ -61,7 +61,7 @@
         <div class="pair">
           <my-button class="create"
               @click="createUser">
-            Добавить
+            {{ localize('Add') }}
           </my-button>
         </div>
       </div>
@@ -76,6 +76,7 @@ import MyButton from "@/components/UI/MyButton.vue";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import ButtonBack from "@/components/UI/ButtonBack.vue";
+import {localize} from "../hooks/localize.js";
 
 const store = useStore();
 const users = computed(() => store.state.admin.users);
@@ -85,7 +86,7 @@ const changeVisibleAddUser = () => {
 const visibleAdminWindow = computed(() => store.getters.visibleAdminWindow);
 const visibleAddUser = computed(() => store.state.admin.visibleAddUser);
 
-const rights = ['Обычный сотрудник', 'Руководитель'];
+const rights = [localize('RegularEmployee'), localize('Supervisor')];
 const color = 'inset 0px 0px 5px red';
 const user = ref({
   surname: '',
@@ -96,13 +97,13 @@ const user = ref({
   password: '',
   is_admin: '',
 })
-const surname = ref('Фамилия');
-const name = ref('Имя');
-const lastname = ref('Отчество');
-const mail = ref('Майл');
-const log = ref('Логин');
-const pas = ref('Пароль');
-const dep = ref('Отдел');
+const surname = ref(localize('Surname'));
+const name = ref(localize('Name'));
+const lastname = ref(localize('Patron'));
+const mail = ref(localize('Mail'));
+const log = ref(localize('Login'));
+const pas = ref(localize('Password'));
+const rightsPlaceholder = ref(localize('IndicateRights'));
 const error = ref(false);
 const errorMsg = ref('');
 const typePassword = ref('text');
@@ -116,35 +117,35 @@ const createUser = () => {
   }
   if (!user.value.surname)  {
     error.value = true;
-    surname.value = 'Введите фамилию!';
+    surname.value = localize('InputSurname');
   }
   flag.value = true;
   if (!user.value.first_name)  {
     error.value = true;
-    name.value = 'Введите имя!';
+    name.value = localize('InputName');
   }
   if (!user.value.last_name)  {
     error.value = true;
-    lastname.value = 'Введите отчество!';
+    lastname.value = localize('InputPatron');
   }
   if (!user.value.mail)  {
     error.value = true;
-    mail.value = 'Введите почтовый адрес!';
+    mail.value = localize('InputMail');
   }
   if (!user.value.login)  {
     error.value = true;
-    log.value = 'Введите логин!';
+    log.value = localize('InputLogin');
   }
   if (!user.value.password)  {
     error.value = true;
-    pas.value = 'Введите пароль!';
+    pas.value = localize('InputPassword');
   }
   if (!user.value.is_admin)  {
     error.value = true;
-    dep.value = 'Укажите права!';
+    rightsPlaceholder.value = localize('InputRights');
   }
   if (users.value.find(p => p.login === user.value.login)) {
-    errorMsg.value = 'Пользователь с таким логином уже есть!';
+    errorMsg.value = localize('UserAlreadyExists');
     error.value = true;
   }
   if (error.value === false) {
@@ -155,20 +156,20 @@ const createUser = () => {
 const clear = () => {
   user.value = {
     surname: '',
-    name: '',
-    lastname: '',
+    first_name: '',
+    last_name: '',
     mail: '',
     login: '',
     password: '',
-    department: '',
+    is_admin: '',
   };
-  surname.value = 'Фамилия';
-  name.value = 'Имя';
-  lastname.value = 'Отчество';
-  mail.value = 'Почта'
-  log.value = 'Логин';
-  pas.value = 'Пароль';
-  dep.value = 'Отдел';
+  surname.value = localize('Surname');
+  name.value = localize('Name');
+  lastname.value = localize('Patron');
+  mail.value = localize('Mail');
+  log.value = localize('Login');
+  pas.value = localize('Password');
+  rights.value = localize('IndicateRights');
   error.value = false;
   flag.value = false;
   store.commit('changeVisibleAddUser');

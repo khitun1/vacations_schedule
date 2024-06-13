@@ -2,22 +2,22 @@
       <router-link to="requestVacation"
           class="link">
         <button class="pick take"
-            title="Планировщик">
+            :title="localize('VacationsPlanner')">
           <img src="@/images/Plus.png"
                alt="plus"/>
           <p>
-            Планировщик отпусков
+            {{localize('VacationsPlanner')}}
           </p>
         </button>
       </router-link>
       <router-link to="myVacations"
                    class="link">
         <button class="pick mine"
-            title="Мои отпуска">
+            :title="localize('MyVacations')">
           <img src="@/images/VacationIcon.png"
                alt="vacations"/>
           <p>
-            Мои отпуска
+            {{localize('MyVacations')}}
           </p>
         </button>
       </router-link>
@@ -25,11 +25,11 @@
           v-if="currentUser.is_admin || currentUser.director"
           class="link">
         <button class="pick all"
-            title="Отпуска сотрудников">
+            :title="localize('EmployeesVacations')">
           <img src="@/images/CalendarIcon.png"
                alt="calendar icon"/>
           <p>
-            Отпуска сотрудников
+            {{localize('EmployeesVacations')}}
           </p>
         </button>
       </router-link>
@@ -37,22 +37,22 @@
           v-if="currentUser.is_admin && !currentUser.director"
           class="link">
         <button class="pick admin"
-            title="Админ">
+            :title="localize('Admin')">
           <img src="@/images/LetterIcon.png"
                alt="letter icon"/>
           <p>
-            Админ
+            {{ localize('Admin') }}
           </p>
         </button>
       </router-link>
       <router-link to="settings"
           class="link">
         <button class="pick settings"
-            title="Настройки">
+            :title="localize('Settings')">
           <img src="@/images/SettingsIcon.png"
                alt="settings"/>
           <p>
-            Настройки
+            {{localize('Settings')}}
           </p>
         </button>
       </router-link>
@@ -61,6 +61,7 @@
 <script setup>
 import {computed} from "vue";
 import {useStore} from "vuex";
+import {localize} from "@/hooks/localize.js";
 
 const props = defineProps({
   choice: {

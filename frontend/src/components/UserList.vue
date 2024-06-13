@@ -2,7 +2,7 @@
   <my-button @click="changeVisibleUserList"
              v-show="!visibleAdminWindow"
              class="open">
-    Список сотрудников
+    {{ localize('EmployeesList') }}
   </my-button>
   <div v-show="visibleUserList"
        class="main">
@@ -15,22 +15,22 @@
     <table>
       <tr>
         <th>
-          Ф.И.О.
+          {{ localize('SNP') }}
         </th>
         <th>
-          Остаток дней на дату актуализации
+          {{ localize('LeftDaysOnActualDate') }}
         </th>
         <th>
-          Наличие плана на отпуск
+          {{ localize('VacationPlan') }}
         </th>
         <th>
-          Проставить ненормированные дни
+          {{ localize('SetExtraDays') }}
         </th>
         <th>
-          Исключить из правил
+          {{ localize('ExcludeFromRules') }}
         </th>
         <th>
-          Удалить сотрудника
+          {{ localize('DeleteEmployee') }}
         </th>
       </tr>
       <tr v-for="user in userList"
@@ -73,15 +73,15 @@
     <dialog>
       <form @submit.prevent
             class="extraDays">
-        <my-input placeholder="Введите кол-во дней"
+        <my-input :placeholder="localize('InputAmountDays')"
                   type="number"
                   v-model="amountExtra"/>
         <my-button type='submit'
                    @click="sendExtraDays">
-          Отправить
+          {{localize('Send')}}
         </my-button>
         <my-button @click="closeModal">
-          Отменить
+          {{ localize('Cancel') }}
         </my-button>
       </form>
     </dialog>
@@ -96,6 +96,7 @@ import MyButton from "@/components/UI/MyButton.vue";
 import {dateReverseFormat} from "../hooks/generalMoment/dateReverseFormat";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 import ButtonBack from "@/components/UI/ButtonBack.vue";
+import {localize} from "../hooks/localize.js";
 
 const store = useStore();
 const userId = ref(null);

@@ -2,21 +2,21 @@
   <my-button @click="changeVisibleDeleteUser"
              v-show="!visibleAdminWindow"
              class="open">
-    Удалить пользователя
+    {{localize('DeleteUser')}}
   </my-button>
   <div v-show="visibleDeleteUser"
       class="main">
     <button-back @click="changeVisibleDeleteUser"/>
     <h2>
-      Удаление пользователя
+      {{localize('DeletingUser')}}
     </h2>
     <div class="inputs">
       <my-input class="delete"
-                placeholder="Найти пользователя"
+                :placeholder="localize('FindUser')"
                 v-model="user"/>
     </div>
     <h2>
-      Список пользователей
+      {{localize('UserList')}}
     </h2>
     <div class="rec"
          v-for="userItem in usersList"
@@ -39,6 +39,7 @@ import MyButton from "@/components/UI/MyButton.vue";
 import ButtonBack from "@/components/UI/ButtonBack.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
+import {localize} from "../hooks/localize.js";
 
 const store = useStore();
 const currentUser = computed(() => store.state.my.currentUser);

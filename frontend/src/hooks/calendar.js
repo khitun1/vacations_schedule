@@ -37,7 +37,7 @@ export function  calendar(inters , flag = 0) {
 
         myVacations.value.forEach(p => {
             if (flag === 0) {
-                if (p.status !== 'Отказ' && p.status !== 'Использовано') {
+                if (p.status !== 'Rejected' && p.status !== 'Done') {
                     attrs.push(chooseColor(p));
                 }
             }
@@ -58,7 +58,7 @@ export function  calendar(inters , flag = 0) {
         let dis = [];
         myVacations.value.forEach(p => {
             if (flag === 0) {
-                if (p.status !== 'Отказ' && p.status !== 'Использовано') {
+                if (p.status !== 'Rejected' && p.status !== 'Done') {
                     dis.push(disDates(p))
                 }
             }
@@ -85,9 +85,9 @@ export function  calendar(inters , flag = 0) {
             highlight: {
                 start: { fillMode: 'transparent' },
                 base: { fillMode: 'light', color: rec.status === undefined ? 'gray' :
-                        rec.status === 'Утверждено'? 'green': rec.status === 'Использовано' ? 'purple':
-                            rec.status === 'Ожидание'? 'orange'
-                                : (rec.status === 'inters' || rec.status === 'Отказ') ? 'red' :'none'},
+                        rec.status === 'Accepted'? 'green': rec.status === 'Done' ? 'purple':
+                            rec.status === 'Waiting'? 'orange'
+                                : (rec.status === 'inters' || rec.status === 'Rejected') ? 'red' :'none'},
                 end: { fillMode: 'transparent' },
             },
             dates: { start: moment(rec.start, 'DD.MM.YYYY')._d, end: moment(rec.end, 'DD.MM.YYYY')._d },

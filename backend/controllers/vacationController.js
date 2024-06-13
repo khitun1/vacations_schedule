@@ -20,7 +20,7 @@ class vacationController {
                 where: {
                     userId: req.user.id,
                     status: {
-                        [Op.ne] : 'Отказ',
+                        [Op.ne] : 'Rejected',
                     }
                 }
             })
@@ -102,7 +102,7 @@ class vacationController {
                 where: {
                     userId: req.user.id,
                     status: {
-                        [Op.ne] : 'Отказ',
+                        [Op.ne] : 'Rejected',
                     }
                 }
             })
@@ -114,7 +114,7 @@ class vacationController {
                     }
                 })
             }
-            if (currentVacation.status === 'Утверждено') {
+            if (currentVacation.status === 'Accepted') {
                 const user = await User.findOne({
                     where: {
                         id: req.user.id,

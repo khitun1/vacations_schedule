@@ -1,31 +1,31 @@
 <template>
   <sample-page choice="takeVacation">
     <h2 style="margin-top: 40px">
-      Календарь отпусков
+      {{ localize('VacationCalendar') }}
     </h2>
     <div class="colours">
       <div class="colour">
         <div style="background: #9deab7"/>
         <p>
-          Одобрено
+          {{ localize('Accepted') }}
         </p>
       </div>
       <div class="colour">
         <div style="background: #fde1b2"/>
         <p>
-          Ожидание
+          {{ localize('Waiting') }}
         </p>
       </div>
       <div class="colour">
         <div style="background:#feb2b2"/>
         <p>
-          Выбран лимит отдела
+          {{ localize('DepartmentLimit') }}
         </p>
       </div>
       <div class="colour">
         <div style="background: #e2e8f0"/>
         <p>
-          Желаемые даты
+          {{ localize('WishesDates') }}
         </p>
       </div>
     </div>
@@ -40,17 +40,17 @@
                      :min-date="minDate"/>
       <div class="infoBar">
         <h2 style="margin-top: -20px">
-          Доступно отпускных дней: {{totalLeft}}
+          {{localize('AvailableVacationDays') + totalLeft}}
         </h2>
         <h2 style="margin-top: -20px"
             v-if="daysForChosenDate && currentUser.rules">
-          Доступно дней на {{ dateForCheckDays }}: {{daysForChosenDate < 0 ? 0 : daysForChosenDate}}
+          {{ localize('AvailableDaysOn') + dateForCheckDays }}: {{daysForChosenDate < 0 ? 0 : daysForChosenDate}}
         </h2>
       </div>
     </div>
     <div class="wishesInfo">
       <h2>
-        Выбранные даты
+        {{ localize('ChosenDates') }}
       </h2>
       <div class="wishes">
         <div class="wishesDates"
@@ -60,7 +60,7 @@
             {{wish.start}} - {{wish.end}}
           </p>
           <p class="pay">
-            Оплачиваемость
+            {{ localize('Payability') }}
           </p>
           <label class="checkbox">
             <input type="checkbox"
@@ -69,13 +69,13 @@
             <div class="check_div"/>
           </label>
           <my-button @click="del(wish.id)">
-            Удалить
+            {{ localize('Delete') }}
           </my-button>
         </div>
         <my-button v-if="wishes.length > 0"
                    style="padding: 5px 15px"
                    @click="sendAll">
-          Отправить пакет
+          {{ localize('SendRequest') }}
         </my-button>
       </div>
     </div>
@@ -96,6 +96,7 @@ import {amountDays} from "@/hooks/generalMoment/amountDays";
 import {findIntersection} from "@/hooks/intersections/findIntersection";
 import MyButton from "@/components/UI/MyButton.vue";
 import store from "@/store";
+import {localize} from "../hooks/localize.js";
 
 
 store.dispatch('getHolidays');
@@ -182,9 +183,8 @@ const wishes = computed(() => store.state.my.wishes);
 const socket = computed(() => store.state.my.socket);
 
 const showWish = () => {
-  console.log(myVacations.value)
-  if (myVacations.value.find(p => p.status === 'Отказ')) {
-    alert('Сначала удалите несогласованный отпуск');
+  if (myVacations.value.find(p => p.status === 'Rejected')) {
+    alert(localize('DeleteRejectedVacationFirst'));
   }
   if (doubleShowAlert.value === 1) {
     doubleShowAlert.value = 0;
@@ -192,7 +192,7 @@ const showWish = () => {
   }
   if (date.value !== null) {
     if (!currentUser.value.allow) {
-      alert('В этом календарном году вы уже спланировали отпуск!');
+      alert(localize('AlreadyPlannedInThisYear'));
     }
     else {
       let wishesAmount = 0;
@@ -211,15 +211,15 @@ const showWish = () => {
       }
       else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) <
           store.state.admin.department.min) {
-        alert('Выбрано меньше дней, чем минимум за один отпуск!');
+        alert(localize('LessThenMinimal'));
       }
       else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > leftOnStart.value +
           Math.floor(totalDays(dateReverseFormat(startY), dateReverseFormat(start)) * total.value / amountInYear)
           && currentUser.value.rules) {
-        alert('Выбрано больше дней, чем будет доступно на ' + dateReverseFormat(start));
+        alert(localize('GreaterThenAvailable') + localize('On')+ dateReverseFormat(start));
       }
       else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > totalLeft.value.split(' ')[0]) {
-        alert('Выбрано больше дней, чем доступно');
+        alert(localize('GreaterThenAvailable'));
       }
           // else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > left.value) {
           //   alert('Выбрано больше дней, чем будет доступно на ' + (nextYear - 1) + ' год');
@@ -268,7 +268,7 @@ const sendAll = async() => {
     }
   })
   if (fourteen === 0 && currentUser.value.allow && currentUser.value.acceptAll) {
-    (alert('Хотя бы один отпуск должен быть не менее 14 дней!'));
+    (alert(localize('AtLeastOneGreater14Days')));
   }
   else {
     const vacs = [];
@@ -278,7 +278,7 @@ const sendAll = async() => {
         end: dateChartFormat(dateUsualFormat(p.end)),
         requested_date: moment(),
         paid: paid.value[wishes.value.indexOf(p)] ? 1 : 0,
-        status: 'Ожидание',
+        status: 'Waiting',
         userId: currentUser.value.id,
         number: last.value + index,
       }

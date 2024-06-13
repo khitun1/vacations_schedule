@@ -1,18 +1,18 @@
 <template>
     <my-button @click="changeVisibleCon"
                v-show="!visibleAdminWindow">
-        Изменить условия
+        {{localize('ChangeConditions')}}
     </my-button>
     <div v-show="visibleChangeCon"
          class="con">
       <button-back @click="changeVisibleCon"/>
       <h2>
-        Назначить условия
+        {{ localize('SetConditions') }}
       </h2>
       <div class="conditions">
         <form @submit.prevent>
           <p>
-            Минимальное кол-во дней отпуска:
+            {{ localize('MinimalDays') }}
           </p>
           <my-input v-model="condition.min"
                     :readonly="changeMin"
@@ -25,7 +25,7 @@
         </form>
         <form @submit.prevent>
           <p>
-            Всего дней для отпуска:
+            {{ localize('TotalVacationDays') }}
           </p>
           <my-input v-model="condition.total"
                     :readonly="changeTotal"
@@ -38,7 +38,7 @@
         </form>
         <form @submit.prevent>
           <p>
-            % максимально допустимых одновременных отпусков:
+            {{ localize('AllowedPercent') }}
           </p>
           <my-input v-model="condition.percents"
                     :readonly="changePercent"
@@ -51,7 +51,7 @@
         </form>
         <div class="debt">
           <p>
-            Возможность брать отпускные дни в долг:
+            {{ localize('AllowedDebtDays') }}
           </p>
           <label class="checkbox">
             <input type="checkbox"
@@ -75,15 +75,16 @@ import {useStore} from "vuex";
 import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import ButtonBack from "@/components/UI/ButtonBack.vue";
+import {localize} from "../hooks/localize.js";
 
 const store = useStore();
 const rule = computed(() => store.state.admin.department.rules);
 const changeMin =  ref(true);
 const changeTotal =  ref(true);
 const changePercent =  ref(true);
-const minText =  ref('Изменить');
-const totalText =  ref('Изменить');
-const percentText =  ref('Изменить');
+const minText =  ref(localize('Change'));
+const totalText =  ref(localize('Change'));
+const percentText =  ref(localize('Change'));
 const errorNum =  ref(false);
 const errorMsg =  ref('');
 const visibleChangeCon = computed(() => store.state.admin.visibleChangeCon);
@@ -98,22 +99,22 @@ const setCon = (flag) => {
         if (validate(condition.value.min)) {
           if (condition.value.min <= condition.value.total) {
             changeMin.value = true;
-            minText.value =  'Изменить';
+            minText.value =  localize('Change');
             accept = true;
           }
           else {
-            errorMsg.value = 'Минимальное количество дней должно быть не больше, чем общее количество дней!';
+            errorMsg.value = localize('MinimalLessThenTotal');
           }
         }
         else {
-          errorMsg.value = 'Минимальное количество дней должно быть целым, положительным числом!';
+          errorMsg.value = localize('MinimalPositiveInteger');
         }
       }
       else
       {
         changeMin.value = false;
         document.getElementsByClassName('minDays')[0].focus();
-        minText.value =  'Подтвердить';
+        minText.value =  localize('Accept');
       }
       break;
     case 3:
@@ -121,38 +122,38 @@ const setCon = (flag) => {
         if (validate(condition.value.total)) {
           if (condition.value.min <= condition.value.total) {
             changeTotal.value = true;
-            totalText.value = 'Изменить';
+            totalText.value = localize('Change');
             accept = true;
           }
           else {
-            errorMsg.value = 'Общее количество дней должно быть не меньше, чем минимальное количество дней!';
+            errorMsg.value = localize('TotalGreaterThenMinimal');
           }
         }
         else {
-          errorMsg.value = 'Общее количество дней должно быть целым и положительным числом!';
+          errorMsg.value = localize('TotalPositiveInteger');
         }
       }
       else
       {
         changeTotal.value = false;
         document.getElementsByClassName('totalDays')[0].focus();
-        totalText.value =  'Подтвердить';
+        totalText.value = localize('Accept');
       }
       break;
     case 4:
       if (changePercent.value === false) {
         if (validate(condition.value.percents) && condition.value.percents <= 100) {
           changePercent.value = true;
-          percentText.value = 'Изменить';
+          percentText.value = localize('Change');
           accept = true;
         }
-        else errorMsg.value = '% пересечений должен быть целым, положительным числом в диапазоне от 0 до 100!';
+        else errorMsg.value = localize('PercentPositiveInteger');
       }
       else
       {
         changePercent.value = false;
         document.getElementsByClassName('percentsDays')[0].focus();
-        percentText.value =  'Подтвердить';
+        percentText.value =  localize('Accept');
       }
       break;
   }

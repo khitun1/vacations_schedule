@@ -1,20 +1,23 @@
 <template>
-  <h1>Планирование отпусков</h1>
+  <div class="hat">
+    <h1>{{ localize('VacationsPlanning') }}</h1>
+    <language/>
+  </div>
     <div class="main">
       <div class="gif">
         <img src="@/images/Bear.gif" alt="bear">
       </div>
       <form class="login" @submit.prevent>
-        <h3>Авторизация</h3>
-        <my-input placeholder="Логин или почта"
+        <h3>{{ localize('Auth') }}</h3>
+        <my-input :placeholder="localize('LoginOrMail')"
                   v-model="login"/>
-        <my-input placeholder="Пароль"
+        <my-input :placeholder="localize('Password')"
                   v-model="password"
                   :type="'password'"/>
         <my-button class="test"
                    @click="check"
                    type="submit">
-          Войти
+          {{localize('SignIn')}}
         </my-button>
         <p class="error">
           {{ error }}
@@ -31,6 +34,13 @@ import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import {useStore} from "vuex";
 import moment from "moment";
+import {localize} from "../hooks/localize.js";
+import Language from "@/components/UI/MySelect.vue";
+
+if (!localStorage.getItem('exist')) {
+  localStorage.setItem('exist', true)
+  localStorage.setItem('lang', window.navigator.language === 'ru-RU'? 'Русский': 'English')
+}
 
 const store = useStore();
 const login = ref('');
@@ -54,6 +64,12 @@ const check = async () => {
 </script>
 
 <style scoped>
+
+.hat{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 
 .login{
   position: absolute;

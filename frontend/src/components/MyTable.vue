@@ -1,6 +1,6 @@
 <template>
   <div class="rec"
-       v-for="rec in records.filter(p => p.status !== 'Удалено')"
+       v-for="rec in records.filter(p => p.status !== 'Deleted')"
        :key="rec.id"
        @mouseover="visible = rec.id"
        @mouseleave="visible = false">
@@ -10,20 +10,20 @@
           {{rec.start}} - {{rec.end}}
         </p>
         <p class="amount">
-          кол-во дней всего: {{totalDays(rec.start, rec.end)}}
+          {{localize('TotalDays') + totalDays(rec.start, rec.end)}}
         </p>
         <p class="amount offs">
-          кол-во выходных дней: {{daysOff(rec.start, rec.end)}}
+          {{ localize('TotalDaysOff') + daysOff(rec.start, rec.end)}}
         </p>
         <div class="status"
              :style="{
               borderColor: setBorder(rec.status),
               color: setBorder(rec.status)
               }"
-             @mouseover="visibleExplanation = rec.status === 'Отказ';
+             @mouseover="visibleExplanation = rec.status === 'Rejected';
              explanation = rec.explanation;"
              @mouseleave="visibleExplanation = false">
-          {{rec.status}}
+          {{ localize(rec.status)}}
         </div>
       </div>
       <button-icon class="del"
@@ -36,7 +36,7 @@
   <div class="exp"
        v-if="visibleExplanation">
     <h4>
-      Причина отказа:
+      {{localize('RejectReason')}}
     </h4>
     {{ explanation }}
   </div>
@@ -47,6 +47,7 @@ import {computed, ref} from "vue";
 import {useStore} from "vuex";
 import {daysOff, totalDays} from "@/components/Options";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
+import {localize} from "../hooks/localize.js";
 
 defineProps({
   records: {
@@ -57,29 +58,29 @@ defineProps({
 const store = useStore();
 const setColor = (status) => {
   switch (status){
-    case 'Утверждено':
+    case 'Accepted':
       return '#b6faba';
-    case 'Ожидание':
+    case 'Waiting':
       return '#ffd7a6';
-    case 'Использовано':
+    case 'Done':
       return '#b2b0ff';
-    case 'Отказ':
+    case 'Rejected':
       return '#ffc4b9';
-    case 'Отменено':
+    case 'Deleted':
       return '#c0c0c0';
   }
 }
 const setBorder = (status) => {
   switch (status){
-    case 'Утверждено':
+    case 'Accepted':
       return '#01b026';
-    case 'Ожидание':
+    case 'Waiting':
       return '#d07100';
-    case 'Использовано':
+    case 'Done':
       return '#5b30b7';
-    case 'Отказ':
+    case 'Rejected':
       return '#d70000';
-    case 'Отменено':
+    case 'Deleted':
       return '#606060';
   }
 }
@@ -94,8 +95,8 @@ const checkDel = (status, id) => {
   if (visible.value !== id) {
     return false;
   }
-  if ((status === 'Утверждено' && currentUser.value.allow && !currentUser.value.acceptAll) ||
-      status === 'Отказ') {
+  if ((status === 'Accepted' && currentUser.value.allow && !currentUser.value.acceptAll) ||
+      status === 'Rejected') {
     return true;
   }
 }

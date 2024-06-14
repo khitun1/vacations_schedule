@@ -1,12 +1,14 @@
 <template>
   <sample-page :choice="'myVacations'"
+               @rerender="rerender"
                v-if="token !== null">
     <div v-show="calendarShow">
       <h2>
-        {{ localize('AvailableVacationDays') + totalLeft}}
+        {{ localize('AvailableVacationDays') + totalLeft()}}
       </h2>
       <my-button class="calendar"
-                 @click="calendarShow = false">
+                 @click="calendarShow = false"
+                 :key="rerenderKey">
         <img src="@/images/CalendarIcon.png"
              alt="calendar icon"/>
         <p>
@@ -84,10 +86,10 @@ import MyTable from "@/components/MyTable";
 import SamplePage from "@/components/Samples/SamplePage";
 import {calendar} from "@/hooks/calendar";
 import {useStore} from "vuex";
-import {computed, onMounted} from "vue";
+import {computed, getCurrentInstance, onMounted, ref} from "vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import ButtonBack from "@/components/UI/ButtonBack.vue";
-import {localize} from "../hooks/localize.js";
+import {localize, totalLeft} from "../hooks/localize.js";
 
 const store = useStore();
 onMounted(async () => {
@@ -97,9 +99,14 @@ onMounted(async () => {
 })
 const {rows, columns, attrs, dis, calendarShow, myVacations} = calendar([], 1);
 const token = localStorage.getItem('token');
-const totalLeft = computed(() => store.getters.totalLeft);
-const total = computed(() => store.state.my.total);
-const width = computed(() => 100 - totalLeft.value / total.value * 100 + '%');
+// const totalLeft = computed(() => store.getters.totalLeft);
+// const total = computed(() => store.state.my.total);
+// const width = computed(() => 100 - totalLeft.value / total.value * 100 + '%');
+
+const rerenderKey = ref(0);
+const rerender = () => {
+  rerenderKey.value++;
+}
 </script>
 
 <style scoped>

@@ -1,13 +1,15 @@
 <script setup>
-import {ref} from "vue";
+import {getCurrentInstance, ref} from "vue";
 
 const language = ref(localStorage.getItem('lang'));
 
-const languages = ['Русский', 'English']
+const languages = ['RU', 'EN'];
+
+const emit = defineEmits(['rerender']);
 
 const selectLanguage = () => {
   localStorage.setItem('lang', language.value);
-  location.reload()
+  emit('rerender');
 }
 
 </script>
@@ -22,5 +24,15 @@ const selectLanguage = () => {
 
 <style scoped>
   .language{
+    background: transparent;
+    border-color: transparent;
+    width: fit-content;
+    height: 25px;
+    cursor: pointer;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    position: absolute;
+    top: 5px;
+    right: 5px;
   }
 </style>

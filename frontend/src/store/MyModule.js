@@ -22,26 +22,6 @@ export const MyModule = {
     }),
 
     getters: {
-        totalLeft(state) {
-            let total = 0;
-            state.wishes.forEach(p => {
-                total += totalDays(p.start, p.end)
-            });
-            if (state.currentUser.allow && state.currentUser.acceptAll) {
-                return (state.currentUser.left - total + state.total) + localize('On')
-                    + (parseInt(state.year) + 1) + ' ' + localize('Year').toLowerCase();
-            }
-            else if ((!state.currentUser.allow && !state.currentUser.acceptAll) ||
-                (state.currentUser.allow && !state.currentUser.acceptAll)) {
-                return state.currentUser.actual_days + state.currentUser.left -
-                    total + state.total + localize('On') + (parseInt(state.year) + 1) + ' год';
-            }
-            else {
-                return (state.currentUser.left + state.total) + localize('On')
-                    + (parseInt(state.year) + 2) + ' ' + localize('Year').toLowerCase();
-            }
-        },
-
         leftOnStartOfYear(state) {
             let total = state.currentUser.left + state.currentUser.actual_days;
             state.wishes.forEach(p => {

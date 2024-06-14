@@ -40,7 +40,7 @@
                      :min-date="minDate"/>
       <div class="infoBar">
         <h2 style="margin-top: -20px">
-          {{localize('AvailableVacationDays') + totalLeft}}
+          {{localize('AvailableVacationDays') + totalLeft()}}
         </h2>
         <h2 style="margin-top: -20px"
             v-if="daysForChosenDate && currentUser.rules">
@@ -96,7 +96,7 @@ import {amountDays} from "@/hooks/generalMoment/amountDays";
 import {findIntersection} from "@/hooks/intersections/findIntersection";
 import MyButton from "@/components/UI/MyButton.vue";
 import store from "@/store";
-import {localize} from "../hooks/localize.js";
+import {localize, totalLeft} from "../hooks/localize.js";
 
 
 store.dispatch('getHolidays');
@@ -169,7 +169,7 @@ onMounted(async () => {
 })
 
 const { rows, columns, attrs, dis, minDate } = calendar(inters);
-const totalLeft = computed(() => store.getters.totalLeft);
+// const totalLeft = computed(() => store.getters.totalLeft);
 const left = computed(() => store.state.my.currentUser.left);
 const leftOnStart = computed(() => store.getters.leftOnStartOfYear)
 const total = computed(() => store.state.my.total);
@@ -218,7 +218,7 @@ const showWish = () => {
           && currentUser.value.rules) {
         alert(localize('GreaterThenAvailable') + localize('On')+ dateReverseFormat(start));
       }
-      else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > totalLeft.value.split(' ')[0]) {
+      else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > totalLeft().split(' ')[0]) {
         alert(localize('GreaterThenAvailable'));
       }
           // else if (totalDays(dateReverseFormat(start), dateReverseFormat(end)) > left.value) {

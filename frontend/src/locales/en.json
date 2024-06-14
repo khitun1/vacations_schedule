@@ -39,6 +39,7 @@
   "DeletingUser": "Deleting user",
   "UserList": "User list",
   "TotalDays": "total days: ",
+  "TotalDaysShort": "total days: ",
   "TotalDaysOff": "days off: ",
   "RejectReason": "Reason of refusal:",
   "Accepted": "Accepted",
@@ -112,5 +113,18 @@
   "EmptyVacations": "There ara no vacations",
   "Y": "y.",
   "WrongLogin": "Wrong login or mail",
-  "WrongPassword": "Wrong password"
+  "WrongPassword": "Wrong password",
+  "PersonalData": "Personal data",
+  "January": "January",
+  "February": "February",
+  "March": "March",
+  "April": "April",
+  "May": "May",
+  "June": "June",
+  "July": "July",
+  "August": "August",
+  "September": "September",
+  "October": "October",
+  "November": "November",
+  "December": "December"
 }

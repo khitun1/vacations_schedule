@@ -18,7 +18,7 @@
       {{ localize('LookAll') }}
     </my-button>
   </div>
-  <div class="hat">
+  <div class="hat" :key="rerenderKey">
     <h1>
       {{ localize('VacationsPlanning') }}
     </h1>
@@ -44,7 +44,6 @@
                alt="exit icon">
         </button-icon>
       </router-link>
-      <my-select/>
     </div>
   </div>
   <transition name="note">
@@ -53,17 +52,19 @@
       {{localize('User') + " " + noteName + " " + localize('SentVacationRequest')}}
     </div>
   </transition>
+  <select-language
+    @rerender="rerender"/>
 </template>
 
 <script setup>
-import {computed, ref, watch} from "vue";
+import {computed, getCurrentInstance, ref, watch} from "vue";
 import moment from "moment";
 import router from "@/router/router";
 import {useStore} from "vuex";
 import MyButton from "@/components/UI/MyButton.vue";
 import ButtonIcon from "@/components/UI/ButtonIcon.vue";
 import {localize} from "@/hooks/localize.js";
-import MySelect from "@/components/UI/MySelect.vue";
+import SelectLanguage from "@/components/UI/SelectLanguage.vue";
 
 const store = useStore();
 const showNote = ref(false);
@@ -71,6 +72,14 @@ const showAllNotes = ref(false);
 const currentUser = computed(() => store.state.my.currentUser);
 const noteName = computed(() => store.state.my.noteName);
 const notes = computed(() => store.state.my.notes);
+const rerenderKey = ref(0);
+
+const emit = defineEmits(['rerender']);
+
+const rerender = () => {
+  rerenderKey.value++;
+  emit('rerender');
+}
 
 const getTime = (time) => {
   return moment(time).format('HH:mm:ss');
@@ -118,11 +127,9 @@ watch (noteName, () => {
 .panel p
 {
   position: relative;
-  top: 12px;
   width: fit-content;
-  left: -50px;
-  height: 40px;
   font-size: 18px;
+  margin: 0;
 }
 
 .notesList{
@@ -161,14 +168,15 @@ watch (noteName, () => {
 {
   display: flex;
   position: relative;
-  width: fit-content;
+  align-items: end;
+  justify-content: space-between;
+  width: 23%;
+  height: 70px;
 }
 
 .btn
 {
   position: relative;
-  top: 25px;
-  margin-right: 20px;
   cursor: pointer;
 }
 

@@ -1,7 +1,8 @@
 <template>
-  <sample-hat/>
+  <sample-hat
+    @rerender="rerender"/>
     <div class="main">
-      <div class="bar">
+      <div class="bar" :key="rerenderKey">
         <sample-nav-bar :choice="choice"/>
       </div>
       <div class="info">
@@ -13,6 +14,7 @@
 <script setup>
 import SampleNavBar from "@/components/Samples/SampleNavBar.vue";
 import SampleHat from "@/components/Samples/SampleHat.vue";
+import {ref} from "vue";
 
 defineProps({
   choice: {
@@ -20,6 +22,14 @@ defineProps({
     requested: true,
   },
 })
+
+const emit = defineEmits(['rerender'])
+
+const rerenderKey = ref(0);
+const rerender = () => {
+  rerenderKey.value++;
+  emit('rerender');
+}
 </script>
 
 <style>

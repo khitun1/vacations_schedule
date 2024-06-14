@@ -18,7 +18,7 @@
             {{ vac.start }} - {{ vac.end }}
           </p>
           <p style="width: 130px">
-            {{localize('TotalDays') +  totalDays(vac.start, vac.end) }}
+            {{localize('TotalDaysShort') +  totalDays(vac.start, vac.end) }}
           </p>
           <p style="width: 130px">
             {{vac.paid ? localize('Paid'): localize('NotPaid')}}
@@ -29,12 +29,12 @@
            :style="vac.intersections? {border: '2px solid #d70000', color: '#d70000'}: 'none'">
           {{ vac.intersections? localize('Intersection') : "" }}
         </p>
-        <div class="btns">
+        <div class="btns" :key="rerenderKey">
           <button class="dec"
                   style="color: #36f64a"
                   :style="vac.intersections? {background: '#ff9e9e'}: {background:'#a19fff'}"
                   @click="$emit('accepted', vac.id)"
-                  :title="localize('AcceptZ')">
+                  :title="localize('Accept')">
             &#10004;
           </button>
           <button class="dec"

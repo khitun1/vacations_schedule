@@ -1,5 +1,6 @@
 <template >
-  <sample-page choice="allVacations">
+  <sample-page choice="allVacations"
+                @rerender="rerender">
     <VueMultiselect class="selectDep"
                     :options="allDeps"
                     :placeholder="localize('ChooseDepartment')"
@@ -19,7 +20,8 @@
         @accepted="accept"
         @showWindow="show"
         @showRec="showData"
-        v-if="!currentUser.director">
+        v-if="!currentUser.director"
+        :key="rerenderKey">
     </signature-table>
     <dialog class="failure">
       <form @submit.prevent>
@@ -46,7 +48,7 @@
           &#60;
         </button>
         <h3 class="year">
-          {{rangeChart}}
+          {{rangeChart()}}
         </h3>
         <button @click="nextRange">
           &#62;
@@ -57,6 +59,7 @@
                       :placeholder="localize('ChartRange')"
                       :show-labels="false"
                       :show-no-results="false"
+                      :key="rerenderKey"
                       v-model="selectedRange"
                       @close="changeRangeInChart(selectedRange)"/>
     </div>
@@ -105,6 +108,7 @@ export default {
       selectedRange: localize('Year'),
       selectedDep: '',
       showVacations: [],
+      rerenderKey: 0,
     }
   },
   components: {
@@ -160,14 +164,6 @@ export default {
       }
       return '0';
     },
-
-    rangeChart() {
-      let curMonth = this.month < 10 ? '0' + this.month : this.month;
-      return this.range === localize('Year') ? this.year + localize('Y') :
-          this.range === localize('Quarter') ? this.quarter + ' ' +
-              localize('Quarter').toLowerCase() + ' ' + this.year + localize('Y') :
-          moment(this.year + '-' + curMonth + '-01').format('MMMM') + ' ' + this.year + localize('Y');
-    },
   },
 
   methods:{
@@ -187,9 +183,23 @@ export default {
       decisionVacation: 'decisionVacation',
       clear: 'clear',
     }),
+
     cancelExplain() {
       this.explanation = '';
       document.querySelector('dialog').close();
+    },
+
+    rangeChart() {
+      let curMonth = this.month < 10 ? '0' + this.month : this.month;
+      return this.range === localize('Year') ? this.year + localize('Y') :
+          this.range === localize('Quarter') ? this.quarter + ' ' +
+              localize('Quarter').toLowerCase() + ' ' + this.year + localize('Y') :
+              localize(moment(this.year + '-' + curMonth + '-01').format('MMMM')) +
+              ' ' + this.year + localize('Y');
+    },
+
+    rerender() {
+      this.rerenderKey++;
     },
 
       setRangeInChart(start = null){

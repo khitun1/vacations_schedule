@@ -1,7 +1,8 @@
 <template>
   <div class="hat">
     <h1>{{ localize('VacationsPlanning') }}</h1>
-    <language/>
+    <select-language
+      @rerender="rerender"/>
   </div>
     <div class="main">
       <div class="gif">
@@ -24,22 +25,27 @@
         </p>
       </form>
     </div>
-
 </template>
 
 <script setup>
 import router from "@/router/router";
-import {computed, ref} from "vue";
+import {computed, getCurrentInstance, ref} from "vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import {useStore} from "vuex";
 import moment from "moment";
 import {localize} from "../hooks/localize.js";
-import Language from "@/components/UI/MySelect.vue";
+import SelectLanguage from "@/components/UI/SelectLanguage.vue";
 
 if (!localStorage.getItem('exist')) {
   localStorage.setItem('exist', true)
-  localStorage.setItem('lang', window.navigator.language === 'ru-RU'? 'Русский': 'English')
+  localStorage.setItem('lang', window.navigator.language === 'ru-RU'? '🌍 RU': '🌍 EN')
+}
+
+const instance = getCurrentInstance();
+
+const rerender = () => {
+  instance.proxy.$forceUpdate()
 }
 
 const store = useStore();

@@ -1,6 +1,6 @@
 <template>
   <div class="table">
-    <h1>Личные данные</h1>
+    <h1>{{localize('PersonalData')}}</h1>
     <div class="info surname">
       <p>
         {{ localize('Surname') }}:

@@ -24,8 +24,9 @@ export function options() // config for chart
                     align: 'start',
                     stepSize: 1,
                     callback: function (value) {
+                        console.log(value)
                             const {converterInYear, converterInQuarter, converterInMonth} = chartDateConverter(value);
-                            return store.state.admin.range === localize('Year') ? converterInYear() :
+                            return store.state.admin.range === localize('Year') ? localize(converterInYear()) :
                                 store.state.admin.range === localize('Quarter') ? converterInQuarter() :
                                     converterInMonth();
                     }

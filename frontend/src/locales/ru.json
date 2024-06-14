@@ -39,6 +39,7 @@
   "DeletingUser": "Удаление пользователя",
   "UserList": "Список пользователей",
   "TotalDays": "кол-во дней всего: ",
+  "TotalDaysShort": "кол-во дней: ",
   "TotalDaysOff": "кол-во выходных дней: ",
   "RejectReason": "Причина отказа:",
   "Accepted": "Утверждено",
@@ -112,5 +113,18 @@
   "EmptyVacations": "Отпуска отсутствуют",
   "Y": "г.",
   "WrongLogin": "Неверный логин или почта",
-  "WrongPassword": "Неверный пароль"
+  "WrongPassword": "Неверный пароль",
+  "PersonalData": "Личные данные",
+  "January": "Январь",
+  "February": "Февраль",
+  "March": "Март",
+  "April": "Апрель",
+  "May": "Май",
+  "June": "Июнь",
+  "July": "Июль",
+  "August": "Август",
+  "September": "Сентябрь",
+  "October": "Октябрь",
+  "November": "Ноябрь",
+  "December": "Декабрь"
 }

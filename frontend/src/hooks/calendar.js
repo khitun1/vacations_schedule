@@ -3,7 +3,7 @@ import moment from "moment/moment";
 import {useStore} from "vuex";
 
 export function  calendar(inters , flag = 0) {
-    const store = useStore()
+    const store = useStore();
     const rows = ref('2');
     let columns = ref('3');
     let calendarShow = ref(true);

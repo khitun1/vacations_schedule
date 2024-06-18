@@ -24,11 +24,9 @@ export function options() // config for chart
                     align: 'start',
                     stepSize: 1,
                     callback: function (value) {
-                        console.log(value)
-                            const {converterInYear, converterInQuarter, converterInMonth} = chartDateConverter(value);
+                            const {converterInYear, converterInMonth} = chartDateConverter(value);
                             return store.state.admin.range === localize('Year') ? localize(converterInYear()) :
-                                store.state.admin.range === localize('Quarter') ? converterInQuarter() :
-                                    converterInMonth();
+                                converterInMonth();
                     }
                 }
             }
@@ -61,15 +59,6 @@ export function options() // config for chart
             }
         }
     }
-}
-
-
-export function viewDate(date) // collect date in view 'dd.mm.yy'
-{
-    let view = ''
-    let split = date.split('-')
-    view = split[2] + '.' + split[1] + '.' + split[0][2] + split[0][3]
-    return view
 }
 
 export function totalDays(start,end) {

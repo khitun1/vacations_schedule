@@ -1,4 +1,3 @@
-import {chartDateConverter} from '@/hooks/chartDateConverter.js'
 import {amountDays} from "@/hooks/generalMoment/amountDays.js";
 import moment from "moment";
 import {dateChartFormat} from "@/hooks/generalMoment/dateChartFormat.js";

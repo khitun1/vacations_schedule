@@ -43,5 +43,7 @@
 // }
 
 export const localTest = () => {
-    return localStorage['lang']
+    localStorage.setItem('key1', 2)
+    localStorage.removeItem('key1')
+    return localStorage.getItem('key1')
 }

@@ -83,5 +83,5 @@ test('localStorage', () => {
     //     global.localStorage = {
     //         lang: 'RU'
     //     }
-    expect(localTest()).toBe('RU')
+    expect(localTest()).toBe(2)
 })

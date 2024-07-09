@@ -9,7 +9,7 @@
     <button-back @click="changeVisibleUserList"/>
     <div class="input">
       <my-input class="delete"
-                placeholder="Найти пользователя"
+                :placeholder="localize('FindUser')"
                 v-model="searchUser"/>
     </div>
     <table>

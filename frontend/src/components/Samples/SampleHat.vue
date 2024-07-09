@@ -107,7 +107,7 @@ watch (noteName, () => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 .notes{
   width: 20px;
@@ -124,15 +124,7 @@ watch (noteName, () => {
   font-weight: bold;
 }
 
-.panel p
-{
-  position: relative;
-  width: fit-content;
-  font-size: 18px;
-  margin: 0;
-}
-
-.notesList{
+.notesList {
   display: flex;
   flex-direction: column;
   width: 260px;
@@ -164,20 +156,26 @@ watch (noteName, () => {
   opacity: 0;
 }
 
-.panel
-{
+.panel {
   display: flex;
   position: relative;
-  align-items: end;
   justify-content: space-between;
-  width: 23%;
+  width: 350px;
   height: 70px;
+
+  p {
+    position: relative;
+    width: fit-content;
+    font-size: 18px;
+    margin-top: 40px;
+  }
 }
 
 .btn
 {
   position: relative;
   cursor: pointer;
+  margin-top: 35px;
 }
 
 img
@@ -219,25 +217,10 @@ img
 }
 
 @media screen and (max-width: 800px) {
-  .hat {
-    display: flex;
-    flex-direction: column;
-  }
-
-  h1 {
-    margin-top: 0;
-  }
 
   .newNote {
     left: 20px;
     top: 90px;
   }
-
-  .panel {
-    left: 60px;
-    margin-top: -30px;
-  }
 }
-
-
 </style>

@@ -176,7 +176,6 @@ const changeRule = async(e) => {
 
 button
 {
-
   width: 250px;
   height: 40px;
 }
@@ -250,7 +249,6 @@ form
 {
   position: relative;
   top: 12px;
-  margin-left: 420px;
 }
 
 .check_div
@@ -301,8 +299,9 @@ form
 .debt {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   padding: 0 0 0 10px;
-  width: fit-content;
+  width: 90%;
 }
 
 input::-webkit-inner-spin-button {

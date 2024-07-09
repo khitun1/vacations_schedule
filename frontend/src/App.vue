@@ -18,6 +18,7 @@ store.commit('setLoading', true);
 onMounted(() => {
   store.commit('setLoading', false);
 })
+debugger
 
 // setTimeout(() => {
 //   store.commit('setLoading', true)

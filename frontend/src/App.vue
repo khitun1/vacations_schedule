@@ -18,11 +18,6 @@ store.commit('setLoading', true);
 onMounted(() => {
   store.commit('setLoading', false);
 })
-debugger
-
-// setTimeout(() => {
-//   store.commit('setLoading', true)
-// }, 1000)
 </script>
 
 <style>
@@ -45,25 +40,59 @@ body::-webkit-scrollbar-thumb {
 .loader {
   border-radius: 50%;
   width: 50px;
-  height: 50px;
+  aspect-ratio: 1;
   position: absolute;
   top: 40%;
   left: 45%;
-  border: 10px solid #5b30b7;
-  animation: progress 1s cubic-bezier(.25, .4, .75, .6) infinite;
+  background: conic-gradient(var(--clr-fill) var(--pie, 0deg), var(--clr-empty) 0);
+  mask: radial-gradient(farthest-side, #0000 80%, #000 0);
+  animation: progress 1s linear infinite;
+}
 
+@property --pie {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --clr-fill {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #5b30b7;
+}
+
+@property --clr-empty {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: rgba(255, 0, 0, 0);
 }
 
 @keyframes progress {
-  0% { clip-path: polygon(50% 50%, 50% -21%, -21% 50%, 50% 121%, 121% 50%, 50% -21%); }
-  12% { clip-path: polygon(50% 50%, 50% -21%, -21% 50%, 50% 121%, 121% 50%, 121% 50%); }
-  25% { clip-path: polygon(50% 50%, 50% -21%, -21% 50%, 50% 121%, 50% 121%, 50% 121%); }
-  37% { clip-path: polygon(50% 50%, 50% -21%, -21% 50%, -21% 50%, -21% 50%, -21% 50%); }
-  50% { clip-path: polygon(50% 50%, 50% -21%, 50% -21%, 50% -21%, 50% -21%, 50% -21%); }
-  62% { clip-path: polygon(50% 50%, 50% -21%, 121% 50%, 121% 50%, 121% 50%, 121% 50%); }
-  75% { clip-path: polygon(50% 50%, 50% -21%, 121% 50%, 50% 121%, 50% 121%, 50% 121%); }
-  87% { clip-path: polygon(50% 50%, 50% -21%, 121% 50%, 50% 121%, -21% 50%, -21% 50%); }
-  100% { clip-path: polygon(50% 50%, 50% -21%, 121% 50%, 50% 121%, -21% 50%, 50% -21%); }
+  0% {
+    --pie: 0deg;
+    rotate: 0;
+  }
+  30% {
+    --pie: 300deg;
+  }
+  50% {
+    --pie: 360deg;
+    --clr-fill: #5b30b7;
+    --clr-empty: rgba(255, 0, 0, 0);
+  }
+  50.1%{
+    --pie: 0deg;
+    --clr-fill: rgba(255, 0, 0, 0);
+    --clr-empty: #5b30b7;
+  }
+  80% {
+    --pie: 300deg;
+  }
+  100% {
+    --pie: 360deg;
+    --clr-fill: rgba(255, 0, 0, 0);
+    --clr-empty: #5b30b7;
+    rotate: 360deg;
+  }
 }
-
 </style>
